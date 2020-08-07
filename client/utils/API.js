@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export default {
-
   // API/USERS ================================================================
   // Create user.
   createUser: function(data) {
