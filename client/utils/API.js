@@ -1,6 +1,8 @@
 import axios from 'axios';
 
 export default {
+
+  // API/USERS ================================================================
   // Create user.
   createUser: function (data) {
     return axios.post('/api/users/', data);
@@ -17,4 +19,13 @@ export default {
   deleteUser: function (id) {
     return axios.delete('/api/users/' + id);
   },
+
+  // API/PRINTS ===============================================================
+  // Create print.
+
+  // Get print with given id.
+
+  // Update print with data.
+
+  // Delete print with given id.
 };
