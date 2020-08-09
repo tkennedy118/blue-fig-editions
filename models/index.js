@@ -1,4 +1,5 @@
 module.exports = {
   User: require('./user'),
-  Print: require('./print')
+  Print: require('./print'),
+  Cart: require('./cart');
 }

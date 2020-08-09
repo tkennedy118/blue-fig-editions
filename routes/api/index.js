@@ -3,12 +3,14 @@ const db = require('../../models');
 const passport = require('../../config/passport');
 const userRoutes = require('./users');
 const printRoutes = require('./prints');
+const cartsRoutes = require('./carts');
 const usersController = require('../../controllers/usersController');
 const isAuthenticated = require('../../config/middleware/isAuthenticated');
 
 // Catch user and snip routes.
 router.use('/users', userRoutes);
 router.use('/prints', printRoutes);
+router.use('/carts', cartsRoutes);
 
 // =============================== SIGNUP/LOGIN/LOGOUT/STATUS ===================================
 

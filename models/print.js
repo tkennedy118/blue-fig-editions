@@ -6,7 +6,7 @@ const PrintSchema = new Schema({
   description: { type: String, require: true },
   series: { type: String, require: false },
   price: { type: Number, require: true },
-  isAvailable: { type: Boolean, require: true }
+  count: { type: Number, require: true, default: 0 }
 });
 
 const Print = mongoose.model('Print', PrintSchema);
