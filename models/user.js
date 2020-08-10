@@ -16,7 +16,11 @@ const UserSchema = new Schema({
     require: true,
     minLength: 8,
     maxLength: 20
-  }
+  },
+  cart: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Print'
+  }]
 });
 
 // Method to check if unhashed password entered by the user can be compared

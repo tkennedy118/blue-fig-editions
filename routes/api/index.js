@@ -2,13 +2,13 @@ const router = require('express').Router();
 const db = require('../../models');
 const passport = require('../../config/passport');
 const userRoutes = require('./users');
-// const snipRoutes = require('./snips');
+const printRoutes = require('./prints');
 const usersController = require('../../controllers/usersController');
 const isAuthenticated = require('../../config/middleware/isAuthenticated');
 
 // Catch user and snip routes.
 router.use('/users', userRoutes);
-// router.use('/snips', snipRoutes);
+router.use('/prints', printRoutes);
 
 // =============================== SIGNUP/LOGIN/LOGOUT/STATUS ===================================
 
