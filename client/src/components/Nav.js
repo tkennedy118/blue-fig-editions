@@ -21,10 +21,10 @@ import Collection from '@material-ui/icons/Collections';
 import Brush from '@material-ui/icons/Brush';
 
 
-import Home from '../../pages/Home';
-import Sale from '../../pages/Sale';
-import Services from '../../pages/Services';
-import Profile from '../../pages/Profile';
+import Home from '../pages/Home';
+import Sale from '../pages/Sale';
+import Services from '../pages/Services';
+import Profile from '../pages/Profile';
 
 const drawerWidth = 256;
 const history = createBrowserHistory();
