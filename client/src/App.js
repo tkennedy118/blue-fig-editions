@@ -1,18 +1,18 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import Nav from './components/Nav.js';
 import Footer from './components/Footer.js';
+import { StoreProvider } from './utils/GlobalState';
 import './App.css';
 
 function App() {
   return (
-    <Container>
-      <Paper square>
+    <Paper square>
+      <StoreProvider>
         <Nav />
         <Footer />
-      </Paper>
-    </Container>
+      </StoreProvider>
+    </Paper>
   );
 }
 
