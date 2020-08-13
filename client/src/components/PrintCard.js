@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import Image from 'material-ui-image';
+import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -51,7 +52,7 @@ export default function RecipeReviewCard(props) {
   };
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} raised>
       <CardHeader
         action={
           state.isLoggedIn
@@ -62,19 +63,23 @@ export default function RecipeReviewCard(props) {
             :
               <></>
         }
-        title='Big Gilbert'
-        subheader='Space-scape Series'
+        title={props.name}
+        subheader={props.series !== 'none' ? props.series + ' Series': 'Original Print'}
       />
       <CardMedia
         className={classes.media}
-        image={require('../utils/images/Big-Gilbert.jpg')}
-        title='Big Gilbert'
-      />
+        title={props.name}
+      >
+        <Image src={require('../utils/images/' + props.image)} />
+      </CardMedia>
+      <CardContent>
+        <Typography variant='subtitle1' color='textPrimary' align='center'>
+          ${props.price}.00
+        </Typography>
+      </CardContent>
       <CardContent>
         <Typography variant='body2' color='textSecondary' component='p'>
-        Contrary to popular belief, Lorem Ipsum is not simply random text. 
-        It has roots in a piece of classical Latin literature from 45 BC, making 
-        it over 2000 years old.
+          {props.description !== 'none' ? props.description : 'No description provided.'}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -94,15 +99,12 @@ export default function RecipeReviewCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout='auto' unmountOnExit>
         <CardContent>
-          <Typography paragraph>Description:</Typography>
+          <Typography paragraph>About:</Typography>
           <Typography paragraph>
             Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, 
             looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum 
             passage, and going through the cites of the word in classical literature, 
-            discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 
-            1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by 
-            Cicero, written in 45 BC. This book is a treatise on the theory of ethics, 
-            very popular during the Renaissance.
+            discovered the undoubtable source.
           </Typography>
         </CardContent>
       </Collapse>

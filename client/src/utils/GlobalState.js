@@ -4,7 +4,7 @@ import {
   LOGOUT,
   LOADING,
   ADD_PRINT,
-  UPDATE_PRINT,
+  UPDATE_PRINTS,
   REMOVE_PRINT,
   SET_CURRENT_PRINT,
   ADD_ITEM,
@@ -54,7 +54,7 @@ const reducer = (state, action) => {
         loading: false
       };
 
-    case UPDATE_PRINT:
+    case UPDATE_PRINTS:
       return {
         ...state,
         prints: [...action.prints],
