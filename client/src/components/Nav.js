@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { Router, Route, Link } from "react-router-dom";
-import { createBrowserHistory } from "history";
+import { Router, Route, Link } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -20,7 +20,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import Collection from '@material-ui/icons/Collections';
 import Brush from '@material-ui/icons/Brush';
 
-
+import CartIcon from '../components/CartIcon';
 import Home from '../pages/Home';
 import Sale from '../pages/Sale';
 import Services from '../pages/Services';
@@ -37,7 +37,7 @@ const styles = theme => ({
     flex: 1
   },
   drawerPaper: {
-    position: "relative",
+    position: 'relative',
     width: drawerWidth
   },
   menuButton: {
@@ -57,19 +57,25 @@ const MyToolbar = withStyles(styles)(
         <Toolbar>
           <IconButton
             className={classes.menuButton}
-            color="inherit"
-            aria-label="Menu"
+            color='inherit'
+            aria-label='Menu'
             onClick={onMenuClick}
           >
             <MenuIcon />
           </IconButton>
           <Typography
-            variant="h6"
-            color="inherit"
+            variant='h6'
+            color='inherit'
             className={classes.flex}
           >
             {title}
           </Typography>
+          <IconButton
+            color='inherit'
+            aria-label='show shopping cart'
+          >
+            <CartIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <div className={classes.toolbarMargin} />
