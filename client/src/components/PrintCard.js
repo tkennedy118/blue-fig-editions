@@ -37,10 +37,10 @@ const useStyles = makeStyles((theme) => ({
   },
   expandOpen: {
     transform: 'rotate(180deg)',
-  }
+  },
 }));
 
-export default function RecipeReviewCard(props) {
+export default function PrintCard(props) {
   const [state] = useStoreContext();
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
@@ -55,7 +55,7 @@ export default function RecipeReviewCard(props) {
     <Card className={classes.root} raised>
       <CardHeader
         action={
-          state.isLoggedIn
+          !state.isLoggedIn
             ?
               <IconButton aria-label='settings'>
                 <MoreVertIcon />
