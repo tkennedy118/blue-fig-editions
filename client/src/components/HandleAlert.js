@@ -34,7 +34,7 @@ export default function HandleAlert(props) {
         autoHideDuration={1700} 
         onClose={() => props.setOpen(false)}
       >
-        <Alert onClose={handleClose} severity='success'>
+        <Alert onClose={handleClose} severity={props.severity}>
           {props.message}
         </Alert>
       </Snackbar>

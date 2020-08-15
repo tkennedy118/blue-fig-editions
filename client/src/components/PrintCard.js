@@ -60,6 +60,7 @@ export default function PrintCard(props) {
       item: props._id
     });
 
+    localStorage.setItem('bfg-cart', JSON.stringify([...state.cart, props._id]));
     setOpen(true);
   }
 
@@ -122,7 +123,7 @@ export default function PrintCard(props) {
           </CardContent>
         </Collapse>
       </Card>
-      <HandleAlert open={open} setOpen={setOpen} message='Added to cart.' />
+      <HandleAlert open={open} setOpen={setOpen} message='Added to cart.' severity='success' />
     </>
   );
 }

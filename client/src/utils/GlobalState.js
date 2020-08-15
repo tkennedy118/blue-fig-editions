@@ -108,7 +108,7 @@ const StoreProvider = ({ valu = [], ...props }) => {
       price: 0,
       count: 0
     },
-    cart: [],
+    cart: JSON.parse(localStorage.getItem('bfg-cart')) || [],
     loading: false
   });
 
