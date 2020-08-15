@@ -87,7 +87,7 @@ const reducer = (state, action) => {
     case CLEAR:
       return {
         ...state,
-        cart: [{}],
+        cart: [],
         loading: false
       };
 
@@ -108,7 +108,7 @@ const StoreProvider = ({ valu = [], ...props }) => {
       price: 0,
       count: 0
     },
-    cart: [{}],
+    cart: [],
     loading: false
   });
 

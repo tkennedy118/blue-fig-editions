@@ -64,6 +64,7 @@ function Sale() {
                 price={print.price}
                 count={print.count}
                 image={print.image}
+                _id={print._id}
               />
             </Grid>
           ))}
