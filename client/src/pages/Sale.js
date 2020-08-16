@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { makeStyles } from '@material-ui/core/styles';
 import PrintCard from '../components/PrintCard';
+import AddPrintCard from '../components/AddPrintCard';
 import SortDropdown from '../components/SortDropdown';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, UPDATE_PRINTS } from '../utils/actions';
@@ -12,12 +17,25 @@ const useStyles = makeStyles((theme) => ({
   cardGrid: {
     paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8),
-  }
+  },
+  addNewCard: {
+    height: '100%',
+    textAlign: 'center',
+    position: 'relative',
+  },
+  addNewCardBtn: {
+    position: 'absolute',
+    margin: 0,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
 }));
 
 function Sale() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
+  const [addNew, setAddNew] = useState(false);
   const [sort, setSort] = useState(false);
 
   const getPrints = () => {
@@ -55,6 +73,25 @@ function Sale() {
           <SortDropdown setSort={setSort} />
         </Grid>
         <Grid container spacing={3}>
+          {state.isLoggedIn
+            ?
+              <Grid item xs={12} sm={6} md={4}>
+                <Card className={classes.addNewCard} raised>
+                    {addNew
+                      ?
+                        <AddPrintCard setAddNew={setAddNew}/>
+                      :
+                        <CardContent className={classes.addNewCardBtn}>
+                          <IconButton onClick={() => setAddNew(true)}>
+                            <AddCircleIcon style={{ fontSize: 128 }}/>
+                          </IconButton>
+                        </CardContent>
+                    }
+                </Card>
+              </Grid>
+            :
+              <></>
+          }
           {state.prints.map((print, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
               <PrintCard 

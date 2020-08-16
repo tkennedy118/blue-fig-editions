@@ -69,7 +69,7 @@ export default function PrintCard(props) {
       <Card className={classes.root} raised>
         <CardHeader
           action={
-            !state.isLoggedIn
+            state.isLoggedIn
               ?
                 <IconButton aria-label='settings'>
                   <MoreVertIcon />
