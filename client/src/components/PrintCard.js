@@ -84,7 +84,7 @@ export default function PrintCard(props) {
           className={classes.media}
           title={props.name}
         >
-          <Image src={require('../utils/images/' + props.image)} />
+          <Image src={props.image} />
         </CardMedia>
         <CardContent>
           <Typography variant='subtitle1' color='textPrimary' align='center'>

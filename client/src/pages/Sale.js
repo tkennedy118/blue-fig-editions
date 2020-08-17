@@ -7,8 +7,9 @@ import Container from '@material-ui/core/Container';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { makeStyles } from '@material-ui/core/styles';
 import PrintCard from '../components/PrintCard';
-import AddPrintCard from '../components/AddPrintCard';
+import PrintForm from '../components/PrintForm';
 import SortDropdown from '../components/SortDropdown';
+import Loader from '../components/Loader';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, UPDATE_PRINTS } from '../utils/actions';
 import API from '../utils/API';
@@ -68,48 +69,51 @@ function Sale() {
   }, [sort])
 
   return (
-    <main>
-      {/* <Hero /> */}
-      <Container className={classes.cardGrid} maxWidth='md'>
-        <Grid container spacing={3}>
-          <SortDropdown setSort={setSort} />
-        </Grid>
-        <Grid container spacing={3}>
-          {state.isLoggedIn
-            ?
-              <Grid item xs={12} sm={6} md={4}>
-                <Card className={classes.addNewCard} raised>
-                    {addNew
-                      ?
-                        <AddPrintCard setAddNew={setAddNew}/>
-                      :
-                        <CardContent className={classes.addNewCardBtn}>
-                          <IconButton onClick={() => setAddNew(true)}>
-                            <AddCircleIcon style={{ fontSize: 128 }}/>
-                          </IconButton>
-                        </CardContent>
-                    }
-                </Card>
+    <>
+      <main>
+        {/* <Hero /> */}
+        <Container className={classes.cardGrid} maxWidth='md'>
+          <Grid container spacing={3}>
+            <SortDropdown setSort={setSort} />
+          </Grid>
+          <Grid container spacing={3}>
+            {state.isLoggedIn
+              ?
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card className={classes.addNewCard} raised>
+                      {addNew
+                        ?
+                          <PrintForm setAddNew={setAddNew}/>
+                        :
+                          <CardContent className={classes.addNewCardBtn}>
+                            <IconButton onClick={() => setAddNew(true)}>
+                              <AddCircleIcon style={{ fontSize: 128 }}/>
+                            </IconButton>
+                          </CardContent>
+                      }
+                  </Card>
+                </Grid>
+              :
+                <></>
+            }
+            {state.prints.map((print, index) => (
+              <Grid item key={index} xs={12} sm={6} md={4}>
+                <PrintCard 
+                  name={print.name}
+                  description={print.description}
+                  series={print.series}
+                  price={print.price}
+                  count={print.count}
+                  image={print.image}
+                  _id={print._id}
+                />
               </Grid>
-            :
-              <></>
-          }
-          {state.prints.map((print, index) => (
-            <Grid item key={index} xs={12} sm={6} md={4}>
-              <PrintCard 
-                name={print.name}
-                description={print.description}
-                series={print.series}
-                price={print.price}
-                count={print.count}
-                image={print.image}
-                _id={print._id}
-              />
-            </Grid>
-          ))}
-        </Grid> 
-      </Container>
-    </main>
+            ))}
+          </Grid> 
+        </Container>
+      </main>
+      <Loader loading={state.loading} />
+    </>
   );
 }
 

@@ -9,7 +9,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import PublishIcon from '@material-ui/icons/Publish';
 import HandleAlert from '../components/HandleAlert';
+import Loader from './Loader';
 import { useStoreContext } from '../utils/GlobalState';
+import AddPrint from './AddPrint';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,12 +22,18 @@ const useStyles = makeStyles((theme) => ({
   input: {
     display: 'none',
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));
 
-export default function AddPrintCard(props) {
+export default function PrintForm(props) {
   const [state, dispatch] = useStoreContext();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [update, setUpdate] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState({
     name: false,
     description: false,
@@ -36,7 +44,7 @@ export default function AddPrintCard(props) {
     series: '',
     price: 0,
     description: '',
-    img: ''
+    image: ''
   });
 
   async function handleChangeImg(event) {
@@ -52,13 +60,15 @@ export default function AddPrintCard(props) {
     data.append('file', files[0]);
     data.append('upload_preset', 'bluefig');
     
-    const res = await fetch(
+    setLoading(true);
+      const res = await fetch(
       'https://api.cloudinary.com/v1_1/tkennedy118/image/upload',
       { method: 'POST', body: data }
     );
     const file = await res.json();
+    setLoading(false);
     
-    setNewPrint({ ...newPrint, img: file.secure_url });
+    setNewPrint({ ...newPrint, image: file.secure_url });
   };
 
   function handleChange(event) {
@@ -87,12 +97,14 @@ export default function AddPrintCard(props) {
       setError({ ...error, description: true }); 
       return; 
     }
-    if (newPrint.img.length < 1) {
+    if (newPrint.image.length < 1) {
       setError({ ...error, img: true });
     }
 
     // send data to api and update state
-    
+    if (!update) { AddPrint(newPrint, dispatch); };
+
+    props.setAddNew(false);
   }
 
   return (
@@ -158,7 +170,7 @@ export default function AddPrintCard(props) {
               ?
                 <Typography variant='subtitle1' color='error' align='left'>Image upload failed</Typography>
               :
-                newPrint.img.length > 0 ? newPrint.img : 'File path'
+                newPrint.image.length > 0 ? newPrint.image : 'File path'
             }
           </Typography>
             <input
@@ -169,6 +181,7 @@ export default function AddPrintCard(props) {
               name='img'
               type='file'
               onChange={handleChangeImg}
+              onClick={() => setError({ ...error, img: false })}
               style={{ display: 'none' }}
             />
             <label htmlFor='upload-img-btn'>
@@ -191,6 +204,7 @@ export default function AddPrintCard(props) {
       </CardContent>
       <HandleAlert open={open} setOpen={setOpen} message='Print added to webstie.' severity='success' />
       <HandleAlert open={open} setOpen={setOpen} message='Print was not added to website.' severity='error' />
+      <Loader loading={loading} />
     </>
   );
 }

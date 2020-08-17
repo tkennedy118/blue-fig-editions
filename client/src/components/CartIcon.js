@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CartIcon() {
-  const [state, _] = useStoreContext();
+  const [state] = useStoreContext();
   const classes = useStyles();
 
   return (
