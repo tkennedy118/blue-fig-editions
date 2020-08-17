@@ -26,7 +26,74 @@ export default function AddPrintCard(props) {
   const [state, dispatch] = useStoreContext();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({
+    name: false,
+    description: false,
+    img: false
+  });
+  const [newPrint, setNewPrint] = useState({
+    name: '',
+    series: '',
+    price: 0,
+    description: '',
+    img: ''
+  });
+
+  async function handleChangeImg(event) {
+    // validation
+    if (!event.target.value.match(/\.(jpg|jpeg|png|gif)$/)) {
+      setError({ ...error, img: true });
+      return;
+    }
+
+    const files = event.target.files;
+    const data = new FormData();
+
+    data.append('file', files[0]);
+    data.append('upload_preset', 'bluefig');
+    
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/tkennedy118/image/upload',
+      { method: 'POST', body: data }
+    );
+    const file = await res.json();
+    
+    setNewPrint({ ...newPrint, img: file.secure_url });
+  };
+
+  function handleChange(event) {
+    setError({
+      name: false,
+      description: false,
+      img: false
+    });
+
+    const name = event.target.name;
+    setNewPrint({ ...newPrint, [name]: event.target.value })
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const names = state.prints.map((print) => print.name);
+    const length = newPrint.description.length;
+
+    // validation
+    if (names.includes(newPrint.name) || newPrint.name === '') { 
+      setError({ ...error, name: true }); 
+      return;
+    }
+    if (length < 15 || length > 40) { 
+      setError({ ...error, description: true }); 
+      return; 
+    }
+    if (newPrint.img.length < 1) {
+      setError({ ...error, img: true });
+    }
+
+    // send data to api and update state
+    
+  }
 
   return (
     <>
@@ -34,7 +101,7 @@ export default function AddPrintCard(props) {
         <Typography variant='h6' style={{ marginBottom: '24px' }}>
           New Print
         </Typography>
-        <Grid container spacing={1}>
+        <Grid container spacing={1} className={classes.helperText}>
           <Grid item xs={12}>
             <TextField
               required
@@ -43,6 +110,9 @@ export default function AddPrintCard(props) {
               label='Title'
               variant='outlined'
               fullWidth
+              onChange={handleChange}
+              error={error.name ? true : false}
+              helperText={error.name ? 'Title must be unique': ''}
             />
           </Grid>
           <Grid item xs={12}>
@@ -52,6 +122,7 @@ export default function AddPrintCard(props) {
               label='Series'
               variant='outlined'
               fullWidth
+              onChange={handleChange}
             />
           </Grid>
           <Grid item xs={12}>
@@ -63,6 +134,7 @@ export default function AddPrintCard(props) {
               type='number'
               variant='outlined'
               fullWidth
+              onChange={handleChange}
             />
           </Grid>
           <Grid item xs={12} style={{ marginBottom: '24px' }}>
@@ -75,15 +147,29 @@ export default function AddPrintCard(props) {
               rows={3}
               rowsMax={4}
               fullWidth
+              onChange={handleChange}
+              error={error.description ? true : false}
+              helperText={error.description ? 'Description must be between 15 and 40 characters' : ''}
             />
           </Grid>
           <Grid item xs={12}>
+          <Typography variant='subtitle1' color='primary' align='left' gutterBottom noWrap>
+            {error.img
+              ?
+                <Typography variant='subtitle1' color='error' align='left'>Image upload failed</Typography>
+              :
+                newPrint.img.length > 0 ? newPrint.img : 'File path'
+            }
+          </Typography>
             <input
               required
-              accept='*.png'
+              accept='image/*'
               className={classes.input}
               id='upload-img-btn'
+              name='img'
               type='file'
+              onChange={handleChangeImg}
+              style={{ display: 'none' }}
             />
             <label htmlFor='upload-img-btn'>
               <Button variant='contained' color='primary' component='span' fullWidth startIcon={<PublishIcon/>}>
@@ -97,7 +183,7 @@ export default function AddPrintCard(props) {
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button variant='outlined' fullWidth color='primary' startIcon={<ArrowUpwardIcon/>}>
+            <Button variant='outlined' fullWidth color='primary' startIcon={<ArrowUpwardIcon/>} onClick={handleSubmit}>
               Submit
             </Button>
           </Grid>

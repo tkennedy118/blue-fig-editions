@@ -19,8 +19,10 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(8),
   },
   addNewCard: {
+    maxWidth: 345,
     height: '100%',
-    textAlign: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     position: 'relative',
   },
   addNewCardBtn: {
