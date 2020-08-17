@@ -6,6 +6,8 @@ const routes = require('./routes');
 
 const PORT = process.env.PORT || 6001;
 const app = express();
+require('dotenv').config();
+
 
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));

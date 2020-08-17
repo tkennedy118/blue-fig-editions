@@ -33,7 +33,7 @@ const printSeed = [
     series: 'Space-scape',
     price: 0,
     count: 10,
-    image: 'Big-Gilbert.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636340/bluefig/Big-Gilbert_pulfnm.jpg'
   },
   {
     name: 'Sasha',
@@ -41,7 +41,7 @@ const printSeed = [
     series: 'Space-scape',
     price: 0,
     count: 10,
-    image: 'Sasha.jpg',
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636368/bluefig/Sasha_dqfi1b.jpg',
   },
   {
     name: 'Enzo',
@@ -49,7 +49,7 @@ const printSeed = [
     series: 'Space-scape',
     price: 0,
     count: 10,
-    image: 'Enzo.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636365/bluefig/Enzo_etzy2a.jpg'
   },
   {
     name: 'Landon',
@@ -57,7 +57,7 @@ const printSeed = [
     series: 'Landscape',
     price: 0,
     count: 10,
-    image: 'Landon.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636369/bluefig/Landon_gj1u3o.jpg'
   },
   {
     name: 'Owen',
@@ -65,7 +65,7 @@ const printSeed = [
     series: 'Landscape',
     price: 0,
     count: 10,
-    image: 'Owen.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636375/bluefig/Owen_kieapy.jpg'
   },
   {
     name: 'Kira',
@@ -73,7 +73,7 @@ const printSeed = [
     series: 'Landscape',
     price: 0,
     count: 10,
-    image: 'Kira.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636372/bluefig/Kira_ijgeet.jpg'
   },
   {
     name: 'Edna',
@@ -81,7 +81,7 @@ const printSeed = [
     series: 'none',
     price: 0,
     count: 10,
-    image: 'Edna.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636365/bluefig/Edna_ge2khl.jpg'
   },
   {
     name: 'Edna L.',
@@ -89,7 +89,7 @@ const printSeed = [
     series: 'none',
     price: 0,
     count: 10,
-    image: 'Edna-L.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636362/bluefig/Edna-L_ptursp.jpg'
   },
   {
     name: 'Jethro',
@@ -97,7 +97,7 @@ const printSeed = [
     series: 'none',
     price: 0,
     count: 10,
-    image: 'Jethro.jpg'
+    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636363/bluefig/Jethro_fk4uve.jpg'
   }
 ];
 

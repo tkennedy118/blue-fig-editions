@@ -83,7 +83,7 @@ function Sale() {
                   <Card className={classes.addNewCard} raised>
                       {addNew
                         ?
-                          <PrintForm setAddNew={setAddNew}/>
+                          <PrintForm exitForm={setAddNew}/>
                         :
                           <CardContent className={classes.addNewCardBtn}>
                             <IconButton onClick={() => setAddNew(true)}>

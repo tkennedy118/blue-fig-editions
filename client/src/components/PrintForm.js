@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -29,16 +29,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PrintForm(props) {
+  console.log('PROPS: ', props);
   const [state, dispatch] = useStoreContext();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({
     name: false,
     description: false,
     img: false
   });
+
   const [newPrint, setNewPrint] = useState({
     name: '',
     series: '',
@@ -46,6 +47,18 @@ export default function PrintForm(props) {
     description: '',
     image: ''
   });
+
+  useEffect(() => {
+    if (props.update) {
+      setNewPrint({
+        name: props.name,
+        series: props.series,
+        price: props.price,
+        description: props.description,
+        image: ''
+      })
+    }
+  }, []);
 
   async function handleChangeImg(event) {
     // validation
@@ -93,7 +106,7 @@ export default function PrintForm(props) {
       setError({ ...error, name: true }); 
       return;
     }
-    if (length < 15 || length > 40) { 
+    if (length < 15 || length > 128) { 
       setError({ ...error, description: true }); 
       return; 
     }
@@ -102,9 +115,9 @@ export default function PrintForm(props) {
     }
 
     // send data to api and update state
-    if (!update) { AddPrint(newPrint, dispatch); };
+    if (!props.update) { AddPrint(newPrint, dispatch); };
 
-    props.setAddNew(false);
+    props.exitForm(false);
   }
 
   return (
@@ -116,6 +129,7 @@ export default function PrintForm(props) {
         <Grid container spacing={1} className={classes.helperText}>
           <Grid item xs={12}>
             <TextField
+              value={newPrint.name}
               required
               id='name'
               name='name'
@@ -129,6 +143,7 @@ export default function PrintForm(props) {
           </Grid>
           <Grid item xs={12}>
             <TextField
+              value={newPrint.series}
               id='series'
               name='series'
               label='Series'
@@ -139,6 +154,7 @@ export default function PrintForm(props) {
           </Grid>
           <Grid item xs={12}>
             <TextField
+              value={newPrint.price}
               required
               id='price'
               name='price'
@@ -151,6 +167,7 @@ export default function PrintForm(props) {
           </Grid>
           <Grid item xs={12} style={{ marginBottom: '24px' }}>
             <TextField
+              value={newPrint.description}
               id='description'
               name='description'
               label='Description'
@@ -174,6 +191,7 @@ export default function PrintForm(props) {
             }
           </Typography>
             <input
+              value={newPrint.image}
               required
               accept='image/*'
               className={classes.input}
@@ -191,7 +209,7 @@ export default function PrintForm(props) {
             </label>
           </Grid>
           <Grid item xs={6}>
-            <Button variant='outlined' fullWidth color='secondary' startIcon={<DeleteIcon/>} onClick={() => props.setAddNew(false)}>
+            <Button variant='outlined' fullWidth color='secondary' startIcon={<DeleteIcon/>} onClick={() => props.exitForm(false)}>
               Delete
             </Button>
           </Grid>
