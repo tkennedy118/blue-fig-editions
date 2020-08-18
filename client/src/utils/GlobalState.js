@@ -66,7 +66,8 @@ const reducer = (state, action) => {
         ...state,
         prints: state.prints.filter(print => {
           return print._id !== action._id;
-        })
+        }),
+        loading: false
       };
     
     // SHOPPING CART ==========================================================

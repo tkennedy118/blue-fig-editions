@@ -12,11 +12,14 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import HandleAlert from '../components/HandleAlert';
 import PrintForm from '../components/PrintForm';
+import RemovePrintModal from '../components/RemovePrintModal';
 import { useStoreContext } from '../utils/GlobalState';
 import { ADD_ITEM } from '../utils/actions';
+import { PromiseProvider } from 'mongoose';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,6 +53,7 @@ export default function PrintCard(props) {
   const [focus, setFocus] = useState(false);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [remove, setRemove] = useState(false);
   
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -66,12 +70,16 @@ export default function PrintCard(props) {
     setOpen(true);
   }
 
+  const toggleRemove = () => {
+    setRemove(!remove);
+  }
+
   return (
     <>
       <Card className={classes.root} raised>
         {edit
           ?
-            <PrintForm 
+            <PrintForm
               exitForm={setEdit}
               name={props.name}
               series={props.series}
@@ -87,9 +95,14 @@ export default function PrintCard(props) {
                 action={
                   state.isLoggedIn
                     ?
-                      <IconButton aria-label='edit'>
-                        <EditIcon onClick={() => setEdit(true)}/>
-                      </IconButton>
+                      <>
+                        <IconButton aria-label='delete'>
+                          <DeleteIcon onClick={toggleRemove} />
+                        </IconButton>
+                        <IconButton aria-label='edit'>
+                          <EditIcon onClick={() => setEdit(true)} />
+                        </IconButton>
+                      </>
                     :
                       <></>
                 }
@@ -142,6 +155,12 @@ export default function PrintCard(props) {
         }
       </Card>
       <HandleAlert open={open} setOpen={setOpen} message='Added to cart.' severity='success' />
+      {remove 
+        ? 
+          <RemovePrintModal remove={remove} setRemove={setRemove} _id={props._id} dispatch={dispatch}/>
+        : 
+          <></>
+      }
     </>
   );
 }
