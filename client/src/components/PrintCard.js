@@ -78,6 +78,7 @@ export default function PrintCard(props) {
               description={props.description}
               price={props.price}
               image={props.image}
+              _id={props._id}
               update={true}
             />
           :

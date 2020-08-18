@@ -5,13 +5,14 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
+import UndoIcon from '@material-ui/icons/Undo';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import PublishIcon from '@material-ui/icons/Publish';
 import HandleAlert from '../components/HandleAlert';
 import Loader from './Loader';
 import { useStoreContext } from '../utils/GlobalState';
 import AddPrint from './AddPrint';
+import UpdatePrint from './UpdatePrint';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PrintForm(props) {
-  console.log('PROPS: ', props);
   const [state, dispatch] = useStoreContext();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -51,6 +51,7 @@ export default function PrintForm(props) {
   useEffect(() => {
     if (props.update) {
       setNewPrint({
+        _id: props._id,
         name: props.name,
         series: props.series,
         price: props.price,
@@ -102,7 +103,7 @@ export default function PrintForm(props) {
     const length = newPrint.description.length;
 
     // validation
-    if (names.includes(newPrint.name) || newPrint.name === '') { 
+    if ((!props.update && names.includes(newPrint.name)) || newPrint.name === '') { 
       setError({ ...error, name: true }); 
       return;
     }
@@ -115,7 +116,7 @@ export default function PrintForm(props) {
     }
 
     // send data to api and update state
-    if (!props.update) { AddPrint(newPrint, dispatch); };
+    (!props.update) ? AddPrint(newPrint, dispatch) : UpdatePrint(newPrint, dispatch);
 
     props.exitForm(false);
   }
@@ -124,7 +125,7 @@ export default function PrintForm(props) {
     <>
       <CardContent>
         <Typography variant='h6' style={{ marginBottom: '24px' }}>
-          New Print
+          {!props.update ? 'New Print' : 'Update Print'}
         </Typography>
         <Grid container spacing={1} className={classes.helperText}>
           <Grid item xs={12}>
@@ -191,7 +192,6 @@ export default function PrintForm(props) {
             }
           </Typography>
             <input
-              value={newPrint.image}
               required
               accept='image/*'
               className={classes.input}
@@ -209,13 +209,13 @@ export default function PrintForm(props) {
             </label>
           </Grid>
           <Grid item xs={6}>
-            <Button variant='outlined' fullWidth color='secondary' startIcon={<DeleteIcon/>} onClick={() => props.exitForm(false)}>
-              Delete
+            <Button variant='outlined' fullWidth color='secondary' startIcon={<UndoIcon/>} onClick={() => props.exitForm(false)}>
+              Undo
             </Button>
           </Grid>
           <Grid item xs={6}>
             <Button variant='outlined' fullWidth color='primary' startIcon={<ArrowUpwardIcon/>} onClick={handleSubmit}>
-              Submit
+              {!props.update ? 'Submit' : 'Update'}
             </Button>
           </Grid>
         </Grid>
