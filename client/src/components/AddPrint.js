@@ -1,8 +1,9 @@
 import API from '../utils/API';
-import { ADD_PRINT } from '../utils/actions';
+import { ADD_PRINT, LOADING } from '../utils/actions';
 
 export default function AddPrint(props, dispatch) {
 
+  dispatch({ type: LOADING })
   API.createPrint({
     name: props.name,
     description: props.description,

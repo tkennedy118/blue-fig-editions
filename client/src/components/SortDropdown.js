@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #d3d45d',
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(0),
   },
   popper: {
     zIndex: theme.zIndex.speedDial,
