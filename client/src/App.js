@@ -1,10 +1,18 @@
 import React from 'react';
-import Nav from './components/Nav';
+import Paper from '@material-ui/core/Paper';
+import Nav from './components/Nav.js';
+import Footer from './components/Footer.js';
+import { StoreProvider } from './utils/GlobalState';
 import './App.css';
 
 function App() {
   return (
-    <Nav />
+    <Paper square>
+      <StoreProvider>
+        <Nav />
+        <Footer />
+      </StoreProvider>
+    </Paper>
   );
 }
 

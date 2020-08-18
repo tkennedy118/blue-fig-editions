@@ -33,8 +33,9 @@ export default {
     return axios.get('/api/prints/' + id);
   },
   // Update print with data.
-  updatePrint: function(id, data) {
-    return axios.put('/api/prints/' + id, data);
+  updatePrint: function(id, data, options) {
+    const body = { data, options };
+    return axios.put('/api/prints/' + id, body);
   },
   // Delete print with given id.
   deletePrint: function(id) {

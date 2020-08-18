@@ -4,7 +4,7 @@ import {
   LOGOUT,
   LOADING,
   ADD_PRINT,
-  UPDATE_PRINT,
+  UPDATE_PRINTS,
   REMOVE_PRINT,
   SET_CURRENT_PRINT,
   ADD_ITEM,
@@ -54,7 +54,7 @@ const reducer = (state, action) => {
         loading: false
       };
 
-    case UPDATE_PRINT:
+    case UPDATE_PRINTS:
       return {
         ...state,
         prints: [...action.prints],
@@ -66,7 +66,8 @@ const reducer = (state, action) => {
         ...state,
         prints: state.prints.filter(print => {
           return print._id !== action._id;
-        })
+        }),
+        loading: false
       };
     
     // SHOPPING CART ==========================================================
@@ -87,7 +88,7 @@ const reducer = (state, action) => {
     case CLEAR:
       return {
         ...state,
-        cart: [{}],
+        cart: [],
         loading: false
       };
 
@@ -98,7 +99,7 @@ const reducer = (state, action) => {
 
 const StoreProvider = ({ valu = [], ...props }) => {
   const [state, dispatch] = useReducer(reducer, {
-    isLoggedIn: false,
+    isLoggedIn: true,
     prints: [],
     currentPrint: {
       _id: 0,
@@ -108,7 +109,7 @@ const StoreProvider = ({ valu = [], ...props }) => {
       price: 0,
       count: 0
     },
-    cart: [{}],
+    cart: JSON.parse(localStorage.getItem('bfg-cart')) || [],
     loading: false
   });
 
