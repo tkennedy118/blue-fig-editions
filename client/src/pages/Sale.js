@@ -73,10 +73,10 @@ function Sale() {
       <main>
         {/* <Hero /> */}
         <Container className={classes.cardGrid} maxWidth='md'>
-          <Grid container spacing={3}>
-            <SortDropdown setSort={setSort} />
-          </Grid>
-          <Grid container spacing={3}>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <SortDropdown setSort={setSort} />
+            </Grid>
             {state.isLoggedIn
               ?
                 <Grid item xs={12} sm={6} md={4}>
