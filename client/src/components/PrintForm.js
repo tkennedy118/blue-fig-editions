@@ -86,11 +86,9 @@ export default function PrintForm(props) {
   };
 
   function handleChange(event) {
-    setError({
-      name: false,
-      description: false,
-      img: false
-    });
+    if (error.name || error.description || error.img ) {
+      setError({ name: false, description: false, img: false });
+    }
 
     const name = event.target.name;
     setNewPrint({ ...newPrint, [name]: event.target.value })

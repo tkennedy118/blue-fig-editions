@@ -40,5 +40,10 @@ export default {
   // Delete print with given id.
   deletePrint: function(id) {
     return axios.delete('/api/prints/' + id);
+  },
+
+  //SIGNUP/SIGNIN/SIGNOUT =====================================================
+  signin: async function(data) {
+    return await axios.post('/api/signin/', data);
   }
 };

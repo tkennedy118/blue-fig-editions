@@ -19,7 +19,6 @@ import PrintForm from '../components/PrintForm';
 import RemovePrintModal from '../components/RemovePrintModal';
 import { useStoreContext } from '../utils/GlobalState';
 import { ADD_ITEM } from '../utils/actions';
-import { PromiseProvider } from 'mongoose';
 
 const useStyles = makeStyles((theme) => ({
   root: {

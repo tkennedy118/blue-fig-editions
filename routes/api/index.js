@@ -18,7 +18,7 @@ router.route('/signup').post(usersController.create);
 
 // Route to login. Uses passport.authenticate middleware that was set up with local strategy.
 // If the user has valid login credentials, sign them in. Otherwise send an error.
-router.post('/login', (req, res, next) => {
+router.post('/signin', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) { console.log(err); }
 

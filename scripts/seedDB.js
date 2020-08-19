@@ -11,18 +11,15 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editio
 const userSeed = [
   {
     username: 'martino.admin',
-    password: 'Toughpassword1',
-    cart: []
+    password: 'Toughpassword1'
   },
   {
     username: 'tyler.kennedy',
-    password: 'Password1',
-    cart: []
+    password: 'Password1'
   },
   {
     username: 'mike.martino',
-    password: 'Password1',
-    cart: []
+    password: 'Password1'
   }
 ];
 
