@@ -53,10 +53,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Signin() {
+export default function Signup() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({
+    email: false,
+    password: false,
+    server: false
+  });
   const [input, setInput] = useState({
     email: '',
     password: ''
@@ -76,24 +80,41 @@ export default function Signin() {
   }
 
   const handleChange = (event) => {
-    if (error) { setError(false) }
+    if (error) { setError({ email: false, password: false, server: false }) }
 
     const name = event.target.name;
-    setInput({ ...input, [name]: event.target.value })
+    setInput({ ...input, [name]: event.target.value });
+
+    // Validation
+    switch (name) {
+      case 'email':
+        if (!event.target.value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
+          setError({ ...error , email: true });
+        }
+        break;
+      case 'password':
+        if (!event.target.value.match(/^([a-zA-Z0-9!@#$%^&*]{8,16})$/)) {
+          setError({ ...error, password: true });
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     dispatch({ type: LOADING })
-    const { data }= await API.signin({ email: input.email, password: input.password });
+    const { data } = await API.signup({ email: input.email, password: input.password });
 
-    if (!data.message) { 
+    if (data) { 
+      await API.signin({ email: input.email, password: input.password });
       dispatch({ type: LOGIN });
       
     } else { 
       dispatch({ type: LOGOUT }); 
-      setError(true);
+      setError({ ...error, server: true });
     }
   }
 
@@ -108,12 +129,12 @@ export default function Signin() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component='h1' variant='h5'>
-              Sign in
+              Sign Up
             </Typography>
-            {error
+            {error.server
               ?
                 <Typography component='p' variant='body2' color='error' align='center' className={classes.error}>
-                  Invalid email or password
+                  Invalid email or password. The email may already exist under a different account.
                 </Typography>
               :
                 <></>
@@ -124,14 +145,13 @@ export default function Signin() {
                 margin='normal'
                 required
                 fullWidth
-                type='email'
                 id='email'
                 label='Email Address'
                 name='email'
                 autoComplete='email'
                 autoFocus
                 onChange={handleChange}
-                error={error ? true : false}
+                error={error.email ? true : false}
               />
               <TextField
                 variant='outlined'
@@ -139,12 +159,13 @@ export default function Signin() {
                 required
                 fullWidth
                 name='password'
-                label='Password'
                 type='password'
+                label='Password'
                 id='password'
                 autoComplete='current-password'
                 onChange={handleChange}
-                error={error ? true : false}
+                error={error.password ? true : false}
+                helperText={error.password ? 'Password must be between 8 and 16 characters' : ''}
               />
               <Button
                 type='submit'
@@ -154,12 +175,12 @@ export default function Signin() {
                 className={classes.submit}
                 onClick={handleSubmit}
               >
-                Sign In
+                Sign Up
               </Button>
               <Grid container justify='center'>
                 <Grid item>
-                  <Link component={RouterLink} to='/signup' variant='body2'>
-                    {"Don't have an account? Sign Up"}
+                  <Link component={RouterLink} to='/signin' variant='body2'>
+                    {"Already have an account? Sign In"}
                   </Link>
                 </Grid>
               </Grid>

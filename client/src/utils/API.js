@@ -42,8 +42,20 @@ export default {
     return axios.delete('/api/prints/' + id);
   },
 
-  //SIGNUP/SIGNIN/SIGNOUT =====================================================
-  signin: async function(data) {
-    return await axios.post('/api/signin/', data);
+  //SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
+  status: function() {
+    return axios.get('/api/status');
+  },
+
+  signin: function(data) {
+    return axios.post('/api/signin', data);
+  },
+
+  signup: function(data) {
+    return axios.post('/api/signup', data);
+  },
+
+  signout: function () {
+    return axios.get('/api/signout');
   }
 };

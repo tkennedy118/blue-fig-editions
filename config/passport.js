@@ -5,20 +5,23 @@ const db = require('../models');
 
 // Set up the local strategy that passport will use. The strategy requires a 'verify'
 // callback, which accepts these credentials and calls 'done' providing a user
-passport.use(new LocalStrategy(
-  (username, password, done) => {
-    // When a user tries to sign in, check if username is in database
-    db.User.findOne({ username: username })
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  (email, password, done) => {
+    // When a user tries to sign in, check if email is in database
+    db.User.findOne({ email: email })
       .then((dbUser) => {
-        // There was no user with the given username
+        // There was no user with the given email
         if (!dbUser) {
-          return done(null, false, { message: 'Username was incorrect.' });
+          return done(null, false, { message: 'Email was incorrect.' });
         }
-        // There was a user with the given username, but the password was incorrect
+        // There was a user with the given email, but the password was incorrect
         if (!dbUser.validPassword(password)) {
           return done(null, false, { message: 'Password was incorrect.' });
         }
-        // Username and password were both correct
+        // Email and password were both correct
         return done(null, dbUser);
     })
     .catch(err => console.log(err));

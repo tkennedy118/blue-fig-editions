@@ -4,7 +4,4 @@ module.exports = function(req, res, next) {
   if(req.user) {
     return next();
   }
-
-  // If user isn't loggin in, redirect to login page.
-  return res.redirect('/api/login');
 };
