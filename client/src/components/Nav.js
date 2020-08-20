@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { Router, Route, Link } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
-
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -19,15 +17,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
 import Collection from '@material-ui/icons/Collections';
 import Brush from '@material-ui/icons/Brush';
-
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CartIcon from '../components/CartIcon';
-import Home from '../pages/Home';
-import Sale from '../pages/Sale';
-import Services from '../pages/Services';
-import Profile from '../pages/Profile';
+import { useStoreContext } from '../utils/GlobalState';
 
 const drawerWidth = 256;
-const history = createBrowserHistory();
 
 const styles = theme => ({
   root: {
@@ -84,57 +78,62 @@ const MyToolbar = withStyles(styles)(
 );
 
 const MyDrawer = withStyles(styles)(
-  ({ classes, variant, open, onClose, onItemClick }) => (
-    <Router history={history}>
-      <Drawer variant={variant} open={open} onClose={onClose}
-        classes={{ paper: classes.drawerPaper }}
-      >
-        <div
-          className={clsx({
-            [classes.toolbarMargin]: variant === 'persistent'
-          })}
-        />
-        <List>
-          <ListItem button component={Link} to='/home' onClick={onItemClick('Home')}>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText>Home</ListItemText>
-          </ListItem>
-          <ListItem button component={Link} to='/sale' onClick={onItemClick('Sale')}>
-            <ListItemIcon>
-              <Collection />
-            </ListItemIcon>
-            <ListItemText>Sale</ListItemText>
-          </ListItem>
-          <ListItem button component={Link} to='/services' onClick={onItemClick('Services')}>
-            <ListItemIcon>
-              <Brush />
-            </ListItemIcon>
-            <ListItemText>Services</ListItemText>
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-          <ListItem button component={Link} to='/profile/:id' onClick={onItemClick('Profile')}>
-            <ListItemIcon>
-              <AccountCircle />
-            </ListItemIcon>
-            <ListItemText>Profile</ListItemText>
-          </ListItem>
-        </List>
-      </Drawer>
-      <main className={classes.content}>
-        <Route exact path='/home' component={Home} />
-        <Route exact path='/sale' component={Sale} />
-        <Route exact path='/services' component={Services} />
-        <Route exact path='/profile/:id' component={Profile} />
-      </main>
-    </Router>
+  ({ classes, variant, open, onClose, onItemClick, isLoggedIn }) => (
+    <Drawer variant={variant} open={open} onClose={onClose}
+      classes={{ paper: classes.drawerPaper }}
+    >
+      <div
+        className={clsx({
+          [classes.toolbarMargin]: variant === 'persistent'
+        })}
+      />
+      <List>
+        <ListItem button component={Link} to='/home' onClick={onItemClick('Home')}>
+          <ListItemIcon>
+            <HomeIcon />
+          </ListItemIcon>
+          <ListItemText>Home</ListItemText>
+        </ListItem>
+        <ListItem button component={Link} to='/sale' onClick={onItemClick('Sale')}>
+          <ListItemIcon>
+            <Collection />
+          </ListItemIcon>
+          <ListItemText>Sale</ListItemText>
+        </ListItem>
+        <ListItem button component={Link} to='/services' onClick={onItemClick('Services')}>
+          <ListItemIcon>
+            <Brush />
+          </ListItemIcon>
+          <ListItemText>Services</ListItemText>
+        </ListItem>
+      </List>
+      <Divider />
+      {isLoggedIn
+        ?
+          <List>
+            <ListItem button component={Link} to='/profile/:id' onClick={onItemClick('Profile')}>
+              <ListItemIcon>
+                <AccountCircle />
+              </ListItemIcon>
+              <ListItemText>Profile</ListItemText>
+            </ListItem>
+          </List>
+        :
+          <List>
+            <ListItem button component={Link} to='/signin' onClick={onItemClick('Signin')}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText>Sign In</ListItemText>
+            </ListItem>
+          </List>
+      }
+    </Drawer>
   )
 );
 
 function AppBarInteraction({ classes, variant }) {
+  const [state] = useStoreContext();
   const [drawer, setDrawer] = useState(false);
   const [title, setTitle] = useState('Blue Fig Editions');
 
@@ -154,6 +153,7 @@ function AppBarInteraction({ classes, variant }) {
         onClose={toggleDrawer}
         onItemClick={onItemClick}
         variant={variant}
+        isLoggedIn={state.isLoggedIn}
       />
     </div>
   );

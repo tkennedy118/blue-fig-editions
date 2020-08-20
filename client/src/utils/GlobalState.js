@@ -98,8 +98,9 @@ const reducer = (state, action) => {
 };
 
 const StoreProvider = ({ valu = [], ...props }) => {
+
   const [state, dispatch] = useReducer(reducer, {
-    isLoggedIn: true,
+    isLoggedIn: false,
     prints: [],
     currentPrint: {
       _id: 0,

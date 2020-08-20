@@ -40,5 +40,22 @@ export default {
   // Delete print with given id.
   deletePrint: function(id) {
     return axios.delete('/api/prints/' + id);
+  },
+
+  //SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
+  status: function() {
+    return axios.get('/api/status');
+  },
+
+  signin: function(data) {
+    return axios.post('/api/signin', data);
+  },
+
+  signup: function(data) {
+    return axios.post('/api/signup', data);
+  },
+
+  signout: function () {
+    return axios.get('/api/signout');
   }
 };

@@ -70,11 +70,12 @@ function Sale() {
 
   return (
     <>
+      
       <main>
         {/* <Hero /> */}
         <Container className={classes.cardGrid} maxWidth='md'>
           <Grid container spacing={1}>
-            <Grid item xs={12}>
+            <Grid item xs={12} >
               <SortDropdown setSort={setSort} />
             </Grid>
             {state.isLoggedIn

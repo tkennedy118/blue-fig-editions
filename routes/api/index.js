@@ -18,14 +18,14 @@ router.route('/signup').post(usersController.create);
 
 // Route to login. Uses passport.authenticate middleware that was set up with local strategy.
 // If the user has valid login credentials, sign them in. Otherwise send an error.
-router.post('/login', (req, res, next) => {
+router.post('/signin', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) { console.log(err); }
 
-    // Username or password was incorrect.
+    // Email or password was incorrect.
     if (info) { res.json({ message: info.message }); } 
     
-    // Username and password were correct.
+    // Email and password were correct.
     req.logIn(user, err => {
       if (err) { return next(err); }
       return res.json(user);
@@ -35,7 +35,7 @@ router.post('/login', (req, res, next) => {
 
 // Route to terminate a login session. According to passport docs, invoking req.logout() will
 // remove the req.user property and clear the lgoin session (if any).
-router.get('/logout', isAuthenticated, (req, res) => {
+router.get('/signout', isAuthenticated, (req, res) => {
   req.logout();
   return res.json({ status: false });
 });
