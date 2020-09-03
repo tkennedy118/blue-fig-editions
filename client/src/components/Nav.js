@@ -135,7 +135,7 @@ const MyDrawer = withStyles(styles)(
 function AppBarInteraction({ classes, variant }) {
   const [state] = useStoreContext();
   const [drawer, setDrawer] = useState(false);
-  const [title, setTitle] = useState('Blue Fig Editions');
+  const [title, setTitle] = useState('Home');
 
   const toggleDrawer = () => { setDrawer(!drawer); };
 
