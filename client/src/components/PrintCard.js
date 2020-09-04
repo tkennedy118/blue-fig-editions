@@ -86,6 +86,8 @@ export default function PrintCard(props) {
               description={props.description}
               price={props.price}
               image={props.image}
+              featured={props.featured}
+              about={props.about}
               _id={props._id}
               update={true}
             />
@@ -129,28 +131,34 @@ export default function PrintCard(props) {
                 <IconButton onClick={handleCartClick} aria-label='add to shopping cart'>
                   <AddShoppingCartIcon />
                 </IconButton>
-                <IconButton
-                  className={clsx(classes.expand, {
-                    [classes.expandOpen]: expanded,
-                  })}
-                  onClick={handleExpandClick}
-                  aria-expanded={expanded}
-                  aria-label='show more'
-                >
-                  <ExpandMoreIcon />
-                </IconButton>
+                {window.location.pathname === '/home' && props.about
+                  ?
+                    <IconButton
+                      className={clsx(classes.expand, {
+                        [classes.expandOpen]: expanded,
+                      })}
+                      onClick={handleExpandClick}
+                      aria-expanded={expanded}
+                      aria-label='show more'
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  :
+                    <></>
+                }
               </CardActions>
-              <Collapse in={expanded} timeout='auto' unmountOnExit>
-                <CardContent>
-                  <Typography paragraph>About:</Typography>
-                  <Typography paragraph>
-                    Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, 
-                    looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum 
-                    passage, and going through the cites of the word in classical literature, 
-                    discovered the undoubtable source.
-                  </Typography>
-                </CardContent>
-              </Collapse>
+              {props.about
+                ?
+                  <Collapse in={expanded} timeout='auto' unmountOnExit>
+                    <CardContent>
+                      <Typography paragraph>
+                        {props.about}
+                      </Typography>
+                    </CardContent>
+                  </Collapse>
+                :
+                  <></>
+              }
             </>
         }
       </Card>

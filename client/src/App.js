@@ -44,7 +44,6 @@ function App() {
     dispatch({ type: LOADING });
     async function fetchData() {
       let { data } = await API.status();
-      console.log('DATA: ', data);
       
       if (data.status === false ) {
         dispatch({ type: LOGOUT });

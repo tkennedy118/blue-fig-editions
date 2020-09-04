@@ -9,7 +9,8 @@ import {
   SET_CURRENT_PRINT,
   ADD_ITEM,
   REMOVE_ITEM,
-  CLEAR
+  CLEAR,
+  UPDATE_FEATURED_PRINTS
 } from "./actions";
 
 const StoreContext = createContext();
@@ -67,6 +68,17 @@ const reducer = (state, action) => {
         prints: state.prints.filter(print => {
           return print._id !== action._id;
         }),
+        featured: state.featured.filter(print => {
+          return print._id !== action._id;
+        }),
+        loading: false
+      };
+
+    // FEATURED PRINT =========================================================
+    case UPDATE_FEATURED_PRINTS:
+      return {
+        ...state,
+        featured: [...action.prints],
         loading: false
       };
     
@@ -102,6 +114,7 @@ const StoreProvider = ({ valu = [], ...props }) => {
   const [state, dispatch] = useReducer(reducer, {
     isLoggedIn: false,
     prints: [],
+    featured: [],
     currentPrint: {
       _id: 0,
       name: '',

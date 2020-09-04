@@ -10,6 +10,8 @@ export default function AddPrint(props, dispatch) {
     series: props.series,
     price: parseFloat(props.price).toFixed(2),
     image: props.image,
+    featured: props.featured,
+    about: props.about
   })
     .then(({ data }) => {
       dispatch({

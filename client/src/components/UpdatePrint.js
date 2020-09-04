@@ -2,6 +2,7 @@ import API from '../utils/API';
 import { REMOVE_PRINT, ADD_PRINT, LOADING } from '../utils/actions';
 
 export default function UpdatePrint(print, dispatch) {
+  console.log('PRINT: ', print);
   dispatch({ type: LOADING });
   API.updatePrint(print._id, {
     name: print.name,
@@ -9,6 +10,8 @@ export default function UpdatePrint(print, dispatch) {
     series: print.series,
     price: parseFloat(print.price).toFixed(2),
     image: print.image,
+    featured: print.featured,
+    about: print.about
   }, {
     new: true,
     overwrite: true
