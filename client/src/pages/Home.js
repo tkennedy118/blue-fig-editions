@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import Image from 'material-ui-image';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -9,14 +10,25 @@ import { makeStyles } from '@material-ui/core/styles';
 import Hero from '../components/Hero';
 import Loader from '../components/Loader';
 import PrintCard from '../components/PrintCard';
+import TechniquesAccordian from '../components/TechniquesAccordian';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, UPDATE_FEATURED_PRINTS } from '../utils/actions';
 import API from '../utils/API';
 import Nekko from '../utils/images/nekko.png';
+import Martino from '../utils/images/martino.png';
 
 const useStyles = makeStyles((theme) => ({
   viewportHeight: {
     height: '100vh',
+  },
+  artistImg: {
+    width: '100%',
+    background: theme.palette.background.default,
+    backgroundColor: theme.palette.background.default,
+    borderRadius: '50%',
+    [theme.breakpoints.down('sm')]: {
+      width: 256,
+    },
   },
   heroContent: {
     height: '100%',
@@ -51,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(4),
   },
   section: {
     padding: theme.spacing(8, 0, 12),
@@ -131,7 +144,7 @@ function Home() {
             <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
               Featured
             </Typography>
-            <Grid container spacing={2} alignItems='center' justify='center'>
+            <Grid container spacing={2} justify='center'>
               {state.featured.length > 0
                 ?
                   <>
@@ -162,10 +175,37 @@ function Home() {
           </Container>
         </div>
       </Hero>
-      <Hero default={true} height='100vh'>
-        <Typography>
-          About Mike
-        </Typography>
+      <Hero default={true}>
+        <div className={classes.section}>
+          <Container>
+            <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+              The Artist
+            </Typography>
+            <Grid container spacing={3} jusfity='center' alignItems='center' align='center'>
+              <Grid item xs={12} md={6}>
+                <img
+                  src={Martino}
+                  className={classes.artistImg}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography component='h3' variant='h4' align='center' color='textSecondary' gutterBottom>
+                  Mike Martino
+                </Typography>
+                <Typography variant='body1' align='left' color='textSecondary' paragraph>
+                  Mike Martino is also an acclaimed artist and printmaker who shows his work both locally 
+                  throughout the Nashville area while maintaining connections throughout the United States.
+                </Typography>
+                <Typography variant='body1' align='left' color='textSecondary' paragraph>
+                  At Blue Fig we have a strong foundation on traditional printmaking techniques and strive 
+                  to maintain the history of printmaking. However we also push our printmaking skills to 
+                  embrace new technologies and media as well as broaden our techniques and to include safety 
+                  for the artist as well as for the environment.
+                </Typography>
+              </Grid>
+            </Grid>
+          </Container>
+        </div>
       </Hero>
       <Loader loading={state.loading} />
     </>
