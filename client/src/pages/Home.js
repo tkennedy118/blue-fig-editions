@@ -10,9 +10,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Hero from '../components/Hero';
 import Loader from '../components/Loader';
 import PrintCard from '../components/PrintCard';
-import TechniquesAccordian from '../components/TechniquesAccordian';
+import ClassesCard from '../components/ClassesCard';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, UPDATE_FEATURED_PRINTS } from '../utils/actions';
+import { lessons } from '../utils/lessons';
 import API from '../utils/API';
 import Nekko from '../utils/images/nekko.png';
 import Martino from '../utils/images/martino.png';
@@ -75,6 +76,8 @@ function Home() {
   const [state, dispatch] = useStoreContext();
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
+
+  console.log('LESSONS: ', lessons);
 
   const getPrints = () => {
     dispatch({ type: LOADING });
@@ -196,13 +199,38 @@ function Home() {
                   Mike Martino is also an acclaimed artist and printmaker who shows his work both locally 
                   throughout the Nashville area while maintaining connections throughout the United States.
                 </Typography>
-                <Typography variant='body1' align='left' color='textSecondary' paragraph>
-                  At Blue Fig we have a strong foundation on traditional printmaking techniques and strive 
-                  to maintain the history of printmaking. However we also push our printmaking skills to 
-                  embrace new technologies and media as well as broaden our techniques and to include safety 
-                  for the artist as well as for the environment.
-                </Typography>
               </Grid>
+            </Grid>
+          </Container>
+        </div>
+      </Hero>
+      <Hero default={false}>
+        <div className={classes.section}>
+          <Container>
+            <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+              Classes
+            </Typography>
+            <Grid container spacing={2} justify='center'>
+              {lessons.length > 0
+                ?
+                  <>
+                    {lessons.map((item, index) => (
+                      <Grid item key={index} xs={12} md={4}>
+                        <ClassesCard
+                          name={item.name}
+                          lineOne={item.lineOne}
+                          lineTwo={item.lineTwo}
+                        />
+                      </Grid>
+                    ))}
+                  </>
+                :
+                  <Grid item xs={12}>
+                    <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
+                      There are no classes offered at this time.
+                    </Typography>
+                  </Grid>
+              }
             </Grid>
           </Container>
         </div>
