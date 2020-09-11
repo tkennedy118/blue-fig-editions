@@ -153,7 +153,7 @@ export default function PrintForm(props) {
         title={!props.update ? 'New Print' : 'Update Print'}
       />
       <CardContent>
-        <Grid container spacing={1} className={classes.helperText}>
+        <Grid container spacing={1}>
           <Grid item xs={12}>
             <TextField
               value={newPrint.name}

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Image from 'material-ui-image';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -11,6 +10,7 @@ import Hero from '../components/Hero';
 import Loader from '../components/Loader';
 import PrintCard from '../components/PrintCard';
 import ClassesCard from '../components/ClassesCard';
+import ContactForm from '../components/ContactForm';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, UPDATE_FEATURED_PRINTS } from '../utils/actions';
 import { lessons } from '../utils/lessons';
@@ -76,8 +76,6 @@ function Home() {
   const [state, dispatch] = useStoreContext();
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
-
-  console.log('LESSONS: ', lessons);
 
   const getPrints = () => {
     dispatch({ type: LOADING });
@@ -184,20 +182,21 @@ function Home() {
             <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
               The Artist
             </Typography>
-            <Grid container spacing={3} jusfity='center' alignItems='center' align='center'>
-              <Grid item xs={12} md={6}>
+            <Grid container spacing={3} justify='center' alignItems='center'>
+              <Grid item xs={12} md={5}>
                 <img
                   src={Martino}
+                  alt='Mike Martino'
                   className={classes.artistImg}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={5}>
                 <Typography component='h3' variant='h4' align='center' color='textSecondary' gutterBottom>
                   Mike Martino
                 </Typography>
                 <Typography variant='body1' align='left' color='textSecondary' paragraph>
-                  Mike Martino is also an acclaimed artist and printmaker who shows his work both locally 
-                  throughout the Nashville area while maintaining connections throughout the United States.
+                  Mike Martino is an acclaimed artist and printmaker, showing his work both locally 
+                  throughout the Nashville area as well as maintaining connections throughout the United States.
                 </Typography>
               </Grid>
             </Grid>
@@ -233,6 +232,18 @@ function Home() {
               }
             </Grid>
           </Container>
+        </div>
+      </Hero>
+      <Hero default={true}>
+        <div className={classes.section}>
+          <Grid container justify='center' alignItems='center'>
+            <Grid item xs={12} sm={8} md={6} lg={4}>
+              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                Contact
+              </Typography>
+              <ContactForm />
+            </Grid>
+          </Grid>
         </div>
       </Hero>
       <Loader loading={state.loading} />

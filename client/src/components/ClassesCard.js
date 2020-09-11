@@ -8,7 +8,8 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    border: `2px solid ${theme.palette.primary.main}`
+    border: `2px solid ${theme.palette.primary.main}`,
+    height: '100%',
   },
   title: {
     fontSize: 14,
@@ -23,7 +24,7 @@ export default function OutlinedCard(props) {
 
   return (
     <Card className={classes.root} raised>
-      <CardContent item style={{ minHeight: 320 }}>
+      <CardContent item style={{ minHeight: 256 }}>
         <Typography variant='h5' color='textSecondary' align='center' paragraph>
           {props.name}
         </Typography>

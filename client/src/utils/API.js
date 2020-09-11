@@ -42,7 +42,7 @@ export default {
     return axios.delete('/api/prints/' + id);
   },
 
-  //SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
+  // SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
   status: function() {
     return axios.get('/api/status');
   },
@@ -57,5 +57,10 @@ export default {
 
   signout: function () {
     return axios.get('/api/signout');
+  },
+
+  // EMAILJS ==================================================================
+  sendEmail: function(data) {
+    return axios.get('/api/emailjs/send', data);
   }
 };
