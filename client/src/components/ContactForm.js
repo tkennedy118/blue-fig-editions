@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import emailjs from 'emailjs-com';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -7,12 +7,15 @@ import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import HandleAlert from '../components/HandleAlert';
 import Loader from '../components/Loader';
-import API from '../utils/API';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
     marginBottom: theme.spacing(2),
     height: 48,
+  },
+  form: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
 }));
 
@@ -26,8 +29,8 @@ export default function ContactFrom(props) {
   const [state, setState] = useState({
     name: '',
     email: '',
-    subject: '',
-    message: ''
+    subject: props.subject,
+    message: props.message
   });
   const [error, setError] = useState({ 
     name: false,
@@ -35,16 +38,6 @@ export default function ContactFrom(props) {
     subject: false,
     message: false
   });
-
-  useEffect(() => {
-    if (props.subject) {
-      setState({
-        ...state,
-        subject: props.subject,
-        message: props.message
-      });
-    }
-  }, []);
 
   function sendEmail(data) {
     setLoading(true);
@@ -58,7 +51,6 @@ export default function ContactFrom(props) {
         }
       }, (error) => {
         setOpen({ ...open, failure: true });
-        console.log(error.text);
       });
     setLoading(false);
 
@@ -110,7 +102,7 @@ export default function ContactFrom(props) {
 
   return (
     <>
-      <Grid container spacing={1} >
+      <Grid container spacing={1} className={classes.form}>
         <Grid item xs={12} sm={6}>
           <TextField
             value={state.name}
@@ -142,7 +134,7 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            value={state.subject}
+            value={props.subject}
             required
             type='subject'
             id='subject'
@@ -157,7 +149,7 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            value={state.message}
+            value={props.message}
             required
             id='message'
             name='message'

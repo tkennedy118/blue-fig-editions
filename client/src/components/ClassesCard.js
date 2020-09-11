@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
 export default function OutlinedCard(props) {
   const classes = useStyles();
 
+  const handleClick = (event) => {
+    event.preventDefault();
+    props.setSubject(props.name);
+  };
+
   return (
     <Card className={classes.root} raised>
       <CardContent item style={{ minHeight: 256 }}>
@@ -36,7 +41,7 @@ export default function OutlinedCard(props) {
         </Typography>
       </CardContent>
       <CardActions style={{ justifyContent: 'center' }}>
-        <Button color='secondary' variant='outlined'>Add Class</Button>
+        <Button color='secondary' variant='outlined' onClick={handleClick}>Add Class</Button>
       </CardActions>
     </Card>
   );

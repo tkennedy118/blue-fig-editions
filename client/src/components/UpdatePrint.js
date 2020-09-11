@@ -2,7 +2,6 @@ import API from '../utils/API';
 import { REMOVE_PRINT, ADD_PRINT, LOADING } from '../utils/actions';
 
 export default function UpdatePrint(print, dispatch) {
-  console.log('PRINT: ', print);
   dispatch({ type: LOADING });
   API.updatePrint(print._id, {
     name: print.name,

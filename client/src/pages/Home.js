@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -19,9 +19,6 @@ import Nekko from '../utils/images/nekko.png';
 import Martino from '../utils/images/martino.png';
 
 const useStyles = makeStyles((theme) => ({
-  viewportHeight: {
-    height: '100vh',
-  },
   artistImg: {
     width: '100%',
     background: theme.palette.background.default,
@@ -31,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
       width: 256,
     },
   },
-  heroContent: {
+  heroBackground: {
     height: '100%',
     position: 'relative',
     '&:before': {
@@ -67,13 +64,18 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
   },
   section: {
-    padding: theme.spacing(8, 0, 12),
+    padding: theme.spacing(8, 0, 8),
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
 }));
 
 function Home() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
+  const [subject, setSubject] = useState('');
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
 
@@ -97,7 +99,7 @@ function Home() {
   return (
     <>
       <Hero default={true} fullHeight={true}>
-        <div className={classes.heroContent}>
+        <div className={classes.heroBackground}>
           <Container maxWidth='sm' className={classes.verticalAlign}>
             <Typography component='h1' variant='h2' align='center' color='textPrimary' className={classes.title} gutterBottom>
               Blue Fig Editions
@@ -139,51 +141,53 @@ function Home() {
           </Container>
         </div>
       </Hero>
-      <Hero default={false}>
-        <div className={classes.section}>
-          <Container>
-            <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-              Featured
-            </Typography>
-            <Grid container spacing={2} justify='center'>
-              {state.featured.length > 0
-                ?
-                  <>
-                    {state.featured.map((print, index) => (
-                      <Grid item key={index} xs={12} sm={6} md={4}>
-                        <PrintCard 
-                          name={print.name}
-                          description={print.description}
-                          series={print.series}
-                          price={print.price}
-                          count={print.count}
-                          image={print.image}
-                          featured={print.featured}
-                          about={print.about}
-                          _id={print._id}
-                        />
-                      </Grid>
-                    ))}
-                  </>
-                :
-                  <Grid item xs={12}>
-                    <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
-                      There are no featured prints at this time.
-                    </Typography>
-                  </Grid>
-              }
-            </Grid>
-          </Container>
-        </div>
-      </Hero>
-      <Hero default={true}>
+      <div style={{ minHeight: '100vh' }}>
+        <Hero default={false}>
+          <div className={classes.section}>
+            <Container>
+              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                Featured
+              </Typography>
+              <Grid container spacing={2} justify='center'>
+                {state.featured.length > 0
+                  ?
+                    <>
+                      {state.featured.map((print, index) => (
+                        <Grid item key={index} xs={12} sm={6} md={4}>
+                          <PrintCard 
+                            name={print.name}
+                            description={print.description}
+                            series={print.series}
+                            price={print.price}
+                            count={print.count}
+                            image={print.image}
+                            featured={print.featured}
+                            about={print.about}
+                            _id={print._id}
+                          />
+                        </Grid>
+                      ))}
+                    </>
+                  :
+                    <Grid item xs={12}>
+                      <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
+                        There are no featured prints at this time.
+                      </Typography>
+                    </Grid>
+                }
+              </Grid>
+            </Container>
+          </div>
+        </Hero>
+      </div>
+      <Hero default={true} fullHeight={true}>
         <div className={classes.section}>
           <Container>
             <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
               The Artist
             </Typography>
             <Grid container spacing={3} justify='center' alignItems='center'>
-              <Grid item xs={12} md={5}>
+              <Grid item xs={12} md={5} align='center'>
                 <img
                   src={Martino}
                   alt='Mike Martino'
@@ -203,45 +207,51 @@ function Home() {
           </Container>
         </div>
       </Hero>
-      <Hero default={false}>
-        <div className={classes.section}>
-          <Container>
-            <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-              Classes
-            </Typography>
-            <Grid container spacing={2} justify='center'>
-              {lessons.length > 0
-                ?
-                  <>
-                    {lessons.map((item, index) => (
-                      <Grid item key={index} xs={12} md={4}>
-                        <ClassesCard
-                          name={item.name}
-                          lineOne={item.lineOne}
-                          lineTwo={item.lineTwo}
-                        />
-                      </Grid>
-                    ))}
-                  </>
-                :
-                  <Grid item xs={12}>
-                    <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
-                      There are no classes offered at this time.
-                    </Typography>
-                  </Grid>
-              }
-            </Grid>
-          </Container>
-        </div>
-      </Hero>
-      <Hero default={true}>
+      <div style={{ minHeight: '100vh' }}>
+        <Hero default={false}>
+          <div className={classes.section}>
+            <Container>
+              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                Classes
+              </Typography>
+              <Grid container spacing={3} justify='center'>
+                {lessons.length > 0
+                  ?
+                    <>
+                      {lessons.map((item, index) => (
+                        <Grid item key={index} xs={12} md={4}>
+                          <ClassesCard
+                            name={item.name}
+                            lineOne={item.lineOne}
+                            lineTwo={item.lineTwo}
+                            setSubject={setSubject}
+                          />
+                        </Grid>
+                      ))}
+                    </>
+                  :
+                    <Grid item xs={12}>
+                      <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
+                        There are no classes offered at this time.
+                      </Typography>
+                    </Grid>
+                }
+              </Grid>
+            </Container>
+          </div>
+        </Hero>
+      </div>
+      <Hero default={true} fullHeight={true}>
         <div className={classes.section}>
           <Grid container justify='center' alignItems='center'>
             <Grid item xs={12} sm={8} md={6} lg={4}>
               <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
                 Contact
               </Typography>
-              <ContactForm />
+              <ContactForm 
+                subject={subject.length > 1 ? `${subject} Lessons` : ''} 
+                message={subject.length > 1 ? `I would like to know more about ${subject} classes. Please contact me at the provided email with more information. Thank you.` : ''}
+              />
             </Grid>
           </Grid>
         </div>
