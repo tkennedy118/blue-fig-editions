@@ -21,7 +21,7 @@ export default function Hero(props) {
       <CssBaseline />
       <div 
         className={props.default ? classes.defaultHero : classes.paperHero} 
-        style={{ height: props.fullHeight ? '100vh' : 'auto' }}
+        style={{ height: props.fullHeight ? '100vh' : '100%' }}
       >
         {props.children}
       </div>

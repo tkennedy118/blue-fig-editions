@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       width: '100%',
       height: '100%',
-      opacity: 0.25,
+      opacity: 0.15,
       backgroundSize: 'cover',
       backgroundColor: theme.palette.background.default,
       backgroundPosition: 'left',
@@ -47,6 +47,26 @@ const useStyles = makeStyles((theme) => ({
       },
       backgroundRepeat: 'no-repeat',
       backgroundImage: `url(${Nekko})`,
+    },
+  },
+  classesBackground: {
+    height: '100%',
+    position: 'relative',
+    '&:before': {
+      content: '" "',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      opacity: .10,
+      backgroundSize: 'cover',
+      [theme.breakpoints.down('sm')]: {
+        backgroundPosition: 'center',
+      },
+      backgroundRepeat: 'no-repeat',
+      backgroundImage: `url(${Nekko})`, 
+      transform: 'scaleX(-1) scaleY(-1)',
     },
   },
   heroButtons: {
@@ -65,10 +85,10 @@ const useStyles = makeStyles((theme) => ({
   },
   section: {
     padding: theme.spacing(8, 0, 8),
+    height: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
   },
 }));
 
@@ -98,9 +118,25 @@ function Home() {
 
   return (
     <>
+      <div style={{ position: 'fixed', bottom: 8, left: '50%', transform: 'translateX(-50%)' }}>
+        <Grid container  maxWidth='xs' spacing={3}>
+          <Grid item>
+            featured
+          </Grid>
+          <Grid item>
+            the artist
+          </Grid>
+          <Grid item>
+            classes
+          </Grid>
+          <Grid item>
+            contact
+          </Grid>
+        </Grid>
+      </div>
       <Hero default={true} fullHeight={true}>
         <div className={classes.heroBackground}>
-          <Container maxWidth='sm' className={classes.verticalAlign}>
+          <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
             <Typography component='h1' variant='h2' align='center' color='textPrimary' className={classes.title} gutterBottom>
               Blue Fig Editions
             </Typography>
@@ -207,14 +243,14 @@ function Home() {
           </Container>
         </div>
       </Hero>
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: '100vh' }} className={classes.classesBackground}>
         <Hero default={false}>
           <div className={classes.section}>
             <Container>
               <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
                 Classes
               </Typography>
-              <Grid container spacing={3} justify='center'>
+              <Grid container spacing={3} justify='center' align='center'>
                 {lessons.length > 0
                   ?
                     <>

@@ -11,7 +11,6 @@ import { LOGOUT, LOADING } from './utils/actions';
 
 import Home from './pages/Home';
 import Sale from './pages/Sale';
-import Services from './pages/Services';
 import Profile from './pages/Profile';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
@@ -72,13 +71,6 @@ function App() {
               <>
                 <Nav />
                 <Sale />
-                <Footer />
-              </>
-              }/>
-              <Route exact path='/services' render={props => 
-              <>
-                <Nav />
-                <Services />
                 <Footer />
               </>
               }/>

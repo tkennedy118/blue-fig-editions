@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     border: `2px solid ${theme.palette.primary.main}`,
     height: '100%',
+    maxWidth: 345,
   },
   title: {
     fontSize: 14,
@@ -28,7 +29,7 @@ export default function OutlinedCard(props) {
   };
 
   return (
-    <Card className={classes.root} raised>
+    <Card className={classes.root} align='left' raised>
       <CardContent item style={{ minHeight: 256 }}>
         <Typography variant='h5' color='textSecondary' align='center' paragraph>
           {props.name}
