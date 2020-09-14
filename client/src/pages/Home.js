@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ScrollableAnchor, { configureAnchors, goToTop } from 'react-scrollable-anchor';
+import VisibilitySensor from 'react-visibility-sensor';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -48,7 +49,8 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       width: '100%',
       height: '100%',
-      opacity: 0.15,
+      opacity: 1,
+      transition: 'opacity 1.25s',
       backgroundSize: 'cover',
       backgroundColor: theme.palette.background.default,
       backgroundPosition: 'left',
@@ -60,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   classesBackground: {
-    height: '100%',
+    height: '100vh',
     position: 'relative',
     '&:before': {
       content: '" "',
@@ -69,7 +71,8 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       width: '100%',
       height: '100%',
-      opacity: .10,
+      transition: 'opacity 1.25s',
+      opacity: 1,
       backgroundSize: 'cover',
       [theme.breakpoints.down('sm')]: {
         backgroundPosition: 'center',
@@ -77,6 +80,11 @@ const useStyles = makeStyles((theme) => ({
       backgroundRepeat: 'no-repeat',
       backgroundImage: `url(${Nekko})`, 
       transform: 'scaleX(-1) scaleY(-1)',
+    },
+  },
+  backgroundFade: {
+    '&:before': {
+      opacity: 0.15,
     },
   },
   heroButtons: {
@@ -125,6 +133,10 @@ function Home() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
   const [subject, setSubject] = useState('');
+  const [visible, setVisible] = useState({
+    top: false,
+    classes: false
+  });
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
 
@@ -144,6 +156,20 @@ function Home() {
     setValue(newValue);
   };
 
+  const onChange = (isVisible) => {
+    console.log('HANDLE TOP');
+    console.log('IS VISIBLE: ', isVisible);
+    console.log('VISIBLE: ', visible);
+    setVisible({ ...visible, classes: isVisible });
+  };
+
+  const handleVisChange = (isVisible) => {
+    console.log('HANDLE CLASSES');
+    console.log('IS VISIBLE: ', isVisible);
+    console.log('VISIBLE: ', visible);
+    setVisible({ ...visible, classes: isVisible });
+  };
+
   const getPrints = () => {
     dispatch({ type: LOADING });
     API.getPrints()
@@ -160,6 +186,101 @@ function Home() {
   useEffect(() => {
     getPrints();
   }, []);
+
+  function getTop() {
+    return(
+      <VisibilitySensor partialVisibility={true}>
+        {({ isVisible }) =>
+          <div className={isVisible ? `${classes.heroBackground} ${classes.backgroundFade}` : classes.heroBackground}>
+            <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
+              <Typography component='h1' variant='h2' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                Blue Fig Editions
+              </Typography>
+              <Typography variant='body1' align='center'>
+                <span>Located at&nbsp;</span>
+                <Link 
+                  href={`https://www.google.com/maps/search/?api=1&query=${location_search}&query_place_id=${location_id}`} 
+                  target='_blank' 
+                  rel='noreferrer'
+                  color='inherit'
+                  underline='hover'
+                >
+                  The Arcade Nashville
+                </Link>
+              </Typography>
+              <Typography variant='body1' align='center' paragraph>
+                Room 56
+              </Typography>
+              <Typography variant='body1' align='center' paragraph>
+                Blue Fig is an established printmaking workshop that
+                collaborates with artists to produce limited editions of original silk screens, etchings,
+                lithographs, woodcuts, monotypes, and collographs.
+              </Typography>
+              <div className={classes.heroButtons}>
+                <Grid container spacing={2} justify='center'>
+                  <Grid item>
+                    <Button component={RouterLink} to='/sale' variant='outlined' color='secondary'>
+                      For Sale
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button component='a' href='#featured' variant='contained' color='secondary'>
+                      More
+                    </Button>
+                  </Grid>
+                </Grid>
+              </div>
+            </Container>
+          </div>
+        }
+      </VisibilitySensor>
+    );
+  }
+
+  function getSectionClasses() {
+    return(
+        <VisibilitySensor partialVisibility={true}>
+          {({ isVisible }) =>
+            <div className={isVisible ? `${classes.classesBackground} ${classes.backgroundFade}` : classes.classesBackground}>
+              <Hero default={false}>
+                <div className={classes.section}>
+                  <Container>
+                    <ScrollableAnchor id={'classes'}>
+                      <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                        Classes
+                      </Typography>
+                    </ScrollableAnchor>
+                    <Grid container spacing={3} justify='center' align='center'>
+                      {lessons.length > 0
+                        ?
+                          <>
+                            {lessons.map((item, index) => (
+                              <Grid item key={index} xs={12} md={4}>
+                                <ClassesCard
+                                  name={item.name}
+                                  lineOne={item.lineOne}
+                                  lineTwo={item.lineTwo}
+                                  setSubject={setSubject}
+                                />
+                              </Grid>
+                            ))}
+                          </>
+                        :
+                          <Grid item xs={12}>
+                            <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
+                              There are no classes offered at this time.
+                            </Typography>
+                          </Grid>
+                      }
+                    </Grid>
+                  </Container>
+                </div>
+              </Hero>
+            </div>
+          }
+        </VisibilitySensor>
+    );
+  }
 
   return (
     <>
@@ -197,47 +318,7 @@ function Home() {
           </Fade>
       }
       <Hero default={true} fullHeight={true}>
-        <div className={classes.heroBackground}>
-          <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
-            <Typography component='h1' variant='h2' align='center' color='textPrimary' className={classes.title} gutterBottom>
-              Blue Fig Editions
-            </Typography>
-            <Typography variant='body1' align='center'>
-              <span>Located at&nbsp;</span>
-              <Link 
-                href={`https://www.google.com/maps/search/?api=1&query=${location_search}&query_place_id=${location_id}`} 
-                target='_blank' 
-                rel='noreferrer'
-                color='inherit'
-                underline='hover'
-              >
-                The Arcade Nashville
-              </Link>
-            </Typography>
-            <Typography variant='body1' align='center' paragraph>
-              Room 56
-            </Typography>
-            <Typography variant='body1' align='center' paragraph>
-              Blue Fig is an established printmaking workshop that
-              collaborates with artists to produce limited editions of original silk screens, etchings,
-              lithographs, woodcuts, monotypes, and collographs.
-            </Typography>
-            <div className={classes.heroButtons}>
-              <Grid container spacing={2} justify='center'>
-                <Grid item>
-                  <Button component={RouterLink} to='/sale' variant='outlined' color='secondary'>
-                    For Sale
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button component='a' href='#featured' variant='contained' color='secondary'>
-                    More
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
-          </Container>
-        </div>
+      {getTop()}
       </Hero>
       <div style={{ minHeight: '100vh' }}>
         <Hero default={false}>
@@ -309,42 +390,7 @@ function Home() {
           </Container>
         </div>
       </Hero>
-      <div style={{ minHeight: '100vh' }} className={classes.classesBackground}>
-        <Hero default={false}>
-          <div className={classes.section}>
-            <Container>
-              <ScrollableAnchor id={'classes'}>
-                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                  Classes
-                </Typography>
-              </ScrollableAnchor>
-              <Grid container spacing={3} justify='center' align='center'>
-                {lessons.length > 0
-                  ?
-                    <>
-                      {lessons.map((item, index) => (
-                        <Grid item key={index} xs={12} md={4}>
-                          <ClassesCard
-                            name={item.name}
-                            lineOne={item.lineOne}
-                            lineTwo={item.lineTwo}
-                            setSubject={setSubject}
-                          />
-                        </Grid>
-                      ))}
-                    </>
-                  :
-                    <Grid item xs={12}>
-                      <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
-                        There are no classes offered at this time.
-                      </Typography>
-                    </Grid>
-                }
-              </Grid>
-            </Container>
-          </div>
-        </Hero>
-      </div>
+      {getSectionClasses()}
       <Hero default={true} fullHeight={true}>
         <div className={classes.section} style={{ position: 'relative' }}>
           <Grid container justify='center' alignItems='center'>
