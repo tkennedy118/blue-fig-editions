@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   classesBackground: {
-    height: '100vh',
+    height: '100%',
     position: 'relative',
     '&:before': {
       content: '" "',
@@ -191,7 +191,7 @@ function Home() {
     return(
       <VisibilitySensor partialVisibility={true}>
         {({ isVisible }) =>
-          <div className={isVisible ? `${classes.heroBackground} ${classes.backgroundFade}` : classes.heroBackground}>
+          <div style={{ minHeight: '100vh' }} className={isVisible ? `${classes.heroBackground} ${classes.backgroundFade}` : classes.heroBackground}>
             <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
               <Typography component='h1' variant='h2' align='center' color='textPrimary' className={classes.title} gutterBottom>
                 Blue Fig Editions
