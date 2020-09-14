@@ -50,7 +50,7 @@ const styles = theme => ({
 const MyToolbar = withStyles(styles)(
   ({ classes, title, onMenuClick, trigger }) => (
     <>
-      <Slide appear={false} direction='down' in={trigger}>
+      <Slide timeout={256} direction='down' in={trigger}>
         <AppBar className={classes.aboveDrawer}>
           <Toolbar>
             <IconButton
@@ -151,7 +151,7 @@ function AppBarInteraction({ classes, variant }) {
 
   return (
     <div className={classes.root}>
-      <MyToolbar title={title} onMenuClick={toggleDrawer} trigger={matches ? !trigger : false} />
+      <MyToolbar title={title} onMenuClick={toggleDrawer} trigger={matches ? !trigger : true} />
       <MyDrawer
         open={drawer}
         onClose={toggleDrawer}

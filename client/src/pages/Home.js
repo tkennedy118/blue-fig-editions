@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import ScrollableAnchor, { configureAnchors, goToTop } from 'react-scrollable-anchor';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import Fade from '@material-ui/core/Fade';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import FiberNewIcon from '@material-ui/icons/FiberNew';
+import InfoIcon from '@material-ui/icons/Info';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 import Hero from '../components/Hero';
 import Loader from '../components/Loader';
 import PrintCard from '../components/PrintCard';
@@ -90,6 +100,25 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  nav: {
+    position: 'fixed',
+    top: 28,
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  navItem: {
+    maringLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+  },
+  navBottom: {
+    position: 'fixed',
+    bottom: 0,
+    width: '100vw',
+    borderTop: `2px solid ${theme.palette.primary.main}`,
+  },
+  toTopButton: {
+    position: 'absolute',
+    bottom: theme.spacing(1),
+  },
 }));
 
 function Home() {
@@ -98,6 +127,22 @@ function Home() {
   const [subject, setSubject] = useState('');
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
+
+  // Deals with hiding app bar at specific breakpoints.
+  const theme = useTheme();
+  const smallToMedium = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const extraSmall = useMediaQuery(theme.breakpoints.only('xs'));
+  const trigger = useScrollTrigger();
+
+  // Deals with bottom navigation
+  const [value, setValue] = React.useState('recents');
+
+  // Scrollable anchor configuration.
+  configureAnchors({offset: -88, scrollDuration: 512})
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const getPrints = () => {
     dispatch({ type: LOADING });
@@ -118,22 +163,39 @@ function Home() {
 
   return (
     <>
-      <div style={{ position: 'fixed', bottom: 8, left: '50%', transform: 'translateX(-50%)' }}>
-        <Grid container  maxWidth='xs' spacing={3}>
-          <Grid item>
-            featured
-          </Grid>
-          <Grid item>
-            the artist
-          </Grid>
-          <Grid item>
-            classes
-          </Grid>
-          <Grid item>
-            contact
-          </Grid>
-        </Grid>
-      </div>
+      {extraSmall
+        ?
+          <></>
+        :
+          <Fade timeout={256} in={smallToMedium ? !trigger : true}>
+            <Grid container maxWidth='sm' justify='center' style={{ marginLeft: 24 }}>
+              <div className={classes.nav}>
+                <Grid item>
+                  <Link href='#featured' underline='none'>
+                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                      featured
+                    </Typography>
+                  </Link>
+                  <Link href='#about' underline='none'>
+                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                      about
+                    </Typography>
+                  </Link>
+                  <Link href='#classes' underline='none'>
+                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                      classes
+                    </Typography>
+                  </Link>
+                  <Link href='#contact' underline='none'>
+                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                      contact
+                    </Typography>
+                  </Link>
+                </Grid>
+              </div>
+            </Grid>
+          </Fade>
+      }
       <Hero default={true} fullHeight={true}>
         <div className={classes.heroBackground}>
           <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
@@ -168,7 +230,7 @@ function Home() {
                   </Button>
                 </Grid>
                 <Grid item>
-                  <Button variant='contained' color='secondary'>
+                  <Button component='a' href='#featured' variant='contained' color='secondary'>
                     More
                   </Button>
                 </Grid>
@@ -181,9 +243,11 @@ function Home() {
         <Hero default={false}>
           <div className={classes.section}>
             <Container>
-              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                Featured
-              </Typography>
+              <ScrollableAnchor id={'featured'}>
+                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                  Featured
+                </Typography>
+              </ScrollableAnchor>
               <Grid container spacing={2} justify='center'>
                 {state.featured.length > 0
                   ?
@@ -219,9 +283,11 @@ function Home() {
       <Hero default={true} fullHeight={true}>
         <div className={classes.section}>
           <Container>
-            <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-              The Artist
-            </Typography>
+            <ScrollableAnchor id={'about'}>
+              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                The Artist
+              </Typography>
+            </ScrollableAnchor>
             <Grid container spacing={3} justify='center' alignItems='center'>
               <Grid item xs={12} md={5} align='center'>
                 <img
@@ -247,9 +313,11 @@ function Home() {
         <Hero default={false}>
           <div className={classes.section}>
             <Container>
-              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                Classes
-              </Typography>
+              <ScrollableAnchor id={'classes'}>
+                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                  Classes
+                </Typography>
+              </ScrollableAnchor>
               <Grid container spacing={3} justify='center' align='center'>
                 {lessons.length > 0
                   ?
@@ -278,20 +346,38 @@ function Home() {
         </Hero>
       </div>
       <Hero default={true} fullHeight={true}>
-        <div className={classes.section}>
+        <div className={classes.section} style={{ position: 'relative' }}>
           <Grid container justify='center' alignItems='center'>
             <Grid item xs={12} sm={8} md={6} lg={4}>
-              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                Contact
-              </Typography>
+              <ScrollableAnchor id={'contact'}>
+                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                  Contact
+                </Typography>
+              </ScrollableAnchor>
               <ContactForm 
                 subject={subject.length > 1 ? `${subject} Lessons` : ''} 
                 message={subject.length > 1 ? `I would like to know more about ${subject} classes. Please contact me at the provided email with more information. Thank you.` : ''}
               />
             </Grid>
+            <Grid item xs={12} align='center' className={classes.toTopButton}>
+              <Button variant='text' color='secondary' onClick={goToTop}>
+                Back to Top
+              </Button>
+            </Grid>
           </Grid>
         </div>
       </Hero>
+      {extraSmall
+        ?
+        <BottomNavigation value={value} onChange={handleChange} className={classes.navBottom}>
+          <BottomNavigationAction component='a' href='#featured' label='Featured' value='featured' icon={<FiberNewIcon />} />
+          <BottomNavigationAction component='a' href='#about' label='About' value='about' icon={<InfoIcon />} />
+          <BottomNavigationAction component='a' href='#classes' label='Classes' value='classes' icon={<LocalOfferIcon />} />
+          <BottomNavigationAction component='a' href='#contact' label='Contact' value='contact' icon={<ContactMailIcon />} />
+        </BottomNavigation>
+        :
+          <></>
+      }
       <Loader loading={state.loading} />
     </>
   );
