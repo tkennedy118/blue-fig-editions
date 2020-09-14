@@ -70,9 +70,7 @@ function Sale() {
 
   return (
     <>
-      
       <main>
-        {/* <Hero /> */}
         <Container className={classes.cardGrid} maxWidth='md'>
           <Grid container spacing={1}>
             <Grid item xs={12} >
@@ -106,6 +104,8 @@ function Sale() {
                   price={print.price}
                   count={print.count}
                   image={print.image}
+                  featured={print.featured}
+                  about={print.about}
                   _id={print._id}
                 />
               </Grid>

@@ -11,12 +11,15 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Divider from '@material-ui/core/Divider';
+import Slide from '@material-ui/core/Slide';
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
 import Collection from '@material-ui/icons/Collections';
-import Brush from '@material-ui/icons/Brush';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CartIcon from '../components/CartIcon';
 import { useStoreContext } from '../utils/GlobalState';
@@ -45,33 +48,35 @@ const styles = theme => ({
 });
 
 const MyToolbar = withStyles(styles)(
-  ({ classes, title, onMenuClick }) => (
+  ({ classes, title, onMenuClick, trigger }) => (
     <>
-      <AppBar className={classes.aboveDrawer}>
-        <Toolbar>
-          <IconButton
-            className={classes.menuButton}
-            color='inherit'
-            aria-label='Menu'
-            onClick={onMenuClick}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant='h6'
-            color='inherit'
-            className={classes.flex}
-          >
-            {title}
-          </Typography>
-          <IconButton
-            color='inherit'
-            aria-label='show shopping cart'
-          >
-            <CartIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <Slide timeout={256} direction='down' in={trigger}>
+        <AppBar className={classes.aboveDrawer}>
+          <Toolbar>
+            <IconButton
+              className={classes.menuButton}
+              color='inherit'
+              aria-label='Menu'
+              onClick={onMenuClick}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant='h6'
+              color='inherit'
+              className={classes.flex}
+            >
+              {title}
+            </Typography>
+            <IconButton
+              color='inherit'
+              aria-label='show shopping cart'
+            >
+              <CartIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+      </Slide>
       <div className={classes.toolbarMargin} />
     </>
   )
@@ -99,12 +104,6 @@ const MyDrawer = withStyles(styles)(
             <Collection />
           </ListItemIcon>
           <ListItemText>Sale</ListItemText>
-        </ListItem>
-        <ListItem button component={Link} to='/services' onClick={onItemClick('Services')}>
-          <ListItemIcon>
-            <Brush />
-          </ListItemIcon>
-          <ListItemText>Services</ListItemText>
         </ListItem>
       </List>
       <Divider />
@@ -135,7 +134,12 @@ const MyDrawer = withStyles(styles)(
 function AppBarInteraction({ classes, variant }) {
   const [state] = useStoreContext();
   const [drawer, setDrawer] = useState(false);
-  const [title, setTitle] = useState('Blue Fig Editions');
+  const [title, setTitle] = useState('Home');
+
+  // Deals with hiding app bar at specific breakpoints.
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const trigger = useScrollTrigger();
 
   const toggleDrawer = () => { setDrawer(!drawer); };
 
@@ -147,7 +151,7 @@ function AppBarInteraction({ classes, variant }) {
 
   return (
     <div className={classes.root}>
-      <MyToolbar title={title} onMenuClick={toggleDrawer} />
+      <MyToolbar title={title} onMenuClick={toggleDrawer} trigger={matches ? !trigger : true} />
       <MyDrawer
         open={drawer}
         onClose={toggleDrawer}

@@ -42,7 +42,7 @@ export default {
     return axios.delete('/api/prints/' + id);
   },
 
-  //SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
+  // SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
   status: function() {
     return axios.get('/api/status');
   },

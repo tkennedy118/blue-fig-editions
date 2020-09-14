@@ -9,6 +9,8 @@ export default function UpdatePrint(print, dispatch) {
     series: print.series,
     price: parseFloat(print.price).toFixed(2),
     image: print.image,
+    featured: print.featured,
+    about: print.about
   }, {
     new: true,
     overwrite: true

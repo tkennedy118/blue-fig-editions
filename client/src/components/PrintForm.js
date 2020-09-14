@@ -3,8 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import UndoIcon from '@material-ui/icons/Undo';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import PublishIcon from '@material-ui/icons/Publish';
@@ -27,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
   },
+  switch: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function PrintForm(props) {
@@ -45,7 +51,9 @@ export default function PrintForm(props) {
     series: '',
     price: 0,
     description: '',
-    image: ''
+    image: '',
+    featured: false,
+    about: ''
   });
 
   useEffect(() => {
@@ -56,7 +64,9 @@ export default function PrintForm(props) {
         series: props.series,
         price: props.price,
         description: props.description,
-        image: ''
+        image: '',
+        featured: props.featured,
+        about: props.about
       })
     }
   }, []);
@@ -83,6 +93,10 @@ export default function PrintForm(props) {
     setLoading(false);
     
     setNewPrint({ ...newPrint, image: file.secure_url });
+  };
+
+  const toggleChecked = (event) => {
+    setNewPrint({ ...newPrint, featured: event.target.checked });
   };
 
   function handleChange(event) {
@@ -121,11 +135,25 @@ export default function PrintForm(props) {
 
   return (
     <>
+      <CardHeader
+        action={
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={newPrint.featured} 
+                onChange={toggleChecked} 
+                name='featured' 
+                color='primary' />
+            }
+            label='Featured'
+            labelPlacement='top'
+            className={classes.switch}
+          />
+        }
+        title={!props.update ? 'New Print' : 'Update Print'}
+      />
       <CardContent>
-        <Typography variant='h6' style={{ marginBottom: '24px' }}>
-          {!props.update ? 'New Print' : 'Update Print'}
-        </Typography>
-        <Grid container spacing={1} className={classes.helperText}>
+        <Grid container spacing={1}>
           <Grid item xs={12}>
             <TextField
               value={newPrint.name}
@@ -164,7 +192,7 @@ export default function PrintForm(props) {
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={12} style={{ marginBottom: '24px' }}>
+          <Grid item xs={12}>
             <TextField
               value={newPrint.description}
               id='description'
@@ -180,6 +208,25 @@ export default function PrintForm(props) {
               helperText={error.description ? 'Description must be between 15 and 40 characters' : ''}
             />
           </Grid>
+          {newPrint.featured
+            ?
+              <Grid item xs={12}>
+                <TextField
+                  value={newPrint.about}
+                  id='about'
+                  name='about'
+                  label='Featured Description'
+                  variant='outlined'
+                  multiline
+                  rows={3}
+                  rowsMax={5}
+                  fullWidth
+                  onChange={handleChange}
+                />
+              </Grid>
+            :
+              <></>
+          }
           <Grid item xs={12}>
           <Typography variant='subtitle1' color='primary' align='left' gutterBottom noWrap>
             {error.img
