@@ -57,5 +57,11 @@ export default {
 
   signout: function () {
     return axios.get('/api/signout');
+  },
+
+  // EMAIL ====================================================================
+  sendEmail: function(data) {
+    console.log('DATA: ', data);
+    return axios.put('/api/emails/send', data);
   }
 };

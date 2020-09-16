@@ -3,11 +3,10 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const session = require('express-session');
 const routes = require('./routes');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 6001;
 const app = express();
-require('dotenv').config();
-
 
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
