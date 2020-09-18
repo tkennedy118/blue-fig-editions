@@ -8,10 +8,10 @@ import Loader from './components/Loader';
 import { useStoreContext } from './utils/GlobalState';
 import API from './utils/API';
 import { LOGOUT, LOADING } from './utils/actions';
-
 import Home from './pages/Home';
 import Sale from './pages/Sale';
 import Profile from './pages/Profile';
+import Cart from './pages/Cart';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import './App.css';
@@ -28,10 +28,15 @@ const theme = createMuiTheme({
       main: '#29231f',
       dark: '#000000',
     },
+    error: {
+      light: '#e57373',
+      main: '#f44336',
+      dark: '#d32f3f',
+    },
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },
-})
+});
 
 
 function App() {
@@ -81,8 +86,22 @@ function App() {
                 <Footer />
               </>
               }/>
+              <Route exact path='/cart' render={props =>
+              <>
+                <Nav />
+                <Cart />
+                <Footer />
+              </>
+              }/>
               <Route exact path='/signin' component={Signin} />
               <Route exact path='/signup' component={Signup} />
+              <Route exact path={'/*'} render={props => 
+              <>
+                <Nav />
+                <Home />
+                <Footer />
+              </>
+              }/>
             </Switch>
           </>
         </Router>

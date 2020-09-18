@@ -128,7 +128,7 @@ export default function PrintCard(props) {
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
-                <IconButton onClick={handleCartClick} aria-label='add to shopping cart'>
+                <IconButton onClick={handleCartClick} aria-label='add'>
                   <AddShoppingCartIcon />
                 </IconButton>
                 {window.location.pathname === '/home' && props.about

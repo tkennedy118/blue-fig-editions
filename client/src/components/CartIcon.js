@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -16,11 +16,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CartIcon(props) {
   const [state] = useStoreContext();
-  const [isButton, setIsButton] = useState(props.isButton);
   const classes = useStyles();
 
   return (
-    isButton
+    props.isButton
       ?
         <IconButton aria-label='cart'>
           <Badge className={classes.badge} badgeContent={state.cart.length} color='secondary'>

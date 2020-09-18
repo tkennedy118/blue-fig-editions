@@ -37,7 +37,7 @@ const reducer = (state, action) => {
     case LOADING:
       return {
         ...state,
-        loading: true
+        loading: !state.loading
       };
 
     // CRUD OPERATIONS ========================================================
@@ -93,7 +93,7 @@ const reducer = (state, action) => {
     case REMOVE_ITEM:
       return {
         ...state,
-        cart: [ ...state.cart.filter(item => item._id !== action._id)],
+        cart: [ ...state.cart.filter(id => id !== action._id)],
         loading: false
       };
 

@@ -133,10 +133,6 @@ function Home() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
   const [subject, setSubject] = useState('');
-  const [visible, setVisible] = useState({
-    top: false,
-    classes: false
-  });
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
 
@@ -154,20 +150,6 @@ function Home() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const onChange = (isVisible) => {
-    console.log('HANDLE TOP');
-    console.log('IS VISIBLE: ', isVisible);
-    console.log('VISIBLE: ', visible);
-    setVisible({ ...visible, classes: isVisible });
-  };
-
-  const handleVisChange = (isVisible) => {
-    console.log('HANDLE CLASSES');
-    console.log('IS VISIBLE: ', isVisible);
-    console.log('VISIBLE: ', visible);
-    setVisible({ ...visible, classes: isVisible });
   };
 
   const getPrints = () => {
