@@ -4,6 +4,7 @@ import Link from '@material-ui/core/Link';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Loader from '../components/Loader';
 import { makeStyles } from '@material-ui/core/styles';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, CLEAR } from '../utils/actions';
@@ -319,6 +320,7 @@ export default function Payment() {
           </Grid>
         </Grid>
       </Grid>
+      <Loader loading={state.loading} />
     </>
   );
 }

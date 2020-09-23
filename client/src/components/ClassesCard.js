@@ -30,7 +30,7 @@ export default function OutlinedCard(props) {
 
   return (
     <Card className={classes.root} align='left' raised>
-      <CardContent item style={{ minHeight: 256 }}>
+      <CardContent style={{ minHeight: 256 }}>
         <Typography variant='h5' color='textSecondary' align='center' paragraph>
           {props.name}
         </Typography>

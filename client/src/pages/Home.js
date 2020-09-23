@@ -278,7 +278,7 @@ function Home() {
           <></>
         :
           <Fade timeout={256} in={smallToMedium ? !trigger : true}>
-            <Grid container maxWidth='sm' justify='center' style={{ marginLeft: 24 }}>
+            <Grid container justify='center' style={{ marginLeft: 24 }}>
               <div className={classes.nav}>
                 <Grid item>
                   <Link href='#featured' underline='none'>
