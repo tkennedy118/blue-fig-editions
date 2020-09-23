@@ -11,15 +11,18 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editio
 const userSeed = [
   {
     email: 'martino@bluefig.com',
-    password: 'HappyApple1*'
+    password: 'HappyApple1*',
+    stripe_id: null
   },
   {
     email: 'kennedy@bluefig.com',
-    password: 'Password1!'
+    password: 'Password1!',
+    stripe_id: null
   },
   {
     email: 'burley@bluefig.com',
-    password: 'Password1!'
+    password: 'Password1!',
+    stripe_id: null
   }
 ];
 
@@ -122,6 +125,7 @@ db.Print
   .then(() => db.Print.collection.insertMany(printSeed))
   .then(async data => {
     console.log(data.result.n + ' print records inserted.');
+    process.exit(0);
   })
   .catch(err => {
     console.log(err);

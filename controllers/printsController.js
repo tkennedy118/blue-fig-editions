@@ -11,7 +11,7 @@ module.exports = {
   },
   findById: function(req, res) {
     db.Print
-      .findById(req.params.id)
+      .findById(req.body._id)
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },

@@ -4,6 +4,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
+import Divider from '@material-ui/core/Divider';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { makeStyles } from '@material-ui/core/styles';
 import PrintCard from '../components/PrintCard';
@@ -16,8 +17,8 @@ import API from '../utils/API';
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
   },
   addNewCard: {
     maxWidth: 345,
@@ -72,9 +73,12 @@ function Sale() {
     <>
       <main>
         <Container className={classes.cardGrid} maxWidth='md'>
-          <Grid container spacing={1}>
+          <Grid container spacing={2}>
             <Grid item xs={12} >
               <SortDropdown setSort={setSort} />
+            </Grid>
+            <Grid item xs={12} style={{ marginBottom: 8 }}>
+              <Divider />
             </Grid>
             {state.isLoggedIn
               ?

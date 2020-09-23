@@ -15,6 +15,8 @@ app.use(express.json());
 // Serve up static assets (usually on heroku)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
+} else {
+  app.use(express.static(process.env.STATIC_DIR));
 }
 
 // Setup app to use sessions to keep track of user's login status.

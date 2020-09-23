@@ -61,7 +61,27 @@ export default {
 
   // EMAIL ====================================================================
   sendEmail: function(data) {
-    console.log('DATA: ', data);
     return axios.put('/api/emails/send', data);
+  },
+
+  // STRIPE ===================================================================
+  getStripeConfig: function() {
+    return axios.get('/api/stripe/config');
+  },
+
+  getSession: function(id) {
+    return axios.get('/api/stripe/checkout-sessions/' + id);
+  },
+
+  getPaymentIntent: function(id) {
+    return axios.get('/api/stripe/payment-intents/' + id);
+  },
+
+  getPaymentMethod: function(id) {
+    return axios.get('/api/stripe/payment-methods/' + id);
+  },
+
+  createCheckoutSession: function(data) {
+    return axios.post('/api/stripe/create-checkout-session', data);
   }
 };

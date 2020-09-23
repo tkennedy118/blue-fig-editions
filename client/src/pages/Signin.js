@@ -89,7 +89,12 @@ export default function Signin() {
     const { data }= await API.signin({ email: input.email, password: input.password });
 
     if (!data.message) { 
-      dispatch({ type: LOGIN });
+      dispatch({ 
+        type: LOGIN,
+        _id: data._id,
+        stripe_id: data.stripe_id,
+        email: data.email
+      });
       
     } else { 
       dispatch({ type: LOGOUT }); 

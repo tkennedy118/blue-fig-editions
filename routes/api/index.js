@@ -4,6 +4,7 @@ const passport = require('../../config/passport');
 const userRoutes = require('./users');
 const printRoutes = require('./prints');
 const emailRoutes = require('./emails');
+const stripeRoutes = require('./stripe');
 const usersController = require('../../controllers/usersController');
 const isAuthenticated = require('../../config/middleware/isAuthenticated');
 
@@ -11,6 +12,7 @@ const isAuthenticated = require('../../config/middleware/isAuthenticated');
 router.use('/users', userRoutes);
 router.use('/prints', printRoutes);
 router.use('/emails', emailRoutes);
+router.use('/stripe', stripeRoutes);
 
 // =============================== SIGNUP/LOGIN/LOGOUT/STATUS ===================================
 

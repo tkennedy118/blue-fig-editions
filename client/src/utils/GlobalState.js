@@ -24,6 +24,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
+        user: {
+          _id: action._id,
+          stripe_id: action.stripe_id,
+          email: action.email
+        },
         loading: false
       };
 
@@ -31,6 +36,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: false,
+        customer: {
+          _id: null,
+          stripe_id: null,
+          email: null
+        },
         loading: false,
       };
     
@@ -113,6 +123,11 @@ const StoreProvider = ({ valu = [], ...props }) => {
 
   const [state, dispatch] = useReducer(reducer, {
     isLoggedIn: false,
+    user: {
+      _id: null,
+      stripe_id: null,
+      email: null
+    },
     prints: [],
     featured: [],
     currentPrint: {

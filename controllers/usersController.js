@@ -10,8 +10,9 @@ module.exports = {
       .catch(err => res.status(422).json(err));
   },
   findById: function(req, res) {
+    console.log('REQ: ', req);
     db.User
-      .findOne({ _id: req.params.id })
+      .findOne({ _id: req.body._id })
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },
@@ -25,8 +26,9 @@ module.exports = {
       .catch(err => res.status(422).json({ err: err }));
   },
   update: function(req, res) {
+    console.log('REQ: ', req);
     db.User
-      .findOneAndUpdate({ _id: req.params.id }, req.body)
+      .findOneAndUpdate({ _id: req.params._id }, req.body)
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },

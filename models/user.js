@@ -12,6 +12,11 @@ const UserSchema = new Schema({
   password: { 
     type: String, 
     require: true,
+  },
+  stripe_id: {
+    type: String,
+    require: true,
+    default: null
   }
 });
 

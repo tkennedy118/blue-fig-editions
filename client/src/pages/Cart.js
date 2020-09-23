@@ -13,6 +13,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Hero from '../components/Hero';
+import StripeCheckoutBtn from '../components/StripeCheckoutBtn';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, REMOVE_ITEM } from '../utils/actions';
 import API from '../utils/API';
@@ -218,7 +219,6 @@ function Cart() {
               {cart.length > 0
                 ?
                   <>
-                    {/* This is where the CartItem component will start */}
                     {cart.map((print, index) => (
                       <div key={index}>
                         <Grid container>
@@ -319,16 +319,9 @@ function Cart() {
                   </ThemeProvider>
                 </Grid>
                 <Grid item xs={12} align='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    className={classes.button}
-                    fullWidth={xs ? true : false}
-                    disableElevation
-                    size='large'
-                  >
-                    Proceed to Checkout
-                  </Button>
+                  <StripeCheckoutBtn 
+                    xs={xs}
+                  />
                 </Grid>
               </Grid>
             </Paper>

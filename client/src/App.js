@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
+import Payment from './pages/Payment';
 import './App.css';
 
 const theme = createMuiTheme({
@@ -90,6 +91,12 @@ function App() {
               <>
                 <Nav />
                 <Cart />
+                <Footer />
+              </>
+              }/>
+              <Route exact path='/payment' render={props => 
+              <>
+                <Payment />
                 <Footer />
               </>
               }/>
