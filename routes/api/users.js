@@ -7,6 +7,9 @@ router.route('/')
   .get(usersController.findAll)
   .post(usersController.create);
 
+router.route('/reset-password')
+  .post(usersController.resetPassword);
+
 // Matches with '/api/users/:id'
 router.route('/:id')
   .get(usersController.findById)

@@ -16,6 +16,7 @@ import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import Payment from './pages/Payment';
 import ResetPassword from './pages/ResetPassword';
+import ResetPasswordRequest from './pages/ResetPasswordRequest';
 import './App.css';
 
 const theme = createMuiTheme({
@@ -101,9 +102,15 @@ function App() {
                 <Footer />
               </>
               }/>
-              <Route exact path='/reset-password' render={props => 
+              <Route exact path='/reset-password/:hash' render={props => 
               <>
-                <ResetPassword />
+                <ResetPassword {...props}/>
+                <Footer />
+              </>
+              }/>
+              <Route exact path='/reset-password-request' render={props => 
+              <>
+                <ResetPasswordRequest />
                 <Footer />
               </>
               }/>

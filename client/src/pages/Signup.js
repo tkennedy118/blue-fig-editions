@@ -118,7 +118,6 @@ export default function Signup() {
        dispatch({ type: LOGIN });
 
     } catch(err) {
-      console.log('ERR: ', err);
       dispatch({ type: LOGOUT }); 
       setError({ ...error, server: true });
     }

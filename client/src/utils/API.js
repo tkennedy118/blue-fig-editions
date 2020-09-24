@@ -19,6 +19,10 @@ export default {
     return axios.delete('/api/users/' + id);
   },
 
+  resetPassword: function(data) {
+    return axios.post('/api/users/reset-password', data);
+  },
+
   // API/PRINTS ===============================================================
   // Create print.
   createPrint: function(data) {
@@ -64,8 +68,8 @@ export default {
     return axios.put('/api/emails/send', data);
   },
 
-  resetPassword: function(data) {
-    return axios.post('/api/emails/reset-password', data);
+  resetPasswordRequest: function(data) {
+    return axios.post('/api/emails/reset-password-request', data);
   },
 
   // STRIPE ===================================================================

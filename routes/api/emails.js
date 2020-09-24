@@ -8,7 +8,7 @@ const Mailgun = require('mailgun-js');
 router.route('/send')
   .put(emailsController.send);
 
-router.route('/reset-password')
+router.route('/reset-password-request')
 .post(async(req, res) => {
     let result;
     const domain = process.env.DOMAIN;

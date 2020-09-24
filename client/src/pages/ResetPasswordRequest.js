@@ -37,62 +37,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ResetPassword(props) {
+export default function ResetPasswordRequest() {
   const classes = useStyles();
-  const hash = props.match.params.hash;
-
   const [state, dispatch] = useStoreContext();
-  const [password, setPassword] = useState({ password: '', verify: '' });
-  const [error, setError] = useState({ password: false, verify: false, response: false});
-  const [response, setResponse] = useState({ error: false, success: false });
+  const [local, setLocal] = useState({
+    error: false,
+    email: ''
+  });
+  const [hash, setHash] = useState({});
+
+  const createHash = async (email) => {
+    dispatch({ type: LOADING });
+    const { data } = await API.resetPasswordRequest({ email: email });
+    dispatch({ type: LOADING });
+
+    // Clear input if hash was successful.
+    if (data.success) { setLocal({ ...local, email: '' }); }
+    setHash(data);
+  }
 
   const handleChange = (event) => {
     const name = event.target.name;
-    const value = event.target.value;
-    
-    if (error.password || error.verify) { setError({ password: false, verify: false, response: false }); }
-    if (response.error || response.success) { setResponse({ error: false, success: false }); }
+    let error = false;
+
+    if (local.error) { setLocal({ ...local, error: false }); }
+    setHash({});
 
     // Validation
-    switch(name) {
-      case 'password':
-        if (!value.match(/^([a-zA-Z0-9!@#$%^&*]{8,16})$/)) {
-          setError({ ...error, password: true });
-        }
-        if (password.verify.length > 0 && value !== password.verify) {
-          setError({ ...error, verify: true });
-        }
-        break;
-        case 'verify':
-        if (value !== password.password) {
-          setError({ ...error, verify: true });
-        }
-        break;
-      default:
-        break;
+    if (name === 'email' && !event.target.value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
+      error = true;
     }
 
-    setPassword({ ...password, [name]: value });
+    setLocal({ ...local, error: error, [name]: event.target.value });
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (!error.password && !error.verify && password.password !== '' && password.verify !== '') {
-      // Do the stuff.
-
-      dispatch({ type: LOADING });
-      const { data } = await API.resetPassword({
-        password: password.password,
-        hash: hash
-      })
-      dispatch({ type: LOADING });
-
-      if (data.success) {
-        setResponse({ ...response, success: true });
-      } else {
-        setResponse({ ...response, error: true });
-      }
+    
+    if (!local.error) {
+      createHash(local.email);
     }
   }
 
@@ -107,66 +90,43 @@ export default function ResetPassword(props) {
                 <Typography component='h2' variant='h6' paragraph>
                   Blue Fig Editions
                 </Typography>
-                <Typography variant='body1'>
-                  Enter a password that includes the following:
-                </Typography>
-                <Typography variant='body2' color='textSecondary'>
-                  Length of 8 to 16
-                </Typography>
-                <Typography variant='body2' color='textSecondary'>
-                  At least 1 special character
+                <Typography variant='body1' paragraph>
+                  Enter the email associated with your account, and we'll send you a link to reset your password.
                 </Typography>
               </Grid>
               <Grid item xs={12} style={{ marginTop: 36 }}>
                 <TextField
-                  value={password.password}
-                  id='password'
-                  name='password'
-                  type='password'
-                  label='Password'
+                  value={local.email}
+                  id='email'
+                  name='email'
+                  label='Email'
                   variant='outlined'
                   color='primary'
                   size='small'
                   fullWidth
                   onChange={handleChange}
-                  error={error.password ? true : false}
-                  helperText={error.password ? 'Pleas enter a valid password' : ''}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  value={password.verify}
-                  id='verify'
-                  name='verify'
-                  type='password'
-                  label='Re-enter password'
-                  variant='outlined'
-                  color='primary'
-                  size='small'
-                  fullWidth
-                  onChange={handleChange}
-                  error={error.verify ? true : false}
-                  helperText={error.verify ? 'Passwords do not match' : ''}
+                  error={state.error ? true : false}
+                  helperText={state.error ? 'Pleas enter a valid email' : ''}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Button variant='contained' disableElevation fullWidth onClick={handleSubmit}>
-                  Update Password
+                  Send Link
                 </Button>
               </Grid>
               <Grid item xs={12}>
-                {response.error
+                {hash.error
                   ?
                     <Typography variant='body2' color='error' className={classes.message} align='center'>
-                      Uh oh! Something went wrong while attempting to update your password.
+                      Uh oh! It looks like that email isn't in our system.
                     </Typography>
                   :
                     <></>
                 }
-                {response.success
+                {hash.success
                   ?
-                    <Typography variant='body2' color='secondary' className={classes.message} align='center'>
-                      Your password has been updated!
+                    <Typography variant='body2' color='primary' className={classes.message} align='center'>
+                      Sending email. Please be sure to check your spam folder if you don't see the email shortly.
                     </Typography>
                   :
                     <></>
