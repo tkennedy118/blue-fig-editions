@@ -63,7 +63,7 @@ export default function Signup() {
   });
   const [input, setInput] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   
   function Copyright() {
@@ -105,14 +105,20 @@ export default function Signup() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    dispatch({ type: LOADING })
-    const { data } = await API.signup({ email: input.email, password: input.password });
+    try {
+      dispatch({ type: LOADING })
+      const { data } = await API.signup({ 
+        email: input.email,
+        password: input.password,
+        stripe_id: null,
+        passwordReset: null
+       });
 
-    if (data) { 
-      await API.signin({ email: input.email, password: input.password });
-      dispatch({ type: LOGIN });
-      
-    } else { 
+       await API.signin({ email: input.email, password: input.password });
+       dispatch({ type: LOGIN });
+
+    } catch(err) {
+      console.log('ERR: ', err);
       dispatch({ type: LOGOUT }); 
       setError({ ...error, server: true });
     }

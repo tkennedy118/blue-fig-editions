@@ -51,8 +51,8 @@ export default {
     return axios.post('/api/signin', data);
   },
 
-  signup: function(data) {
-    return axios.post('/api/signup', data);
+  signup: async function(data) {
+    return await axios.post('/api/signup', data);
   },
 
   signout: function () {
@@ -62,6 +62,10 @@ export default {
   // EMAIL ====================================================================
   sendEmail: function(data) {
     return axios.put('/api/emails/send', data);
+  },
+
+  resetPassword: function(data) {
+    return axios.post('/api/emails/reset-password', data);
   },
 
   // STRIPE ===================================================================

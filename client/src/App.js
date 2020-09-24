@@ -15,6 +15,7 @@ import Cart from './pages/Cart';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import Payment from './pages/Payment';
+import ResetPassword from './pages/ResetPassword';
 import './App.css';
 
 const theme = createMuiTheme({
@@ -97,6 +98,12 @@ function App() {
               <Route exact path='/payment' render={props => 
               <>
                 <Payment />
+                <Footer />
+              </>
+              }/>
+              <Route exact path='/reset-password' render={props => 
+              <>
+                <ResetPassword />
                 <Footer />
               </>
               }/>
