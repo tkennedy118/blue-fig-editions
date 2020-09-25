@@ -49,16 +49,16 @@ function App() {
   useEffect(() => {
     
     dispatch({ type: LOADING });
-    async function fetchData() {
-      let { data } = await API.status();
+    // async function fetchData() {
+    //   let { data } = await API.status();
       
-      if (data.status === false ) {
-        dispatch({ type: LOGOUT });
-      } else {
-        dispatch({ type: LOGOUT });
-      }
-    }
-    fetchData();
+    //   if (data.status === false ) {
+    //     dispatch({ type: LOGOUT });
+    //   } else {
+    //     dispatch({ type: LOGOUT });
+    //   }
+    // }
+    // fetchData();
 
   }, []);
 

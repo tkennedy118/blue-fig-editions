@@ -14,6 +14,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import HandleAlert from '../components/HandleAlert';
 import Loader from './Loader';
 import { useStoreContext } from '../utils/GlobalState';
+import API from '../utils/API';
 import AddPrint from './AddPrint';
 import UpdatePrint from './UpdatePrint';
 
@@ -45,7 +46,7 @@ export default function PrintForm(props) {
     description: false,
     img: false
   });
-
+  const [selectedImage, setSelectedImage] = useState('');
   const [newPrint, setNewPrint] = useState({
     name: '',
     series: '',
@@ -78,21 +79,15 @@ export default function PrintForm(props) {
       return;
     }
 
-    const files = event.target.files;
-    const data = new FormData();
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setSelectedImage(reader.result);
+    }
 
-    data.append('file', files[0]);
-    data.append('upload_preset', 'bluefig');
-    
-    setLoading(true);
-      const res = await fetch(
-      'https://api.cloudinary.com/v1_1/tkennedy118/image/upload',
-      { method: 'POST', body: data }
-    );
-    const file = await res.json();
-    setLoading(false);
-    
-    setNewPrint({ ...newPrint, image: file.secure_url });
+    setNewPrint({ ...newPrint, image: file.name });
   };
 
   const toggleChecked = (event) => {
@@ -108,7 +103,7 @@ export default function PrintForm(props) {
     setNewPrint({ ...newPrint, [name]: event.target.value })
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const names = state.prints.map((print) => print.name);
@@ -123,14 +118,39 @@ export default function PrintForm(props) {
       setError({ ...error, description: true }); 
       return; 
     }
-    if (newPrint.image.length < 1) {
+    if (newPrint.image.length < 1 || !selectedImage) {
       setError({ ...error, img: true });
+      return;
     }
 
-    // send data to api and update state
-    (!props.update) ? AddPrint(newPrint, dispatch) : UpdatePrint(newPrint, dispatch);
+    // Cloudinary
+    const print = await uploadImage(selectedImage);
+
+    if (print.image) {
+      // send data to api and update state
+      (!props.update) ? AddPrint(print, dispatch) : UpdatePrint(print, dispatch);
+    } else { return; }
 
     props.exitForm(false);
+  }
+
+  const uploadImage = async (base64EncodedImage) => {
+    let print = newPrint;
+
+    try {
+      setLoading(true);
+      const { data } = await API.uploadImage({ data: base64EncodedImage });
+      setLoading(false);
+
+      print.image = data.url;
+    } catch {
+      setLoading(false);
+      setError({ ...error, img: true });
+
+      print.image = false;
+    }
+
+    return print;
   }
 
   return (

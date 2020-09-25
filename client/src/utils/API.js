@@ -72,7 +72,7 @@ export default {
     return axios.post('/api/emails/reset-password-request', data);
   },
 
-  // STRIPE ===================================================================
+  // API/STRIPE ===================================================================
   getStripeConfig: function() {
     return axios.get('/api/stripe/config');
   },
@@ -91,5 +91,10 @@ export default {
 
   createCheckoutSession: function(data) {
     return axios.post('/api/stripe/create-checkout-session', data);
+  },
+
+  // API/CLOUDINARY ===========================================================
+  uploadImage: function(data) {
+    return axios.post('/api/cloudinary/upload-image', data);
   }
 };

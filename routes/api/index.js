@@ -5,6 +5,7 @@ const userRoutes = require('./users');
 const printRoutes = require('./prints');
 const emailRoutes = require('./emails');
 const stripeRoutes = require('./stripe');
+const cloudinaryRoutes = require('./cloudinary');
 const usersController = require('../../controllers/usersController');
 const isAuthenticated = require('../../config/middleware/isAuthenticated');
 
@@ -13,6 +14,7 @@ router.use('/users', userRoutes);
 router.use('/prints', printRoutes);
 router.use('/emails', emailRoutes);
 router.use('/stripe', stripeRoutes);
+router.use('/cloudinary', cloudinaryRoutes);
 
 // =============================== SIGNUP/LOGIN/LOGOUT/STATUS ===================================
 
