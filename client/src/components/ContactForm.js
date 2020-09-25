@@ -48,23 +48,17 @@ export default function ContactFrom(props) {
   }, [props.subject, props.message])
 
   async function sendEmail() {
-    console.log('STATE: ', state);
-
     setLoading(true);
     await API.sendEmail({
+      name: state.name,
       from: state.from,
-      to: process.env.REACT_APP_EMAIL,
       subject: state.subject,
-      text: `Hello, may name is ${state.name}.
-
-${state.text}
-
-Please respond at ${state.from}.`
+      text: state.text
     })
       .then((result) => {
         setOpen({ ...open, success: true });
       })
-      .catch((err) => {
+      .catch((error) => {
         setOpen({ ...open, failure: true })
       });
     setLoading(false);

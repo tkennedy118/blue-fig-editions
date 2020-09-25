@@ -65,7 +65,7 @@ export default {
 
   // EMAIL ====================================================================
   sendEmail: function(data) {
-    return axios.put('/api/emails/send', data);
+    return axios.post('/api/emails/send', data);
   },
 
   resetPasswordRequest: function(data) {

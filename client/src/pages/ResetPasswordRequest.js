@@ -125,7 +125,7 @@ export default function ResetPasswordRequest() {
                 }
                 {hash.success
                   ?
-                    <Typography variant='body2' color='primary' className={classes.message} align='center'>
+                    <Typography variant='body2' color='secondary' className={classes.message} align='center'>
                       Sending email. Please be sure to check your spam folder if you don't see the email shortly.
                     </Typography>
                   :

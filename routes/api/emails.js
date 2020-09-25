@@ -1,13 +1,38 @@
 const router = require('express').Router();
 const crypto = require('crypto');
 const db = require('../../models');
-const emailsController = require('../../controllers/emailsController');
 const Mailgun = require('mailgun-js');
 
-// Matches with '/api/email'
+// POST request to send email from contact form.
 router.route('/send')
-  .put(emailsController.send);
+  .post(async(req, res) => {
+    let result;
 
+    const mailgun = Mailgun({
+      apiKey: process.env.MAILGUN_SECRET_KEY,
+      domain: process.env.MAILGUN_DOMAIN
+    });
+
+    const email = {
+      from: `${req.body.name} <${req.body.from}>`,
+      to: process.env.EMAIL_ADDRESS,
+      subject: req.body.subject,
+      text: req.body.text,
+      html: `<p>${req.body.text}</p>`
+    };
+
+    mailgun.messages().send(email, (error, body) => {
+      if (error || !body) {
+        result = res.status(422).send({ error: true });
+      } else {
+        result = res.send({ success: true });
+      }
+    });
+
+    return result;
+  });
+
+// POST request for password reset.
 router.route('/reset-password-request')
 .post(async(req, res) => {
     let result;
