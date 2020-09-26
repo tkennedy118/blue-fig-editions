@@ -78,7 +78,7 @@ export default function PrintForm(props) {
       setError({ ...error, img: true });
       return;
     }
-
+    
     const file = event.target.files[0];
     const reader = new FileReader();
     

@@ -21,7 +21,10 @@ router.route('/config')
 router.route('/checkout-sessions/:id')
   .get(async(req, res) => {
     const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-    const result = await stripe.checkout.sessions.retrieve(req.params.id);
+    const result = await stripe.checkout.sessions.retrieve(req.params.id,
+      {
+        expand: ['payment_intent.payment_method', 'line_items']
+      });
 
     res.send(result);
   });
@@ -80,18 +83,25 @@ router.route('/create-checkout-session')
 
     // Convert cart to valid items for stripe checkout.
     await asyncForEach(cart, async(_id) => {
-      const data = await db.Print.findById(_id);
-      items.push({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: data.name,
-            images: [data.image]
+
+      try {
+        const data = await db.Print.findById(_id);
+        items.push({
+          price_data: {
+            currency: 'usd',
+            unit_amount: data.price * 100,
+            product_data: {
+              name: data.name,
+              images: [data.image],
+              description: data.description
+            },
           },
-          unit_amount: data.price * 100,
-        },
-        quantity: 1
-      });
+          quantity: 1
+        });
+
+      } catch(err) {
+        console.log('ERROR: ', err);
+      }
     });
 
     // Create new Checkout Session for the order

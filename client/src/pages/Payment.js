@@ -13,7 +13,7 @@ import Tara from '../utils/images/tara.jpg';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    minHeight: '95vh',
+    minHeight: '100vh',
   },
   image: {
     backgroundImage:`url(${Tara})`,
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     padding: theme.spacing(2),
-    height: '100vh',
+    height: '100%',
   },
   title: {
     fontSize: 64,
@@ -64,38 +64,26 @@ export default function Payment() {
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
   const success = params.get('success');
-  console.log('SUCCESS: ', success);
 
   const [state, dispatch] = useStoreContext();
-  const [payment, setPayment] = useState(false);
-  const [items, setItems] = useState({});
+  const [session, setSession] = useState({});
 
   useEffect(() => {
 
     // Deal with payment details.
-    dispatch({ type: LOADING });
     async function fetchSession() {
+      dispatch({ type: LOADING });
       const session = await API.getSession(sessionId);
-      const intent = await API.getPaymentIntent(session.data.payment_intent);
-      const method = await API.getPaymentMethod(intent.data.payment_method);
 
-      setPayment({
+      dispatch({ type: LOADING });
+      setSession({
         session: session.data,
-        intent: intent.data,
-        method: method.data
+        payment_intent: session.data.payment_intent,
+        payment_method: session.data.payment_intent.payment_method,
+        line_items: session.data.line_items
       });
     }
     fetchSession();
-
-    // Deal with cart details.
-    async function fetchItems() {
-      const { data } = await API.getPrints();
-      const items = data.filter(print => state.cart.includes(print._id));
-
-      setItems(items);
-    }
-    fetchItems();
-    dispatch({ type: LOADING });
 
     // Clear cart if payment was a success.
     if (success) {
@@ -116,14 +104,14 @@ export default function Payment() {
               <Typography component='h1' variant='h2' className={classes.title} gutterBottom>
                 Blue Fig Editions
               </Typography>
-              {(success === 'true' && payment)
+              {(success === 'true' && Object.entries(session).length !== 0)
                 ?
                   <>
                     <Typography variant='h6'>
                       Thanks for your purchase!
                     </Typography>
                     <Typography variant='body1' style={{ marginBottom: 32 }}>
-                      A confirmation email has been sent to {payment.method.billing_details.email}.
+                      A confirmation email has been sent to {session.payment_method.billing_details.email}.
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6}>
@@ -132,19 +120,19 @@ export default function Payment() {
                         </Typography>
                         <Divider className={classes.divider} light/>
                         <Typography variant='body2'>
-                          {payment.method.billing_details.name}
+                          {session.payment_method.billing_details.name}
                         </Typography>
                         <Typography variant='body2'>
-                          {payment.method.billing_details.address.line1}
+                          {session.payment_method.billing_details.address.line1}
                         </Typography>
                         <Typography variant='body2'>
-                          {payment.method.billing_details.address.line2}
+                          {session.payment_method.billing_details.address.line2}
                         </Typography>
                         <Typography variant='body2'>
-                          {payment.method.billing_details.address.city}, {payment.method.billing_details.address.state} {payment.method.billing_details.address.postal_code}
+                          {session.payment_method.billing_details.address.city}, {session.payment_method.billing_details.address.state} {session.payment_method.billing_details.address.postal_code}
                         </Typography>
                         <Typography varaint='body2'>
-                          {payment.method.billing_details.address.country}
+                          {session.payment_method.billing_details.address.country}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6}>
@@ -153,10 +141,10 @@ export default function Payment() {
                         </Typography>
                         <Divider className={classes.divider} light/>
                         <Typography variant='body2'>
-                          {payment.method.card.brand}
+                          {session.payment_method.card.brand}
                         </Typography>
                         <Typography variant='body2'>
-                          **** **** **** {payment.method.card.last4}
+                          **** **** **** {session.payment_method.card.last4}
                         </Typography>
                       </Grid>
                       <Grid item xs={12}>
@@ -170,25 +158,25 @@ export default function Payment() {
                               Order Number
                             </Typography>
                             <Typography variant='body2' style={{ marginBottom: 24}}>
-                              {payment.intent.id}
+                              {session.payment_intent.id}
                             </Typography>
                             <Typography variant='subtitle2' className={classes.subtitle}>
                               Shipping Address
                             </Typography>
                             <Typography variant='body2'>
-                              {payment.intent.shipping.name}
+                              {session.payment_intent.shipping.name}
                             </Typography>
                             <Typography variant='body2'>
-                              {payment.intent.shipping.address.line1}
+                              {session.payment_intent.shipping.address.line1}
                             </Typography>
                             <Typography variant='body2'>
-                              {payment.intent.shipping.address.line2}
+                              {session.payment_intent.shipping.address.line2}
                             </Typography>
                             <Typography variant='body2'>
-                              {payment.intent.shipping.address.city}, {payment.intent.shipping.address.state} {payment.intent.shipping.address.postal_code}
+                              {session.payment_intent.shipping.address.city}, {session.payment_intent.shipping.address.state} {session.payment_intent.shipping.address.postal_code}
                             </Typography>
                             <Typography varaint='body2' style={{ marginBottom: 24}}>
-                              {payment.intent.shipping.address.country}
+                              {session.payment_intent.shipping.address.country}
                             </Typography>
                           </Grid>
                           <Grid item xs={12} lg={8} className={classes.leftDivider}>
@@ -197,50 +185,37 @@ export default function Payment() {
                                 <Typography variant='subtitle2' className={classes.subtitle}>
                                   Items
                                 </Typography>
-                                {items.length > 0
-                                  ?
-                                    items.map((item, index) => {
-                                      return(
-                                        <Typography key={index} variant='body2'>
-                                          {item.name}
-                                        </Typography>
-                                      );
-                                    })
-                                  :
-                                    <Typography variant='body2'>
-                                      No items to display.
+                                {session.line_items.data.map((item, index) => {
+                                  return(
+                                    <Typography key={index} variant='body2'>
+                                      {item.description}
                                     </Typography>
-                                }
+                                  );
+                                })}
                               </Grid>
                               <Grid item xs={3}>
                                 <Typography variant='subtitle2' className={classes.subtitle} align='right'>
                                   Quantity
                                 </Typography>
-                                {items.length > 0
-                                  ?
-                                    <Typography varaint='body2' align='right'>
-                                      1
+                                {session.line_items.data.map((item, index) => {
+                                  return(
+                                    <Typography key={index} variant='body2' align='right'>
+                                      {item.quantity}
                                     </Typography>
-                                  :
-                                    <></>
-                                }
+                                  );
+                                })}
                               </Grid>
                               <Grid item xs={3}>
                                 <Typography variant='subtitle2' className={classes.subtitle} align='right'>
                                   Cost
                                 </Typography>
-                                {items.length > 0
-                                  ?
-                                    items.map((item, index) => {
-                                      return(
-                                        <Typography key={index} variant='body2' align='right'>
-                                          ${item.price.toFixed(2)}
-                                        </Typography>
-                                      );
-                                    })
-                                  :
-                                    <></>
-                                }
+                                {session.line_items.data.map((item, index) => {
+                                  return(
+                                    <Typography key={index} variant='body2' align='right'>
+                                      ${(item.amount_subtotal / 100).toFixed(2)}
+                                    </Typography>
+                                  );
+                                })}
                               </Grid>
                               <Grid item xs={6} />
                               <Grid item xs={3}>
@@ -250,7 +225,7 @@ export default function Payment() {
                               </Grid>
                               <Grid item xs={3}>
                                 <Typography variant='body2' align='right' className={classes.marginTop}>
-                                  ${(payment.session.amount_subtotal / 100).toFixed(2)}
+                                  ${(session.session.amount_subtotal / 100).toFixed(2)}
                                 </Typography>
                               </Grid>
                               <Grid item xs={6} />
@@ -261,7 +236,7 @@ export default function Payment() {
                               </Grid>
                               <Grid item xs={3}>
                                 <Typography variant='body2' align='right'>
-                                  ${(payment.session.total_details.amount_tax / 100).toFixed(2)}
+                                  ${(session.session.total_details.amount_tax / 100).toFixed(2)}
                                 </Typography>
                               </Grid>
                               <Grid item xs={6} />
@@ -283,7 +258,7 @@ export default function Payment() {
                               </Grid>
                               <Grid item xs={3} className={classes.topDivider}>
                                 <Typography variant='body2' align='right' className={classes.total}>
-                                  ${(payment.session.amount_total / 100).toFixed(2)}
+                                  ${(session.session.amount_total / 100).toFixed(2)}
                                 </Typography>
                               </Grid>
                             </Grid>
