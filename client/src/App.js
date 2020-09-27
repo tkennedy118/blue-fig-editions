@@ -8,12 +8,15 @@ import Loader from './components/Loader';
 import { useStoreContext } from './utils/GlobalState';
 import API from './utils/API';
 import { LOGOUT, LOADING } from './utils/actions';
-
 import Home from './pages/Home';
 import Sale from './pages/Sale';
 import Profile from './pages/Profile';
+import Cart from './pages/Cart';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
+import Payment from './pages/Payment';
+import ResetPassword from './pages/ResetPassword';
+import ResetPasswordRequest from './pages/ResetPasswordRequest';
 import './App.css';
 
 const theme = createMuiTheme({
@@ -28,10 +31,15 @@ const theme = createMuiTheme({
       main: '#29231f',
       dark: '#000000',
     },
+    error: {
+      light: '#e57373',
+      main: '#f44336',
+      dark: '#d32f3f',
+    },
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },
-})
+});
 
 
 function App() {
@@ -41,16 +49,16 @@ function App() {
   useEffect(() => {
     
     dispatch({ type: LOADING });
-    async function fetchData() {
-      let { data } = await API.status();
+    // async function fetchData() {
+    //   let { data } = await API.status();
       
-      if (data.status === false ) {
-        dispatch({ type: LOGOUT });
-      } else {
-        dispatch({ type: LOGOUT });
-      }
-    }
-    fetchData();
+    //   if (data.status === false ) {
+    //     dispatch({ type: LOGOUT });
+    //   } else {
+    //     dispatch({ type: LOGOUT });
+    //   }
+    // }
+    // fetchData();
 
   }, []);
 
@@ -81,8 +89,40 @@ function App() {
                 <Footer />
               </>
               }/>
+              <Route exact path='/cart' render={props =>
+              <>
+                <Nav />
+                <Cart />
+                <Footer />
+              </>
+              }/>
+              <Route exact path='/payment' render={props => 
+              <>
+                <Payment />
+                <Footer />
+              </>
+              }/>
+              <Route exact path='/reset-password/:hash' render={props => 
+              <>
+                <ResetPassword {...props}/>
+                <Footer />
+              </>
+              }/>
+              <Route exact path='/reset-password-request' render={props => 
+              <>
+                <ResetPasswordRequest />
+                <Footer />
+              </>
+              }/>
               <Route exact path='/signin' component={Signin} />
               <Route exact path='/signup' component={Signup} />
+              <Route exact path={'/*'} render={props => 
+              <>
+                <Nav />
+                <Home />
+                <Footer />
+              </>
+              }/>
             </Switch>
           </>
         </Router>

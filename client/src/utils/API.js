@@ -19,6 +19,10 @@ export default {
     return axios.delete('/api/users/' + id);
   },
 
+  resetPassword: function(data) {
+    return axios.post('/api/users/reset-password', data);
+  },
+
   // API/PRINTS ===============================================================
   // Create print.
   createPrint: function(data) {
@@ -51,11 +55,46 @@ export default {
     return axios.post('/api/signin', data);
   },
 
-  signup: function(data) {
-    return axios.post('/api/signup', data);
+  signup: async function(data) {
+    return await axios.post('/api/signup', data);
   },
 
   signout: function () {
     return axios.get('/api/signout');
+  },
+
+  // EMAIL ====================================================================
+  sendEmail: function(data) {
+    return axios.post('/api/emails/send', data);
+  },
+
+  resetPasswordRequest: function(data) {
+    return axios.post('/api/emails/reset-password-request', data);
+  },
+
+  // API/STRIPE ===================================================================
+  getStripeConfig: function() {
+    return axios.get('/api/stripe/config');
+  },
+
+  getSession: function(id) {
+    return axios.get('/api/stripe/checkout-sessions/' + id);
+  },
+
+  getPaymentIntent: function(id) {
+    return axios.get('/api/stripe/payment-intents/' + id);
+  },
+
+  getPaymentMethod: function(id) {
+    return axios.get('/api/stripe/payment-methods/' + id);
+  },
+
+  createCheckoutSession: function(data) {
+    return axios.post('/api/stripe/create-checkout-session', data);
+  },
+
+  // API/CLOUDINARY ===========================================================
+  uploadImage: function(data) {
+    return axios.post('/api/cloudinary/upload-image', data);
   }
 };

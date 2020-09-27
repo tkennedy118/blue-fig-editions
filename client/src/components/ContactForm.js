@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import emailjs from 'emailjs-com';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -7,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import HandleAlert from '../components/HandleAlert';
 import Loader from '../components/Loader';
+import API from '../utils/API';
 
 const useStyles = makeStyles((theme) => ({
   submit: {
@@ -28,51 +28,60 @@ export default function ContactFrom(props) {
   });
   const [state, setState] = useState({
     name: '',
-    email: '',
-    subject: props.subject,
-    message: props.message
+    from: '',
+    subject: '',  
+    text: ''
   });
   const [error, setError] = useState({ 
     name: false,
-    email: false,
+    from: false,
     subject: false,
-    message: false
+    text: false
   });
 
-  function sendEmail(data) {
-    setLoading(true);
+  useEffect(() => {
+    setState({
+      ...state,
+      subject: props.subject,
+      text: props.message
+    });
+  }, [props.subject, props.message])
 
-    emailjs.send('gmail', 'blue-fig', data, 'user_2ykaMlM7W9u4Q1XssHrYO')
+  async function sendEmail() {
+    setLoading(true);
+    await API.sendEmail({
+      name: state.name,
+      from: state.from,
+      subject: state.subject,
+      text: state.text
+    })
       .then((result) => {
-        if (result.text === 'OK') {
-          setOpen({ ...open, success: true });
-        } else {
-          setOpen({ ...open, failure: true });
-        }
-      }, (error) => {
-        setOpen({ ...open, failure: true });
+        setOpen({ ...open, success: true });
+      })
+      .catch((error) => {
+        setOpen({ ...open, failure: true })
       });
     setLoading(false);
 
     setState({
       name: '',
-      email: '',
+      from: '',
       subject: '',
-      message: ''
+      text: ''
     });
   }
 
   function handleChange(event) {
-    if (error.name || error.email || error.subject || error.message ) {
-      setError({ name: false, email: false, subject: false, message: false });
+    if (error.name || error.from || error.subject || error.text ) {
+      setError({ name: false, from: false, subject: false, text: false });
     }
 
     const name = event.target.name;
     setState({ ...state, [name]: event.target.value });
 
     // Validation
-    if (name === 'email' && !event.target.value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
-      setError({ ...error, email: true });
+    if (name === 'from' && !event.target.value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
+      setError({ ...error, from: true });
     }
   }
 
@@ -84,20 +93,21 @@ export default function ContactFrom(props) {
       setError({ ...error, name: true }); 
       return;
     }
-    if (state.email === '') { 
-      setError({ ...error, email: true }); 
+    if (state.from === '') { 
+      setError({ ...error, from: true }); 
       return; 
     }
     if (state.subject === '') {
       setError({ ...error, subject: true });
       return
     }
-    if (state.message === '') {
-      setError({ ...error, message: true});
+    if (state.text === '') {
+      setError({ ...error, text: true});
       return;
     }
 
-    sendEmail(state);
+    // Everything is valid. Rebuild email format before sending.
+    sendEmail();
   }
 
   return (
@@ -119,24 +129,23 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            value={state.email}
+            value={state.from}
             required
             type='email'
-            id='email'
-            name='email'
+            id='from'
+            name='from'
             label='Email'
             variant='outlined'
             fullWidth
             onChange={handleChange}
-            error={error.email ? true : false}
-            helperText={error.email ? 'Please enter email' : ''}
+            error={error.from ? true : false}
+            helperText={error.from ? 'Please enter email' : ''}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            value={props.subject}
+            value={state.subject}
             required
-            type='subject'
             id='subject'
             name='subject'
             label='Subject'
@@ -149,10 +158,10 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            value={props.message}
+            value={state.text}
             required
-            id='message'
-            name='message'
+            id='text'
+            name='text'
             label='Message'
             variant='outlined'
             multiline
@@ -160,8 +169,8 @@ export default function ContactFrom(props) {
             rowsMax={4}
             fullWidth
             onChange={handleChange}
-            error={error.message ? true : false}
-            helperText={error.message ? 'Please enter message' : ''}
+            error={error.text ? true : false}
+            helperText={error.text ? 'Please enter message' : ''}
           />
         </Grid>
         <Grid item xs={12}>

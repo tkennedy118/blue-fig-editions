@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import ScrollableAnchor, { configureAnchors, goToTop } from 'react-scrollable-anchor';
+import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
 import VisibilitySensor from 'react-visibility-sensor';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Fade from '@material-ui/core/Fade';
+import Slide from '@material-ui/core/Slide';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
@@ -71,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       width: '100%',
       height: '100%',
-      transition: 'opacity 1.25s',
+      transition: 'opacity 1.5s',
       opacity: 1,
       backgroundSize: 'cover',
       [theme.breakpoints.down('sm')]: {
@@ -93,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
   verticalAlign: {
     margin: 0,
     position: 'absolute',
-    top: '45%',
+    top: '40%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
   },
@@ -122,6 +123,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     width: '100vw',
     borderTop: `2px solid ${theme.palette.primary.main}`,
+    zIndex: theme.zIndex.appBar,
   },
   toTopButton: {
     position: 'absolute',
@@ -133,10 +135,6 @@ function Home() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
   const [subject, setSubject] = useState('');
-  const [visible, setVisible] = useState({
-    top: false,
-    classes: false
-  });
   const location_search = 'The+Arcade+Nashville&2C65+Arcade+Alley%2C+Nashville%2C+TN+37219';
   const location_id = 'ChIJiccAvouiZIgRj0P8XT2smLg';
 
@@ -154,20 +152,6 @@ function Home() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const onChange = (isVisible) => {
-    console.log('HANDLE TOP');
-    console.log('IS VISIBLE: ', isVisible);
-    console.log('VISIBLE: ', visible);
-    setVisible({ ...visible, classes: isVisible });
-  };
-
-  const handleVisChange = (isVisible) => {
-    console.log('HANDLE CLASSES');
-    console.log('IS VISIBLE: ', isVisible);
-    console.log('VISIBLE: ', visible);
-    setVisible({ ...visible, classes: isVisible });
   };
 
   const getPrints = () => {
@@ -192,45 +176,47 @@ function Home() {
       <VisibilitySensor partialVisibility={true}>
         {({ isVisible }) =>
           <div className={isVisible ? `${classes.heroBackground} ${classes.backgroundFade}` : classes.heroBackground}>
-            <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
-              <Typography component='h1' variant='h2' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                Blue Fig Editions
-              </Typography>
-              <Typography variant='body1' align='center'>
-                <span>Located at&nbsp;</span>
-                <Link 
-                  href={`https://www.google.com/maps/search/?api=1&query=${location_search}&query_place_id=${location_id}`} 
-                  target='_blank' 
-                  rel='noreferrer'
-                  color='inherit'
-                  underline='hover'
-                >
-                  The Arcade Nashville
-                </Link>
-              </Typography>
-              <Typography variant='body1' align='center' paragraph>
-                Room 56
-              </Typography>
-              <Typography variant='body1' align='center' paragraph>
-                Blue Fig is an established printmaking workshop that
-                collaborates with artists to produce limited editions of original silk screens, etchings,
-                lithographs, woodcuts, monotypes, and collographs.
-              </Typography>
-              <div className={classes.heroButtons}>
-                <Grid container spacing={2} justify='center'>
-                  <Grid item>
-                    <Button component={RouterLink} to='/sale' variant='outlined' color='secondary'>
-                      For Sale
-                    </Button>
+            <Fade in={isVisible} timeout={1500}>
+              <Container maxWidth='sm' className={classes.verticalAlign} style={{ zIndex: 1 }}>
+                <Typography component='h1' variant={extraSmall ? 'h4' : 'h2'} align='center' color='textPrimary' className={classes.title} gutterBottom>
+                  Blue Fig Editions
+                </Typography>
+                <Typography variant='body1' align='center'>
+                  <span>Located at&nbsp;</span>
+                  <Link 
+                    href={`https://www.google.com/maps/search/?api=1&query=${location_search}&query_place_id=${location_id}`} 
+                    target='_blank' 
+                    rel='noreferrer'
+                    color='inherit'
+                    underline='hover'
+                  >
+                    The Arcade Nashville
+                  </Link>
+                </Typography>
+                <Typography variant='body1' align='center' paragraph>
+                  Room 56
+                </Typography>
+                <Typography variant='body1' align='center' style={{ fontSize: 14 }} paragraph>
+                  Blue Fig is an established printmaking workshop that
+                  collaborates with artists to produce limited editions of original silk screens, etchings,
+                  lithographs, woodcuts, monotypes, and collographs.
+                </Typography>
+                <div className={classes.heroButtons}>
+                  <Grid container spacing={2} justify='center'>
+                    <Grid item>
+                      <Button component={RouterLink} to='/sale' variant='outlined' color='secondary'>
+                        For Sale
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button component='a' href='#featured' variant='contained' color='secondary'>
+                        More
+                      </Button>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Button component='a' href='#featured' variant='contained' color='secondary'>
-                      More
-                    </Button>
-                  </Grid>
-                </Grid>
-              </div>
-            </Container>
+                </div>
+              </Container>
+            </Fade>
           </div>
         }
       </VisibilitySensor>
@@ -244,36 +230,38 @@ function Home() {
             <div style={{ minHeight: '100vh' }} className={isVisible ? `${classes.classesBackground} ${classes.backgroundFade}` : classes.classesBackground}>
               <Hero default={false}>
                 <div className={classes.section}>
-                  <Container>
-                    <ScrollableAnchor id={'classes'}>
-                      <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                        Classes
-                      </Typography>
-                    </ScrollableAnchor>
-                    <Grid container spacing={3} justify='center' align='center'>
-                      {lessons.length > 0
-                        ?
-                          <>
-                            {lessons.map((item, index) => (
-                              <Grid item key={index} xs={12} md={4}>
-                                <ClassesCard
-                                  name={item.name}
-                                  lineOne={item.lineOne}
-                                  lineTwo={item.lineTwo}
-                                  setSubject={setSubject}
-                                />
-                              </Grid>
-                            ))}
-                          </>
-                        :
-                          <Grid item xs={12}>
-                            <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
-                              There are no classes offered at this time.
-                            </Typography>
-                          </Grid>
-                      }
-                    </Grid>
-                  </Container>
+                  <Fade in={isVisible} timeout={1500}>
+                    <Container>
+                      <ScrollableAnchor id={'classes'}>
+                        <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                          Classes
+                        </Typography>
+                      </ScrollableAnchor>
+                      <Grid container spacing={3} justify='center' align='center'>
+                        {lessons.length > 0
+                          ?
+                            <>
+                              {lessons.map((item, index) => (
+                                <Grid item key={index} xs={12} md={4} style={{ zIndex: theme.zIndex.mobileStepper }}>
+                                  <ClassesCard
+                                    name={item.name}
+                                    lineOne={item.lineOne}
+                                    lineTwo={item.lineTwo}
+                                    setSubject={setSubject}
+                                  />
+                                </Grid>
+                              ))}
+                            </>
+                          :
+                            <Grid item xs={12}>
+                              <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
+                                There are no classes offered at this time.
+                              </Typography>
+                            </Grid>
+                        }
+                      </Grid>
+                    </Container>
+                  </Fade>
                 </div>
               </Hero>
             </div>
@@ -284,31 +272,32 @@ function Home() {
 
   return (
     <>
+      <ScrollableAnchor id={'top'}><></></ScrollableAnchor>
       {extraSmall
         ?
           <></>
         :
           <Fade timeout={256} in={smallToMedium ? !trigger : true}>
-            <Grid container maxWidth='sm' justify='center' style={{ marginLeft: 24 }}>
+            <Grid container justify='center' style={{ marginLeft: 24 }}>
               <div className={classes.nav}>
                 <Grid item>
                   <Link href='#featured' underline='none'>
-                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                    <Typography className={classes.navItem} component='span' color='textSecondary'>
                       featured
                     </Typography>
                   </Link>
                   <Link href='#about' underline='none'>
-                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                    <Typography className={classes.navItem} component='span' color='textSecondary'>
                       about
                     </Typography>
                   </Link>
                   <Link href='#classes' underline='none'>
-                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                    <Typography className={classes.navItem} component='span' color='textSecondary'>
                       classes
                     </Typography>
                   </Link>
                   <Link href='#contact' underline='none'>
-                    <Typography className={classes.navItem} variant='text2' color='textSecondary'>
+                    <Typography className={classes.navItem} component='span' color='textSecondary'>
                       contact
                     </Typography>
                   </Link>
@@ -329,34 +318,40 @@ function Home() {
                   Featured
                 </Typography>
               </ScrollableAnchor>
-              <Grid container spacing={2} justify='center'>
-                {state.featured.length > 0
-                  ?
-                    <>
-                      {state.featured.map((print, index) => (
-                        <Grid item key={index} xs={12} sm={6} md={4}>
-                          <PrintCard 
-                            name={print.name}
-                            description={print.description}
-                            series={print.series}
-                            price={print.price}
-                            count={print.count}
-                            image={print.image}
-                            featured={print.featured}
-                            about={print.about}
-                            _id={print._id}
-                          />
+              <VisibilitySensor partialVisibility>
+                {({isVisible}) => (
+                  <Grid container spacing={2} justify='center'>
+                    {state.featured.length > 0
+                      ?
+                        <>
+                          {state.featured.map((print, index) => (
+                            <Slide in={isVisible} direction='right' timeout={1500}>
+                              <Grid item key={index} xs={12} sm={6} md={4}>
+                                <PrintCard
+                                  name={print.name}
+                                  description={print.description}
+                                  series={print.series}
+                                  price={print.price}
+                                  count={print.count}
+                                  image={print.image}
+                                  featured={print.featured}
+                                  about={print.about}
+                                  _id={print._id}
+                                />
+                              </Grid>
+                            </Slide>
+                          ))}
+                        </>
+                      :
+                        <Grid item xs={12}>
+                          <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
+                            There are no featured prints at this time.
+                          </Typography>
                         </Grid>
-                      ))}
-                    </>
-                  :
-                    <Grid item xs={12}>
-                      <Typography variant='body1' align='center' style={{ fontStyle: 'italic' }} paragraph>
-                        There are no featured prints at this time.
-                      </Typography>
-                    </Grid>
-                }
-              </Grid>
+                    }
+                  </Grid>
+                )}
+              </VisibilitySensor>
             </Container>
           </div>
         </Hero>
@@ -381,7 +376,7 @@ function Home() {
                 <Typography component='h3' variant='h4' align='center' color='textSecondary' gutterBottom>
                   Mike Martino
                 </Typography>
-                <Typography variant='body1' align='left' color='textSecondary' paragraph>
+                <Typography variant='body1' align='center' color='textSecondary' paragraph>
                   Mike Martino is an acclaimed artist and printmaker, showing his work both locally 
                   throughout the Nashville area as well as maintaining connections throughout the United States.
                 </Typography>
@@ -406,7 +401,7 @@ function Home() {
               />
             </Grid>
             <Grid item xs={12} align='center' className={classes.toTopButton}>
-              <Button variant='text' color='secondary' onClick={goToTop}>
+              <Button component='a' href='#top' variant='text' color='secondary'>
                 Back to Top
               </Button>
             </Grid>

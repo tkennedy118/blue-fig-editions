@@ -56,7 +56,7 @@ const MyToolbar = withStyles(styles)(
             <IconButton
               className={classes.menuButton}
               color='inherit'
-              aria-label='Menu'
+              aria-label='menu'
               onClick={onMenuClick}
             >
               <MenuIcon />
@@ -70,9 +70,11 @@ const MyToolbar = withStyles(styles)(
             </Typography>
             <IconButton
               color='inherit'
-              aria-label='show shopping cart'
+              aria-label='cart'
+              component={Link}
+              to='/cart'
             >
-              <CartIcon />
+              <CartIcon isButton={true}/>
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -104,6 +106,12 @@ const MyDrawer = withStyles(styles)(
             <Collection />
           </ListItemIcon>
           <ListItemText>Sale</ListItemText>
+        </ListItem>
+        <ListItem button component={Link} to='/cart' onClick={onItemClick('Checkout')}>
+          <ListItemIcon>
+            <CartIcon isButton={false}/>
+          </ListItemIcon>
+          <ListItemText>Checkout</ListItemText>
         </ListItem>
       </List>
       <Divider />

@@ -14,15 +14,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CartIcon() {
+export default function CartIcon(props) {
   const [state] = useStoreContext();
   const classes = useStyles();
 
   return (
-    <IconButton aria-label='cart'>
-      <Badge className={classes.badge} badgeContent={state.cart.length} color='secondary'>
-        <ShoppingCartIcon className={classes.cartIcon} />
-      </Badge>
-    </IconButton>
+    props.isButton
+      ?
+        <IconButton aria-label='cart'>
+          <Badge className={classes.badge} badgeContent={state.cart.length} color='secondary'>
+            <ShoppingCartIcon className={classes.cartIcon} />
+          </Badge>
+        </IconButton>
+      :
+        <Badge className={classes.badge} badgeContent={state.cart.length} color='secondary'>
+          <ShoppingCartIcon className={classes.cartIcon} />
+        </Badge>
   );
 }

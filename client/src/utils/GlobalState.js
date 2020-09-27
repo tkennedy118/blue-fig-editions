@@ -24,6 +24,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
+        user: {
+          _id: action._id,
+          stripe_id: action.stripe_id,
+          email: action.email
+        },
         loading: false
       };
 
@@ -31,13 +36,18 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: false,
+        customer: {
+          _id: null,
+          stripe_id: null,
+          email: null
+        },
         loading: false,
       };
     
     case LOADING:
       return {
         ...state,
-        loading: true
+        loading: !state.loading
       };
 
     // CRUD OPERATIONS ========================================================
@@ -93,7 +103,7 @@ const reducer = (state, action) => {
     case REMOVE_ITEM:
       return {
         ...state,
-        cart: [ ...state.cart.filter(item => item._id !== action._id)],
+        cart: [ ...state.cart.filter(id => id !== action._id)],
         loading: false
       };
 
@@ -112,7 +122,12 @@ const reducer = (state, action) => {
 const StoreProvider = ({ valu = [], ...props }) => {
 
   const [state, dispatch] = useReducer(reducer, {
-    isLoggedIn: false,
+    isLoggedIn: true,
+    user: {
+      _id: null,
+      stripe_id: null,
+      email: null
+    },
     prints: [],
     featured: [],
     currentPrint: {

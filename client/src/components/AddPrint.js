@@ -2,6 +2,7 @@ import API from '../utils/API';
 import { ADD_PRINT, LOADING } from '../utils/actions';
 
 export default function AddPrint(props, dispatch) {
+  console.log('PROPS: ', props);
 
   dispatch({ type: LOADING })
   API.createPrint({

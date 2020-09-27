@@ -89,7 +89,12 @@ export default function Signin() {
     const { data }= await API.signin({ email: input.email, password: input.password });
 
     if (!data.message) { 
-      dispatch({ type: LOGIN });
+      dispatch({ 
+        type: LOGIN,
+        _id: data._id,
+        stripe_id: data.stripe_id,
+        email: data.email
+      });
       
     } else { 
       dispatch({ type: LOGOUT }); 
@@ -156,7 +161,12 @@ export default function Signin() {
               >
                 Sign In
               </Button>
-              <Grid container justify='center'>
+              <Grid container justify='space-between'>
+                <Grid item>
+                  <Link component={RouterLink} to='/reset-password-request' variant='body2' style={{ marginRight: 16 }}>
+                    Forgot password?
+                  </Link>
+                </Grid>
                 <Grid item>
                   <Link component={RouterLink} to='/signup' variant='body2'>
                     {"Don't have an account? Sign Up"}
