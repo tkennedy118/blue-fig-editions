@@ -7,7 +7,7 @@ router.use('/api', apiRoutes);
 
 // If no other routes are hit, send to home page.
 router.use(function(req, res) {
-  res.sendFile(path.join(__dirname, '/home'));
+  res.sendFile(path.join(__dirname, '/'));
 });
 
 module.exports = router;

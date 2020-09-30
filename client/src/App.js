@@ -7,7 +7,7 @@ import Footer from './components/Footer.js';
 import Loader from './components/Loader';
 import { useStoreContext } from './utils/GlobalState';
 import API from './utils/API';
-import { LOGOUT, LOADING } from './utils/actions';
+import { LOGIN, LOGOUT, LOADING } from './utils/actions';
 import Home from './pages/Home';
 import Sale from './pages/Sale';
 import Profile from './pages/Profile';
@@ -49,16 +49,22 @@ function App() {
   useEffect(() => {
     
     dispatch({ type: LOADING });
-    // async function fetchData() {
-    //   let { data } = await API.status();
+    async function fetchData() {
+      let { data } = await API.status();
       
-    //   if (data.status === false ) {
-    //     dispatch({ type: LOGOUT });
-    //   } else {
-    //     dispatch({ type: LOGOUT });
-    //   }
-    // }
-    // fetchData();
+      if (data.status === false ) {
+        dispatch({ type: LOGOUT });
+      } else {
+        dispatch({ 
+          type: LOGIN,
+          _id: data._id,
+          stripe_id: data.stripe_id,
+          email: data.email,
+          isAdmin: data.isAdmin
+        });
+      }
+    }
+    fetchData();
 
   }, []);
 

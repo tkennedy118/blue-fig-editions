@@ -10,7 +10,9 @@ import {
   ADD_ITEM,
   REMOVE_ITEM,
   CLEAR,
-  UPDATE_FEATURED_PRINTS
+  UPDATE_FEATURED_PRINTS,
+  UPDATE_ADDRESS,
+  UPDATE_SHIPPING
 } from "./actions";
 
 const StoreContext = createContext();
@@ -24,6 +26,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
+        isAdmin: action.isAdmin,
         user: {
           _id: action._id,
           stripe_id: action.stripe_id,
@@ -36,6 +39,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: false,
+        isAdmin: false,
         customer: {
           _id: null,
           stripe_id: null,
@@ -91,7 +95,23 @@ const reducer = (state, action) => {
         featured: [...action.prints],
         loading: false
       };
+
+    // ADDRESS INFORMATION ====================================================
+    case UPDATE_ADDRESS:
+      return {
+        ...state,
+        address: { ...action.address },
+        loading: false
+      };
     
+    // SHIPPING INFORMATION ===================================================
+    case UPDATE_SHIPPING:
+      return {
+        ...state,
+        shipping: { ...action.shipping },
+        loading: false
+      };
+
     // SHOPPING CART ==========================================================
     case ADD_ITEM: 
       return {
@@ -123,6 +143,7 @@ const StoreProvider = ({ valu = [], ...props }) => {
 
   const [state, dispatch] = useReducer(reducer, {
     isLoggedIn: true,
+    isAdmin: false,
     user: {
       _id: null,
       stripe_id: null,
@@ -139,7 +160,20 @@ const StoreProvider = ({ valu = [], ...props }) => {
       count: 0
     },
     cart: JSON.parse(localStorage.getItem('bfg-cart')) || [],
-    loading: false
+    loading: false,
+    address: {
+      name: '',
+      street1: '',
+      street2: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: ''
+    },
+    shipping: {
+      shipment_id: '',
+      rate_id: ''
+    },
   });
 
   return <Provider value={[state, dispatch]} {...props} />;

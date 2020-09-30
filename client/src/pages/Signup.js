@@ -111,11 +111,18 @@ export default function Signup() {
         email: input.email,
         password: input.password,
         stripe_id: null,
-        passwordReset: null
-       });
+        passwordReset: null,
+        isAdmin: false
+      });
 
-       await API.signin({ email: input.email, password: input.password });
-       dispatch({ type: LOGIN });
+      await API.signin({ email: input.email, password: input.password });
+      dispatch({ 
+        type: LOGIN,
+        _id: data._id,
+        stripe_id: data.stripe_id,
+        email: data.email,
+        isAdmin: data.isAdmin
+      });
 
     } catch(err) {
       dispatch({ type: LOGOUT }); 

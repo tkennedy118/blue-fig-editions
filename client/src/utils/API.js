@@ -89,6 +89,10 @@ export default {
     return axios.get('/api/stripe/payment-methods/' + id);
   },
 
+  getCustomer: function(id) {
+    return axios.get('/api/stripe/customer/' + id);
+  },
+
   createCheckoutSession: function(data) {
     return axios.post('/api/stripe/create-checkout-session', data);
   },
@@ -96,5 +100,34 @@ export default {
   // API/CLOUDINARY ===========================================================
   uploadImage: function(data) {
     return axios.post('/api/cloudinary/upload-image', data);
+  },
+
+  // API/EASYPOST =============================================================
+  retrieveShipment: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment/' + id);
+  },
+
+  retrieveParcel: function(id) {
+    return axios.get('/api/easypost/retrieve-parcel/' + id);
+  },
+
+  retrieveAddress: function(id) {
+    return axios.get('/api/easypost/retrieve-address/' + id);
+  },
+
+  buyShipment: function(id, data) {
+    return axios.post('/api/easypost/buy-shipment/' + id, data);
+  },
+
+  createShipment: function(data) {
+    return axios.post('/api/easypost/create-shipment', data);
+  },
+
+  createParcel: function(data) {
+    return axios.post('/api/easypost/create-parcel', data);
+  },
+
+  createAddress: function(data) {
+    return axios.post('/api/easypost/create-address', data);
   }
 };

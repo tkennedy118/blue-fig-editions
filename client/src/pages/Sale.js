@@ -80,7 +80,7 @@ function Sale() {
             <Grid item xs={12} style={{ marginBottom: 8 }}>
               <Divider />
             </Grid>
-            {state.isLoggedIn
+            {state.isLoggedIn && state.isAdmin
               ?
                 <Grid item xs={12} sm={6} md={4}>
                   <Card className={classes.addNewCard} raised>

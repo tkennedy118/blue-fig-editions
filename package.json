@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/tkennedy118/blue-fig-editions#readme",
   "dependencies": {
+    "@easypost/api": "^3.9.1",
     "bcrypt": "^5.0.0",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",

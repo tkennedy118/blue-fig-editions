@@ -11,18 +11,36 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editio
 const userSeed = [
   {
     email: 'martino@bluefig.com',
-    password: 'HappyApple1*',
-    stripe_id: null
+    password: 'Password1!',
+    stripe_id: null,
+    isAdmin: false
   },
   {
     email: 'kennedy@bluefig.com',
     password: 'Password1!',
-    stripe_id: null
+    stripe_id: null,
+    isAdmin: false
   },
   {
     email: 'burley@bluefig.com',
     password: 'Password1!',
-    stripe_id: null
+    stripe_id: null,
+    isAdmin: false
+  },
+  {
+    email: 'tkennedy118@gmail.com',
+    password: 'Happyapple1!',
+    stripe_id: null,
+    isAdmin: true,
+    address: {
+      name: 'Blue Fig Editions',
+      street1: '2006 Acklen Ave.',
+      street2: null,
+      city: 'Nashville',
+      state: 'TN',
+      zip: '37212',
+      country: 'US'
+    }
   }
 ];
 

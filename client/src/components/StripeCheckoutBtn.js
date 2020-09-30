@@ -9,12 +9,11 @@ import API from '../utils/API';
 const useStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(1),
-    minWidth: 224,
   },
 }));
 
-const fetchCheckoutSession = async (cart, user) => {
-  const { data } = await API.createCheckoutSession(cart, user);
+const fetchCheckoutSession = async (cart, user, shipping, address) => {
+  const { data } = await API.createCheckoutSession(cart, user, shipping, address);
   return { sessionId: data.sessionId };
 };
 
@@ -36,12 +35,14 @@ export default function StripeCheckoutBtn(props) {
     fetchConfig();
   }, []);
 
-  const handleClick = async (event) => {
+  const handleClick = async () => {
     // Call backend to create Checkout session.
     dispatch({ type: LOADING });
     const { sessionId } = await fetchCheckoutSession({
       cart: state.cart,
-      user: state.user
+      user: state.user,
+      shipping: state.shipping,
+      address: state.address
     });
 
     // When customer clicks on the button, redirect them to checkout.
@@ -60,13 +61,14 @@ export default function StripeCheckoutBtn(props) {
       variant='contained'
       color='primary'
       className={classes.button}
-      fullWidth={props.xs ? true : false}
       disableElevation
-      size='large'
       onClick={handleClick}
-      disabled={!stripe || state.loading || state.cart.length < 1}
+      disabled={
+        !stripe || state.loading || state.cart.length < 1 || state.shipping === 0 ||
+        state.shipping.shipment_id.length === 0 || state.shipping.rate_id.length === 0
+      }
     >
-      Proceed to Checkout
+      Add Payment
     </Button>
   );
 }

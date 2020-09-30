@@ -9,24 +9,21 @@ import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Hero from '../components/Hero';
+import ShippingForm from '../components/ShippingForm';
 import StripeCheckoutBtn from '../components/StripeCheckoutBtn';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, REMOVE_ITEM } from '../utils/actions';
 import API from '../utils/API';
 
-const localTheme = createMuiTheme({
-  palette: {
-    secondary: {
-      light: '#e57373',
-      main: '#f44336',
-      dark: '#d32f3f',
-    },
-  },
-});
+const getSteps = () => {
+  return ['View Cart', 'Shipping', 'Review'];
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,20 +46,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
   cartItem: {
-    maxHeight: 256,
+    maxHeight: 128,
   },
   image: {
     marginLeft: 'auto',
     marginRight: 'auto',
-    maxWidth: 256,
-    maxHeight: 256,
-    paddingTop: theme.spacing(1),
+    maxWidth: 96,
+    maxHeight: 96,
   },
   info: {
-    paddingTop: theme.spacing(3),
+    paddingTop: theme.spacing(1),
     paddingLeft: theme.spacing(2),
     [theme.breakpoints.only('xs')]: {
-      paddingTop: theme.spacing(2),
       paddingLeft: theme.spacing(1),
     },
   },
@@ -76,10 +71,12 @@ const useStyles = makeStyles((theme) => ({
   },
   totalSection: {
     marginTop: theme.spacing(2),
-    padding: theme.spacing(1),
+    padding: theme.spacing(0),
   },
   total: {
     fontSize: '1.15rem',
+    fontWeight: 'bold',
+    marginTop: theme.spacing(.5),
   },
   aligntRight: {
   },
@@ -100,6 +97,19 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  stepper: {
+    marginBottom: theme.spacing(1),
+  },
+  backButton: {
+    marginRight: theme.spacing(1),
+  },
+  instructions: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  buttonsBottom: {
+    marginTop: theme.spacing(4),
+  },
 }));
 
 function Cart() {
@@ -108,16 +118,30 @@ function Cart() {
   const [cart, setCart] = useState([]);
   const [checked, setChecked] = useState({});
   const [toggle, setToggle] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = getSteps();
   const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
+
+  // Props sent to Shipping Form
+  const [billing, setBilling] = useState(false);
 
   // Calculations
   const [costs, setCosts] = useState({
     subtotal: 0,
     taxes: 0,
     shipping: 0,
-    total: 0
   });
+
+  // Stepper ==================================================================
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+  // ==========================================================================
 
   const getCart = () => {
     dispatch({ type: LOADING });
@@ -169,21 +193,9 @@ function Cart() {
     });
   };
 
-  const calculateCost = () => {
-    let taxes = 0;
-    let shipping = 5;
-    let total = costs.subtotal + taxes + shipping;
-
-    setCosts({ ...costs, taxes, shipping, total });
-  };
-
   useEffect(() => {
     getCart();
   }, [state.cart]);
-
-  useEffect(() => {
-    calculateCost();
-  }, [costs.shipping])
 
   return (
     <div className={classes.root}>
@@ -191,137 +203,229 @@ function Cart() {
         <div className={classes.cart}>
           <Container maxWidth='sm' justify='center' style={{ padding: 4 }}>
             <Paper className={classes.paper} elevation={0} square>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Typography align='left' component='h2' variant='h4' color='textPrimary'>
-                    Your Cart
-                  </Typography>
-                  <Grid container className={classes.top}>
-                    <Grid item xs={12} sm={8}>
-                      <Link component='button' color='textSecondary' variant='body1' className={classes.selectLink} onClick={handleToggle}>
-                        {toggle ? 'Unselect All' : 'Select All'}
-                      </Link>
-                      <Link component='a' href='/sale' color='textSecondary' variant='body1'>
-                        Keep Shopping
-                      </Link>
-                    </Grid>
-                    <Hidden xsDown>
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant='subtitle2' color='textSecondary' align='right'>
-                          Price
-                        </Typography>
-                      </Grid>
-                    </Hidden>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Divider />
-              {cart.length > 0
+              <Typography align='center' component='h2' variant='h4' color='textPrimary'>
+                Checkout
+              </Typography>
+              <Stepper activeStep={activeStep} alternativeLabel className={classes.stepper}>
+                {steps.map((label) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+              {activeStep === 0
                 ?
                   <>
-                    {cart.map((print, index) => (
-                      <div key={index}>
-                        <Grid container>
-                          <Grid item xs={2} align='center' className={classes.checkbox}>
-                            <Checkbox
-                              checked={checked[print._id] || false}
-                              color='primary'
-                              inputProps={{ 'aria-label': 'select item'}}
-                              name={print._id}
-                              onChange={handleChange}
-                            />
+                    <Grid container>
+                      <Grid item xs={12}>
+                        <Grid container className={classes.top}>
+                          <Grid item xs={12} sm={8}>
+                            <Link component='button' color='textSecondary' variant='body1' className={classes.selectLink} onClick={handleToggle}>
+                              {toggle ? 'Unselect All' : 'Select All'}
+                            </Link>
+                            <Link component='a' href='/sale' color='textSecondary' variant='body1'>
+                              Keep Shopping
+                            </Link>
                           </Grid>
-                          <Grid item xs={3} sm={4}>
-                            <Image src={print.image} className={classes.image} />
-                          </Grid>
-                          <Grid item xs={7} sm={6} className={classes.info}>
-                            <Grid container>
-                              <Grid item xs={12} sm={6}>
-                                <Typography variant={xs ? 'h6' : 'h5'} color='textPrimary' className={classes.title}>
-                                  {print.name}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12} sm={6}>
-                                <Typography variant={xs ? 'body1' : 'h5'} color='textPrimary' align={xs ? 'left' : 'right'}>
-                                  ${print.price.toFixed(2)}
-                                </Typography>
-                              </Grid>
+                          <Hidden xsDown>
+                            <Grid item xs={12} sm={4}>
+                              <Typography variant='subtitle2' color='textSecondary' align='right'>
+                                Price
+                              </Typography>
                             </Grid>
-                          </Grid>
+                          </Hidden>
                         </Grid>
-                        <Divider />
-                      </div>
-                    ))}
+                      </Grid>
+                    </Grid>
+                    <Divider />
+                    {cart.length > 0
+                      ?
+                        <>
+                          {cart.map((print, index) => (
+                            <div key={index}>
+                              <Grid container className={classes.cartItem}>
+                                <Grid item xs={2} align='center' className={classes.checkbox}>
+                                  <Checkbox
+                                    checked={checked[print._id] || false}
+                                    color='primary'
+                                    inputProps={{ 'aria-label': 'select item'}}
+                                    name={print._id}
+                                    onChange={handleChange}
+                                  />
+                                </Grid>
+                                <Grid item xs={4} sm={2}>
+                                  <Image src={print.image} className={classes.image} style={{ padding: 48 }} />
+                                </Grid>
+                                <Grid item xs={6} sm={8} className={classes.info}>
+                                  <Grid container>
+                                    <Grid item xs={12} sm={6}>
+                                      <Typography variant='body1' color='textPrimary' className={classes.title} align={xs ? 'right' : 'left'}>
+                                        {print.name}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                      <Typography variant='body1' color='textPrimary' align='right'>
+                                        ${print.price.toFixed(2)}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                              <Divider />
+                            </div>
+                          ))}
+                        </>
+                      :
+                        <div className={classes.emptyCartWrapper}>
+                          <Typography variant='overline' className={classes.emptyCart}>
+                            Uh oh! Your cart is empty.
+                          </Typography>
+                        </div>
+                    }
+                    <Grid container className={classes.totalSection}>
+                      <Grid item xs={12} sm={6}>
+                        <Link component='button' variant='body1' color='textSecondary' onClick={handleDelete}>
+                          Remove Selected
+                        </Link>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant='h6' align='right'>
+                          Subtotal
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography variant='body1' align='right'>
+                          {costs.subtotal === 0 ? '$0.00' : `$${costs.subtotal.toFixed(2)}`}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </>
                 :
-                  <div className={classes.emptyCartWrapper}>
-                    <Typography variant='overline' className={classes.emptyCart}>
-                      Uh oh! Your cart is empty.
-                    </Typography>
-                  </div>
+                  <></>
               }
-              <Grid container className={classes.totalSection}>
-                <Grid item xs={12}>
-                  <Typography variant='h6' align='right'>
-                    Total
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography component='p' variant='body1' align={xs ? 'left' : 'right'}>
-                    Subtotal:
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography component='p' variant='body2' align='right'>
-                    {costs.subtotal === 0 ? '$0.00' : `$${costs.subtotal.toFixed(2)}`}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography component='p' variant='body1' align={xs ? 'left' : 'right'}>
-                    Taxes:
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography component='p' variant='body2' align='right'>
-                    {costs.taxes === 0 ? '$0.00' : `$${costs.taxes.toFixed(2)}`}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography component='p' variant='body1' align={xs ? 'left' : 'right'}>
-                    Shipping:
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography component='p' variant='body2' align='right'>
-                    {costs.shipping === 0 ? '$0.00' : `$${costs.shipping.toFixed(2)}`}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography component='p' varaint='body1' align='right' className={classes.total}>
-                    {costs.total === 0 ? '$0.00' : `$${costs.total.toFixed(2)}`}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid container>
+              {activeStep === 1
+                ?
+                  <>
+                    <ShippingForm 
+                      setCosts={setCosts}
+                      setBilling={setBilling}
+                      costs={costs}
+                      billing={billing}/>
+                  </>
+                :
+                  <></>
+              }
+              {activeStep == 2
+                ?
+                  <>
+                    <Grid container className={classes.top}>
+                      <Hidden xsDown>
+                        <Grid item xs={12}>
+                          <Typography variant='subtitle2' color='textSecondary' align='right'>
+                            Price
+                          </Typography>
+                        </Grid>
+                      </Hidden>
+                    </Grid>
+                    <Divider />
+                    {cart.length > 0
+                      ?
+                        <>
+                          {cart.map((print) => (
+                            <div key={print._id}>
+                              <Grid container className={classes.cartItem}>
+                                <Grid item xs={6} sm={2}>
+                                  <Image src={print.image} className={classes.image} style={{ padding: 48 }} />
+                                </Grid>
+                                <Grid item xs={6} sm={10} className={classes.info}>
+                                  <Grid container>
+                                    <Grid item xs={12} sm={6}>
+                                      <Typography variant='body1' color='textPrimary' className={classes.title} align={xs ? 'right' : 'left'}>
+                                        {print.name}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                      <Typography variant='body1' color='textPrimary' align='right'>
+                                        ${print.price.toFixed(2)}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                              <Divider />
+                            </div>
+                          ))}
+                        </>
+                      :
+                        <div className={classes.emptyCartWrapper}>
+                          <Typography variant='overline' className={classes.emptyCart}>
+                            Uh oh! Your cart is empty.
+                          </Typography>
+                        </div>
+                    }
+                    <Grid container spacing={0} className={classes.totalSection}>
+                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={6} sm={3}>
+                        <Typography variant='body1' align={xs ? 'left' : 'right'}>
+                          Subtotal
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3}>
+                        <Typography variant='body1' align='right'>
+                          ${costs.subtotal.toFixed(2)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={6} sm={3}>
+                        <Typography variant='body1' align={xs ? 'left' : 'right'}>
+                          Shipping
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3}>
+                        <Typography variant='body1' align='right'>
+                          ${costs.shipping.toFixed(2)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={6} sm={3}className={classes.topDivider}>
+                        <Typography variant='body1' align={xs ? 'left' : 'right'} className={classes.total}>
+                          Total
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3}className={classes.topDivider}>
+                        <Typography variant='body1' align='right' className={classes.total}>
+                          ${(costs.subtotal + costs.shipping + costs.taxes).toFixed(2)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </>
+                :
+                  <></>
+              }
+              <Grid container className={classes.buttonsBottom}>
                 <Grid item xs={12} align='center'>
-                  <ThemeProvider theme={localTheme}>
-                    <Button
-                      variant='contained'
-                      color='secondary'
-                      className={classes.button}
-                      fullWidth={xs ? true : false}
-                      disableElevation
-                      size='large'
-                      onClick={handleDelete}
-                    >
-                      Remove Selected
-                    </Button>
-                  </ThemeProvider>
-                </Grid>
-                <Grid item xs={12} align='center'>
-                  <StripeCheckoutBtn 
-                    xs={xs}
-                  />
+                  <Button
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    className={classes.backButton}
+                    disableElevation
+                  >
+                    Back
+                  </Button>
+                  {activeStep === 2
+                    ?
+                      <StripeCheckoutBtn billing={billing} />
+                    :
+                      <Button 
+                        variant='contained'
+                        color='primary'
+                        onClick={handleNext}
+                        disabled={(activeStep === 1 && costs.shipping === 0) || activeStep === 0 && state.cart.length === 0}
+                        disableElevation
+                      >
+                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                      </Button>
+                  }
                 </Grid>
               </Grid>
             </Paper>

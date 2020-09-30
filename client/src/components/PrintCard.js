@@ -95,7 +95,7 @@ export default function PrintCard(props) {
             <>
               <CardHeader
                 action={
-                  state.isLoggedIn
+                  state.isLoggedIn && state.isAdmin
                     ?
                       <>
                         <IconButton aria-label='delete'>
