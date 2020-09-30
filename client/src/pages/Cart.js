@@ -399,6 +399,17 @@ function Cart() {
                         </Typography>
                       </Grid>
                       <Grid item xs={0} sm={6}/>
+                      <Grid item xs={6} sm={3}>
+                        <Typography variant='body1' align={xs ? 'left' : 'right'}>
+                          Taxes
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} sm={3}>
+                        <Typography variant='body1' align='right'>
+                          ${costs.taxes.toFixed(2)}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={0} sm={6}/>
                       <Grid item xs={6} sm={3}className={classes.topDivider}>
                         <Typography variant='body1' align={xs ? 'left' : 'right'} className={classes.total}>
                           Total

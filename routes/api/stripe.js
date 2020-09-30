@@ -77,6 +77,7 @@ router.route('/create-checkout-session')
     let customer = null;
     let rate = {};
     let items = [];
+    let taxes = 0;
 
     // Create address object that fits stripes docs.
     const shippingAddress = {
@@ -133,7 +134,7 @@ router.route('/create-checkout-session')
               name: data.name,
               images: [data.image],
               description: data.description
-            },
+            }
           },
           quantity: 1
         });
@@ -156,7 +157,7 @@ router.route('/create-checkout-session')
               product_data: {
                 name: rate.carrier,
                 description: rate.service
-              },
+              }
             },
             quantity: 1
           });
@@ -165,6 +166,25 @@ router.route('/create-checkout-session')
       .catch((err) => {
         console.log(err);
       });
+
+    // Add taxes as a line item. Includes shipping cost.
+    let subtotal = 0;
+    items.forEach(item => {
+      subtotal += item.price_data.unit_amount;
+    });
+    taxes = (parseFloat(subtotal) * (process.env.TAX_RATE / 100)).toFixed(0);
+
+    items.push({
+      price_data: {
+        currency: 'usd',
+        unit_amount: taxes,
+        product_data: {
+          name: 'Taxes',
+          description: 'TN Sales Tax'
+        }
+      },
+      quantity: 1
+    });
 
     // Create new Checkout Session for the order
     // For full details see https://stripe.com/docs/api/checkout/sessions/create

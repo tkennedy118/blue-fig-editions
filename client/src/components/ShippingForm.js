@@ -104,8 +104,10 @@ export default function ShippingForm(props) {
   const handleRadioChange = (event) => {
     setRadio(event.target.value);
     const chosen = rates.find(rate => rate.id === event.target.value);
+    const shipping = parseFloat(chosen.rate);
+    const taxes = ((props.costs.subtotal + shipping) * .0925);
 
-    props.setCosts({ ...props.costs, shipping: parseFloat(chosen.rate) });
+    props.setCosts({ ...props.costs, shipping: shipping, taxes: taxes });
     dispatch({
       type: UPDATE_SHIPPING,
       shipping: { ...state.shipping, rate_id: event.target.value }

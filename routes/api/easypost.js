@@ -46,7 +46,6 @@ router.route('/buy-shipment/:id')
       .then((shipment) => {
         shipment.buy(req.body.rate_id)
           .then((response) => {
-            console.log('RESPONSE: ', response);
             res.send(response);
           })
           .catch((err) => {

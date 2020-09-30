@@ -75,8 +75,9 @@ export default function Payment() {
 
       const session = await API.getSession(sessionId);
       const customer = await API.getCustomer(session.data.customer);
-      const lineItems = session.data.line_items.data.filter(item => item.description !== 'USPS');
+      const lineItems = session.data.line_items.data.filter(item => (item.description !== 'USPS' && item.description !== 'Taxes'));
       const shippingCost = session.data.line_items.data.find(item => item.description === 'USPS');
+      const taxesCost = session.data.line_items.data.find(item => item.description === 'Taxes');
 
       // Deal with EasyPost
       try {
@@ -97,7 +98,8 @@ export default function Payment() {
         payment_method: session.data.payment_intent.payment_method,
         line_items: lineItems,
         shipping: customer.data.shipping,
-        shippingCost: shippingCost.amount_subtotal
+        shippingCost: shippingCost.amount_subtotal,
+        taxesCost: taxesCost.amount_subtotal
       });
     }
     fetchSession();
@@ -247,7 +249,7 @@ export default function Payment() {
                                     </Grid>
                                     <Grid item xs={3}>
                                       <Typography variant='body2' align='right' className={classes.marginTop}>
-                                        ${((session.session.amount_subtotal - session.shippingCost) / 100).toFixed(2)}
+                                        ${((session.session.amount_subtotal - session.shippingCost - session.taxesCost) / 100).toFixed(2)}
                                       </Typography>
                                     </Grid>
                                     <Grid item xs={6} />
@@ -269,7 +271,7 @@ export default function Payment() {
                                     </Grid>
                                     <Grid item xs={3}>
                                       <Typography variant='body2' align='right'>
-                                        ${(session.session.total_details.amount_tax / 100).toFixed(2)}
+                                        ${(session.taxesCost / 100).toFixed(2)}
                                       </Typography>
                                     </Grid>
                                     <Grid item xs={6} />
