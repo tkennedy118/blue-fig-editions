@@ -23,6 +23,8 @@ import Collection from '@material-ui/icons/Collections';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CartIcon from '../components/CartIcon';
 import { useStoreContext } from '../utils/GlobalState';
+import { LOGOUT } from '../utils/actions';
+import API from '../utils/API';
 
 const drawerWidth = 256;
 
@@ -85,7 +87,7 @@ const MyToolbar = withStyles(styles)(
 );
 
 const MyDrawer = withStyles(styles)(
-  ({ classes, variant, open, onClose, onItemClick, isLoggedIn }) => (
+  ({ classes, variant, open, onClose, onItemClick, isLoggedIn, handleSignOut }) => (
     <Drawer variant={variant} open={open} onClose={onClose}
       classes={{ paper: classes.drawerPaper }}
     >
@@ -124,6 +126,12 @@ const MyDrawer = withStyles(styles)(
               </ListItemIcon>
               <ListItemText>Profile</ListItemText>
             </ListItem>
+            <ListItem button component={Link} to='/home' onClick={handleSignOut}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText>Sign Out</ListItemText>
+            </ListItem>
           </List>
         :
           <List>
@@ -140,7 +148,7 @@ const MyDrawer = withStyles(styles)(
 );
 
 function AppBarInteraction({ classes, variant }) {
-  const [state] = useStoreContext();
+  const [state, dispatch] = useStoreContext();
   const [drawer, setDrawer] = useState(false);
   const [title, setTitle] = useState('Home');
 
@@ -157,6 +165,14 @@ function AppBarInteraction({ classes, variant }) {
     setDrawer(!drawer);
   };
 
+  const handleSignOut = async () => {
+    await API.signout();
+    dispatch({ type: LOGOUT });
+
+    setTitle('Home');
+    setDrawer(!drawer);
+  }
+
   return (
     <div className={classes.root}>
       <MyToolbar title={title} onMenuClick={toggleDrawer} trigger={matches ? !trigger : true} />
@@ -164,6 +180,7 @@ function AppBarInteraction({ classes, variant }) {
         open={drawer}
         onClose={toggleDrawer}
         onItemClick={onItemClick}
+        handleSignOut={handleSignOut}
         variant={variant}
         isLoggedIn={state.isLoggedIn}
       />

@@ -65,7 +65,8 @@ export default function StripeCheckoutBtn(props) {
       onClick={handleClick}
       disabled={
         !stripe || state.loading || state.cart.length < 1 || state.shipping === 0 ||
-        state.shipping.shipment_id.length === 0 || state.shipping.rate_id.length === 0
+        state.shipping.shipment_id.length === 0 || state.shipping.rate_id.length === 0 ||
+        !state.isLoggedIn
       }
     >
       Add Payment

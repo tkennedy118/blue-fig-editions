@@ -16,6 +16,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Hero from '../components/Hero';
 import ShippingForm from '../components/ShippingForm';
+import SignInModal from '../components/SignInModal';
 import StripeCheckoutBtn from '../components/StripeCheckoutBtn';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, REMOVE_ITEM } from '../utils/actions';
@@ -116,10 +117,17 @@ function Cart() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
   const [cart, setCart] = useState([]);
+
+  // Toggles for selecting cart items, and for displaying modal.
   const [checked, setChecked] = useState({});
   const [toggle, setToggle] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  // Deals with steps.
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
+
+  // Deals with theming.
   const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
@@ -135,7 +143,11 @@ function Cart() {
 
   // Stepper ==================================================================
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (state.isLoggedIn) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else {
+      setModal(true);
+    }
   };
 
   const handleBack = () => {
@@ -420,10 +432,10 @@ function Cart() {
                         variant='contained'
                         color='primary'
                         onClick={handleNext}
-                        disabled={(activeStep === 1 && costs.shipping === 0) || activeStep === 0 && state.cart.length === 0}
+                        disabled={(activeStep === 0 && state.cart.length === 0) || (activeStep === 1 && costs.shipping === 0)}
                         disableElevation
                       >
-                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                        Next
                       </Button>
                   }
                 </Grid>
@@ -432,6 +444,7 @@ function Cart() {
           </Container>
         </div>
       </Hero>
+      <SignInModal modal={modal} setModal={setModal} />
     </div>
   );
 }
