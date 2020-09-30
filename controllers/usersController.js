@@ -24,6 +24,7 @@ module.exports = {
   create: function(req, res) {
     const salt = bcrypt.genSaltSync(10);
     req.body.password = bcrypt.hashSync(req.body.password, salt);
+    req.body.isAdmin = false;
 
     db.User
       .create(req.body)

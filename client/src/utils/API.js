@@ -93,6 +93,10 @@ export default {
     return axios.get('/api/stripe/customer/' + id);
   },
 
+  createCustomer: function(data) {
+    return axios.post('/api/stripe/create-customer/', data);
+  },
+
   createCheckoutSession: function(data) {
     return axios.post('/api/stripe/create-checkout-session', data);
   },

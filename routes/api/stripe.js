@@ -55,6 +55,20 @@ router.route('/payment-methods/:id')
     res.send(result);
   });
 
+// Create customer.
+router.route('/create-customer')
+  .post(async(req, res) => {
+    const { email } = req.body;
+
+    try {
+      customer = await stripe.customers.create({ email: email || null });
+      res.send(customer);
+
+    } catch (err) { 
+      res.status(422).send(err); 
+    }
+  });
+
 // Create checkout session.
 router.route('/create-checkout-session')
   .post(async (req, res) => {

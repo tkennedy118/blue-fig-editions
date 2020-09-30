@@ -26,7 +26,8 @@ const UserSchema = new Schema({
   isAdmin: {
     type: Boolean,
     require: true,
-    default: false
+    default: false,
+    immutable: true
   },
   address: {
     name: { type: String, require: false },
