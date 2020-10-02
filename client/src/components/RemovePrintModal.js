@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import RemovePrint from './RemovePrint';
+import RemovePrint from '../utils/functions/RemovePrint';
 
 const useStyles = makeStyles((theme) => ({
   modal: {

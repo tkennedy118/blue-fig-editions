@@ -113,19 +113,43 @@ const reducer = (state, action) => {
       };
 
     // SHOPPING CART ==========================================================
-    case ADD_ITEM: 
-      return {
-        ...state,
-        cart: [action.item, ...state.cart],
-        loading: false
-      };
+    case ADD_ITEM: {
+      const cart = state.cart.filter(item => item.id !== action.item.id);
+      const item = state.cart.find(item => item.id === action.item.id);
 
-    case REMOVE_ITEM:
-      return {
-        ...state,
-        cart: [ ...state.cart.filter(id => id !== action._id)],
-        loading: false
-      };
+      if (item) {
+        return {
+          ...state,
+          cart: [...cart, { id: item.id, quantity: item.quantity + 1 }],
+          loading: false
+        };
+      } else {
+        return {
+          ...state,
+          cart: [...cart, { id: action.item.id, quantity: 1 }],
+          loading: false
+        };
+      }
+    }
+
+    case REMOVE_ITEM: {
+      const cart = state.cart.filter(item => item.id !== action.item.id);
+      const item = state.cart.find(item => item.id === action.item.id);
+
+      if ((item.quantity - action.item.quantity) <= 1) {
+        return {
+          ...state,
+          cart: [...cart],
+          loading: false
+        }
+      } else {
+        return {
+          ...state,
+          cart: [...cart, { id: item.id, quantity: item.quantity - action.item.quantity }],
+          loading: false
+        }
+      }
+    }
 
     case CLEAR:
       return {

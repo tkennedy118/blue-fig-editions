@@ -122,10 +122,9 @@ router.route('/create-checkout-session')
     }
 
     // Convert cart to valid items for stripe checkout.
-    await asyncForEach(cart, async(_id) => {
-
+    await asyncForEach(cart, async(item) => {
       try {
-        const data = await db.Print.findById(_id);
+        const data = await db.Print.findById({ _id: item.id });
         items.push({
           price_data: {
             currency: 'usd',
@@ -136,7 +135,7 @@ router.route('/create-checkout-session')
               description: data.description
             }
           },
-          quantity: 1
+          quantity: item.quantity
         });
 
       } catch(err) {
@@ -170,7 +169,7 @@ router.route('/create-checkout-session')
     // Add taxes as a line item. Includes shipping cost.
     let subtotal = 0;
     items.forEach(item => {
-      subtotal += item.price_data.unit_amount;
+      subtotal += item.price_data.unit_amount * item.quantity;
     });
     taxes = (parseFloat(subtotal) * (process.env.TAX_RATE / 100)).toFixed(0);
 

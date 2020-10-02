@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/Radio';
 import Paper from '@material-ui/core/Paper';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import { states } from '../utils/states';
 import { useStoreContext } from '../utils/GlobalState';
@@ -114,12 +112,17 @@ export default function ShippingForm(props) {
     });
   };
 
+  // Not necessarily permanent. May try to update this function later.
   const getParcel = (cart) => {
+    let count = 0;
+    cart.forEach(item => { count += item.quantity });
+
+    console.log('COUNT: ', count);
     return({
       length: 22,
       width: 20,
       height: 2,
-      weight: 1.5
+      weight: .25 * count
     });
   };
 
@@ -144,7 +147,7 @@ export default function ShippingForm(props) {
       let response = await API.createAddress({ address: state.address });
       addr = response.data;
 
-      // 2. Create Parcels
+      // 2. Create Parcel
       response = await API.createParcel({ parcel: getParcel(state.cart) });
       parcel = response.data;
       
@@ -292,13 +295,6 @@ export default function ShippingForm(props) {
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={<Checkbox color='secondary' name='saveAddress' value='yes' />}
-            label='Use this address for payment details'
-            onClick={() => props.setBilling(!props.billing)}
-          />
         </Grid>
         {checks.searchedAddress && !checks.foundAddress && !state.loading
           ?

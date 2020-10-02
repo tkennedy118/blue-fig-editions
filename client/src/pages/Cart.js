@@ -131,9 +131,6 @@ function Cart() {
   const theme = useTheme();
   const xs = useMediaQuery(theme.breakpoints.only('xs'));
 
-  // Props sent to Shipping Form
-  const [billing, setBilling] = useState(false);
-
   // Calculations
   const [costs, setCosts] = useState({
     subtotal: 0,
@@ -156,17 +153,24 @@ function Cart() {
   // ==========================================================================
 
   const getCart = () => {
+    // Update local storage after delete.
+    localStorage.setItem('bfg-cart', JSON.stringify([...state.cart]));
+
     dispatch({ type: LOADING });
     API.getPrints()
       .then(results => {
-        const cart = results.data.filter(print => state.cart.includes(print._id));
+        const cart = results.data.filter(print => {
+          const item = state.cart.find(item => item.id === print._id);
+          if (item) return true;
+        });
         let checked = {};
         let subtotal = 0;
         
         // Set initial checks and subtotal
         cart.forEach(item => {
+          const cartObj = state.cart.find(obj => obj.id === item._id);
           checked[item._id] = false;
-          subtotal += item.price;
+          subtotal += item.price * cartObj.quantity;
         });
 
         setCart(cart);
@@ -175,9 +179,6 @@ function Cart() {
       })
       .catch(err => console.log(err));  
     dispatch({ type: LOADING });
-
-    // Update local storage. Needed after delete.
-    localStorage.setItem('bfg-cart', JSON.stringify([...state.cart]));
   };
 
   const handleChange = (event) => {
@@ -195,19 +196,37 @@ function Cart() {
   };
 
   const handleDelete = () => {
-    const temp = state.cart.filter(item => checked[item] === true);
+    const temp = state.cart.filter(item => checked[item.id] === true);
 
-    temp.forEach(_id => {
+    temp.forEach(item => {
       dispatch({
         type: REMOVE_ITEM,
-        _id: _id,
+        item: { id: item.id, quantity: item.quantity }
       });
     });
   };
 
+  const getPrice = (print) => {
+    const cartObj = state.cart.find(obj => obj.id === print._id);
+    if (cartObj) {
+      return `$${(print.price * cartObj.quantity).toFixed(2)}`;
+    } else {
+      return 0;
+    }
+  };
+
+  const getQuantity = (print) => {
+    const cartObj = state.cart.find(obj => obj.id === print._id);
+    if (cartObj) {
+      return cartObj.quantity;
+    } else {
+      return 0;
+    }
+  };
+
   useEffect(() => {
     getCart();
-  }, [state.cart]);
+  }, [state.cart.length]);
 
   return (
     <div className={classes.root}>
@@ -276,9 +295,16 @@ function Cart() {
                                       </Typography>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                      <Typography variant='body1' color='textPrimary' align='right'>
-                                        ${print.price.toFixed(2)}
-                                      </Typography>
+                                      <Grid container>
+                                        <Grid item xs={12}>
+                                          <Typography variant='body1' color='textPrimary' align='right'>
+                                            Qty: {getQuantity(print)}
+                                          </Typography>
+                                          <Typography variant='body1' color='textPrimary' align='right' style={{ fontWeight: 'bold' }}>
+                                            {getPrice(print)}
+                                          </Typography>
+                                        </Grid>
+                                      </Grid>
                                     </Grid>
                                   </Grid>
                                 </Grid>
@@ -318,11 +344,7 @@ function Cart() {
               {activeStep === 1
                 ?
                   <>
-                    <ShippingForm 
-                      setCosts={setCosts}
-                      setBilling={setBilling}
-                      costs={costs}
-                      billing={billing}/>
+                    <ShippingForm setCosts={setCosts} costs={costs} />
                   </>
                 :
                   <></>
@@ -357,9 +379,16 @@ function Cart() {
                                       </Typography>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                      <Typography variant='body1' color='textPrimary' align='right'>
-                                        ${print.price.toFixed(2)}
-                                      </Typography>
+                                      <Grid container>
+                                        <Grid item xs={12}>
+                                          <Typography variant='body1' color='textPrimary' align='right'>
+                                            Qty: {getQuantity(print)}
+                                          </Typography>
+                                          <Typography variant='body1' color='textPrimary' align='right' style={{ fontWeight: 'bold' }}>
+                                            {getPrice(print)}
+                                          </Typography>
+                                        </Grid>
+                                      </Grid>
                                     </Grid>
                                   </Grid>
                                 </Grid>
@@ -437,7 +466,7 @@ function Cart() {
                   </Button>
                   {activeStep === 2
                     ?
-                      <StripeCheckoutBtn billing={billing} />
+                      <StripeCheckoutBtn />
                     :
                       <Button 
                         variant='contained'

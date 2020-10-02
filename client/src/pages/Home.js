@@ -332,10 +332,11 @@ function Home() {
                                   description={print.description}
                                   series={print.series}
                                   price={print.price}
-                                  count={print.count}
+                                  quantity={print.quantity}
                                   image={print.image}
                                   featured={print.featured}
                                   about={print.about}
+                                  quantity={print.quantity}
                                   _id={print._id}
                                 />
                               </Grid>

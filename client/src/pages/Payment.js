@@ -79,7 +79,8 @@ export default function Payment() {
       const shippingCost = session.data.line_items.data.find(item => item.description === 'USPS');
       const taxesCost = session.data.line_items.data.find(item => item.description === 'Taxes');
 
-      // Deal with EasyPost
+      // Deal with EasyPost. Should throw error if shipment has already been
+      // purchased from EasyPost.
       try {
         const shipmentId = session.data.metadata.shipment_id;
         const rateId = session.data.metadata.rate_id;
@@ -87,6 +88,20 @@ export default function Payment() {
         
         // Configure into admin dashboard at some point.
         console.log('LABEL: ', purchase.data.postage_label);
+
+        // If payment was successful, clear the cart and update database.
+        if (success) {
+          for await (const item of state.cart) {
+            const { data } = await API.getPrint(item.id);
+
+            const response = await API.updatePrint(item.id, {
+              quantity: data.quantity - item.quantity
+            }, { new: true });
+          }
+          
+          dispatch({ type: CLEAR });
+          localStorage.removeItem('bfg-cart');
+        }
 
       } catch(err) {
         console.log('ERROR: ', err);
@@ -103,13 +118,6 @@ export default function Payment() {
       });
     }
     fetchSession();
-
-    // Clear cart if payment was a success.
-    if (success) {
-      dispatch({ type: CLEAR });
-      localStorage.removeItem('bfg-cart');
-    }
-
   }, [sessionId]);
 
   return(

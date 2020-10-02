@@ -1,5 +1,5 @@
-import API from '../utils/API';
-import { REMOVE_PRINT, ADD_PRINT, LOADING } from '../utils/actions';
+import API from '../API';
+import { REMOVE_PRINT, ADD_PRINT, LOADING } from '../actions';
 
 export default function UpdatePrint(print, dispatch) {
   dispatch({ type: LOADING });
@@ -8,9 +8,10 @@ export default function UpdatePrint(print, dispatch) {
     description: print.description,
     series: print.series,
     price: parseFloat(print.price).toFixed(2),
+    quantity: Math.floor(parseFloat(print.quantity)),
     image: print.image,
     featured: print.featured,
-    about: print.about
+    about: print.about,
   }, {
     new: true,
     overwrite: true

@@ -1,5 +1,5 @@
-import API from '../utils/API';
-import { REMOVE_PRINT, LOADING } from '../utils/actions';
+import API from '../API';
+import { REMOVE_PRINT, LOADING } from '../actions';
 
 export default function RemovePrint(id, dispatch) {
 

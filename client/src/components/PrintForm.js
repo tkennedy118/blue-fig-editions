@@ -15,8 +15,8 @@ import HandleAlert from '../components/HandleAlert';
 import Loader from './Loader';
 import { useStoreContext } from '../utils/GlobalState';
 import API from '../utils/API';
-import AddPrint from './AddPrint';
-import UpdatePrint from './UpdatePrint';
+import AddPrint from '../utils/functions/AddPrint';
+import UpdatePrint from '../utils/functions/UpdatePrint';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,6 +51,7 @@ export default function PrintForm(props) {
     name: '',
     series: '',
     price: 0,
+    quantity: 0,
     description: '',
     image: '',
     featured: false,
@@ -64,6 +65,7 @@ export default function PrintForm(props) {
         name: props.name,
         series: props.series,
         price: props.price,
+        quantity: props.quantity,
         description: props.description,
         image: '',
         featured: props.featured,
@@ -199,13 +201,26 @@ export default function PrintForm(props) {
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <TextField
               value={newPrint.price}
               required
               id='price'
               name='price'
               label='Price'
+              type='number'
+              variant='outlined'
+              fullWidth
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              value={newPrint.quantity}
+              required
+              id='quantity'
+              name='quantity'
+              label='Quantity'
               type='number'
               variant='outlined'
               fullWidth
