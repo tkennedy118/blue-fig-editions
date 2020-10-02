@@ -10,7 +10,9 @@ import {
   ADD_ITEM,
   REMOVE_ITEM,
   CLEAR,
-  UPDATE_FEATURED_PRINTS
+  UPDATE_FEATURED_PRINTS,
+  UPDATE_ADDRESS,
+  UPDATE_SHIPPING
 } from "./actions";
 
 const StoreContext = createContext();
@@ -24,6 +26,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: true,
+        isAdmin: action.isAdmin,
         user: {
           _id: action._id,
           stripe_id: action.stripe_id,
@@ -36,6 +39,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLoggedIn: false,
+        isAdmin: false,
         customer: {
           _id: null,
           stripe_id: null,
@@ -91,21 +95,61 @@ const reducer = (state, action) => {
         featured: [...action.prints],
         loading: false
       };
-    
-    // SHOPPING CART ==========================================================
-    case ADD_ITEM: 
+
+    // ADDRESS INFORMATION ====================================================
+    case UPDATE_ADDRESS:
       return {
         ...state,
-        cart: [action.item, ...state.cart],
+        address: { ...action.address },
+        loading: false
+      };
+    
+    // SHIPPING INFORMATION ===================================================
+    case UPDATE_SHIPPING:
+      return {
+        ...state,
+        shipping: { ...action.shipping },
         loading: false
       };
 
-    case REMOVE_ITEM:
-      return {
-        ...state,
-        cart: [ ...state.cart.filter(id => id !== action._id)],
-        loading: false
-      };
+    // SHOPPING CART ==========================================================
+    case ADD_ITEM: {
+      const cart = state.cart.filter(item => item.id !== action.item.id);
+      const item = state.cart.find(item => item.id === action.item.id);
+
+      if (item) {
+        return {
+          ...state,
+          cart: [...cart, { id: item.id, quantity: item.quantity + 1 }],
+          loading: false
+        };
+      } else {
+        return {
+          ...state,
+          cart: [...cart, { id: action.item.id, quantity: 1 }],
+          loading: false
+        };
+      }
+    }
+
+    case REMOVE_ITEM: {
+      const cart = state.cart.filter(item => item.id !== action.item.id);
+      const item = state.cart.find(item => item.id === action.item.id);
+
+      if ((item.quantity - action.item.quantity) <= 1) {
+        return {
+          ...state,
+          cart: [...cart],
+          loading: false
+        }
+      } else {
+        return {
+          ...state,
+          cart: [...cart, { id: item.id, quantity: item.quantity - action.item.quantity }],
+          loading: false
+        }
+      }
+    }
 
     case CLEAR:
       return {
@@ -122,7 +166,8 @@ const reducer = (state, action) => {
 const StoreProvider = ({ valu = [], ...props }) => {
 
   const [state, dispatch] = useReducer(reducer, {
-    isLoggedIn: true,
+    isLoggedIn: false,
+    isAdmin: false,
     user: {
       _id: null,
       stripe_id: null,
@@ -139,7 +184,20 @@ const StoreProvider = ({ valu = [], ...props }) => {
       count: 0
     },
     cart: JSON.parse(localStorage.getItem('bfg-cart')) || [],
-    loading: false
+    loading: false,
+    address: {
+      name: '',
+      street1: '',
+      street2: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: ''
+    },
+    shipping: {
+      shipment_id: '',
+      rate_id: ''
+    },
   });
 
   return <Provider value={[state, dispatch]} {...props} />;

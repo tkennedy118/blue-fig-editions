@@ -11,18 +11,36 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editio
 const userSeed = [
   {
     email: 'martino@bluefig.com',
-    password: 'HappyApple1*',
-    stripe_id: null
+    password: 'Password1!',
+    stripe_id: null,
+    isAdmin: false
   },
   {
     email: 'kennedy@bluefig.com',
     password: 'Password1!',
-    stripe_id: null
+    stripe_id: null,
+    isAdmin: false
   },
   {
     email: 'burley@bluefig.com',
     password: 'Password1!',
-    stripe_id: null
+    stripe_id: null,
+    isAdmin: false
+  },
+  {
+    email: 'tkennedy118@gmail.com',
+    password: 'Happyapple1!',
+    stripe_id: null,
+    isAdmin: true,
+    address: {
+      name: 'Blue Fig Editions',
+      street1: '2006 Acklen Ave.',
+      street2: null,
+      city: 'Nashville',
+      state: 'TN',
+      zip: '37212',
+      country: 'US'
+    }
   }
 ];
 
@@ -32,7 +50,7 @@ const printSeed = [
     description: 'Silkscreen mono-print and silkscreen 22x22',
     series: 'Space-scape',
     price: 10,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636340/bluefig/Big-Gilbert_pulfnm.jpg'
   },
   {
@@ -40,7 +58,7 @@ const printSeed = [
     description: 'Silkscreen mono-print and etching 20x20',
     series: 'Space-scape',
     price: 12,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636368/bluefig/Sasha_dqfi1b.jpg',
   },
   {
@@ -48,7 +66,7 @@ const printSeed = [
     description: 'Silkscreen mono-print and silkscreen 21x21',
     series: 'Space-scape',
     price: 11,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636365/bluefig/Enzo_etzy2a.jpg'
   },
   {
@@ -56,7 +74,7 @@ const printSeed = [
     description: 'Silkscreen and monoprint 22x28',
     series: 'Landscape',
     price: 11,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636369/bluefig/Landon_gj1u3o.jpg'
   },
   {
@@ -64,7 +82,7 @@ const printSeed = [
     description: 'Silkscreen and monoprint 22x18',
     series: 'Landscape',
     price: 16,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636375/bluefig/Owen_kieapy.jpg'
   },
   {
@@ -72,7 +90,7 @@ const printSeed = [
     description: 'Monoprint / screen print 11x11, 8 of 12',
     series: 'Landscape',
     price: 15,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636372/bluefig/Kira_ijgeet.jpg'
   },
   {
@@ -80,7 +98,7 @@ const printSeed = [
     description: 'none',
     series: 'none',
     price: 12,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636365/bluefig/Edna_ge2khl.jpg'
   },
   {
@@ -88,7 +106,7 @@ const printSeed = [
     description: 'none',
     series: 'none',
     price: 8,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636362/bluefig/Edna-L_ptursp.jpg'
   },
   {
@@ -96,7 +114,7 @@ const printSeed = [
     description: 'none',
     series: 'none',
     price: 10,
-    count: 10,
+    quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636363/bluefig/Jethro_fk4uve.jpg'
   }
 ];

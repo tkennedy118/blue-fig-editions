@@ -9,19 +9,34 @@ const UserSchema = new Schema({
     match: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
     unique: true
   },
+  password: { 
+    type: String, 
+    require: true,
+  },
   stripe_id: {
     type: String,
     require: false,
     default: null
   },
-  password: { 
-    type: String, 
-    require: true,
-  },
   passwordReset: {
     type: String,
     require: false,
     select: false
+  },
+  isAdmin: {
+    type: Boolean,
+    require: true,
+    default: false,
+    immutable: true
+  },
+  address: {
+    name: { type: String, require: false },
+    street1: { type: String, require: false },
+    street2: { type: String, require: false },
+    city: { type: String, require: false },
+    state: { type: String, require: false },
+    zip: { type: String, require: false },
+    country: { type: String, require: false }
   }
 });
 

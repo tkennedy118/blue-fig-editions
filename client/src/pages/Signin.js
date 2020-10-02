@@ -93,7 +93,8 @@ export default function Signin() {
         type: LOGIN,
         _id: data._id,
         stripe_id: data.stripe_id,
-        email: data.email
+        email: data.email,
+        isAdmin: data.isAdmin
       });
       
     } else { 

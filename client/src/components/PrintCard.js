@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import Image from 'material-ui-image';
 import { makeStyles } from '@material-ui/core/styles';
@@ -54,6 +54,7 @@ export default function PrintCard(props) {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [remove, setRemove] = useState(false);
+  const [quantity, setQuantity] = useState(0);
   
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -63,16 +64,25 @@ export default function PrintCard(props) {
   const handleCartClick = () => {
     dispatch({
       type: ADD_ITEM,
-      item: props._id
+      item: { id: props._id }
     });
-
-    localStorage.setItem('bfg-cart', JSON.stringify([...state.cart, props._id]));
+    
     setOpen(true);
+    setQuantity(quantity + 1);
   }
 
   const toggleRemove = () => {
     setRemove(!remove);
   }
+
+  useEffect(() => {
+    const item = state.cart.find(item => item.id === props._id);
+    if (item) { setQuantity(item.quantity); }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('bfg-cart', JSON.stringify([...state.cart]));
+  }, [quantity])
 
   return (
     <>
@@ -85,9 +95,11 @@ export default function PrintCard(props) {
               series={props.series}
               description={props.description}
               price={props.price}
+              quantity={props.quantity}
               image={props.image}
               featured={props.featured}
               about={props.about}
+              quantity={props.quantity}
               _id={props._id}
               update={true}
             />
@@ -95,14 +107,14 @@ export default function PrintCard(props) {
             <>
               <CardHeader
                 action={
-                  state.isLoggedIn
+                  state.isLoggedIn && state.isAdmin
                     ?
                       <>
-                        <IconButton aria-label='delete'>
-                          <DeleteIcon onClick={toggleRemove} />
+                        <IconButton onClick={toggleRemove} aria-label='delete'>
+                          <DeleteIcon />
                         </IconButton>
-                        <IconButton aria-label='edit'>
-                          <EditIcon onClick={() => setEdit(true)} />
+                        <IconButton onClick={() => setEdit(true)} aria-label='edit'>
+                          <EditIcon />
                         </IconButton>
                       </>
                     :
@@ -119,7 +131,7 @@ export default function PrintCard(props) {
               </CardMedia>
               <CardContent>
                 <Typography variant='subtitle1' color='textPrimary' align='center'>
-                  ${props.price}.00
+                  ${props.price.toFixed(2)}
                 </Typography>
               </CardContent>
               <CardContent>
@@ -128,7 +140,7 @@ export default function PrintCard(props) {
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
-                <IconButton onClick={handleCartClick} aria-label='add to shopping cart'>
+                <IconButton onClick={handleCartClick} disabled={quantity >= props.quantity} aria-label='add to shopping cart'>
                   <AddShoppingCartIcon />
                 </IconButton>
                 {window.location.pathname === '/home' && props.about

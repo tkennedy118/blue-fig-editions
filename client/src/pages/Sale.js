@@ -80,7 +80,7 @@ function Sale() {
             <Grid item xs={12} style={{ marginBottom: 8 }}>
               <Divider />
             </Grid>
-            {state.isLoggedIn
+            {state.isLoggedIn && state.isAdmin
               ?
                 <Grid item xs={12} sm={6} md={4}>
                   <Card className={classes.addNewCard} raised>
@@ -106,10 +106,11 @@ function Sale() {
                   description={print.description}
                   series={print.series}
                   price={print.price}
-                  count={print.count}
+                  quantity={print.quantity}
                   image={print.image}
                   featured={print.featured}
                   about={print.about}
+                  quantity={print.quantity}
                   _id={print._id}
                 />
               </Grid>

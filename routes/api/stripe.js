@@ -1,5 +1,10 @@
 const router = require('express').Router();
-const Stripe = require('stripe');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const EasyPost = require('@easypost/api');
+const easypost = new EasyPost(process.env.EASYPOST_API_KEY);
 const db = require('../../models');
 
 // For asynchronous looping.
@@ -20,7 +25,6 @@ router.route('/config')
 // Fetch the Checkout session to display the JSON result on the success page.
 router.route('/checkout-sessions/:id')
   .get(async(req, res) => {
-    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
     const result = await stripe.checkout.sessions.retrieve(req.params.id,
       {
         expand: ['payment_intent.payment_method', 'line_items']
@@ -32,8 +36,14 @@ router.route('/checkout-sessions/:id')
 // Fetch the Payment Intent after a session is completed.
 router.route('/payment-intents/:id')
   .get(async(req, res) => {
-    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
     const result = await stripe.paymentIntents.retrieve(req.params.id);
+
+    res.send(result);
+  });
+
+router.route('/customer/:id')
+  .get(async(req, res) => {
+    const result = await stripe.customers.retrieve(req.params.id);
 
     res.send(result);
   });
@@ -41,33 +51,63 @@ router.route('/payment-intents/:id')
 // Fetch the Payment Method after a payment is completed.
 router.route('/payment-methods/:id')
   .get(async(req, res) => {
-    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
     const result = await stripe.paymentMethods.retrieve(req.params.id);
-
     res.send(result);
+  });
+
+// Create customer.
+router.route('/create-customer')
+  .post(async(req, res) => {
+    const { email } = req.body;
+
+    try {
+      customer = await stripe.customers.create({ email: email || null });
+      res.send(customer);
+
+    } catch (err) { 
+      res.status(422).send(err); 
+    }
   });
 
 // Create checkout session.
 router.route('/create-checkout-session')
   .post(async (req, res) => {
-    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
     const domainURL = process.env.DOMAIN;
-    const { user, cart, locale } = req.body;
+    const { user, cart, shipping, address, locale } = req.body;
     let customer = null;
+    let rate = {};
     let items = [];
+    let taxes = 0;
+
+    // Create address object that fits stripes docs.
+    const shippingAddress = {
+      name: address.name,
+      address: {
+        line1: address.street1,
+        line2: address.street2,
+        city: address.city,
+        state: address.state,
+        postal_code: address.zip,
+        country: address.country
+      }
+    };
 
     // Create new stripe customer or retrieve existing customer.
     // User is linked to stripe account.
     if (user.stripe_id !== null) {
       try {
-        customer = await stripe.customers.retrieve(user.stripe_id);
+        customer = await stripe.customers.update(
+          user.stripe_id, 
+          { shipping: shippingAddress }
+        );
       } catch (err) { console.log(err); }
 
     } else {  // User is not linked to stripe account.
 
       try {
         customer = await stripe.customers.create({
-          email: user.email || null
+          email: user.email || null,
+          shipping: shippingAddress
         });
       } catch (err) { console.log(err); }
 
@@ -82,10 +122,9 @@ router.route('/create-checkout-session')
     }
 
     // Convert cart to valid items for stripe checkout.
-    await asyncForEach(cart, async(_id) => {
-
+    await asyncForEach(cart, async(item) => {
       try {
-        const data = await db.Print.findById(_id);
+        const data = await db.Print.findById({ _id: item.id });
         items.push({
           price_data: {
             currency: 'usd',
@@ -94,14 +133,56 @@ router.route('/create-checkout-session')
               name: data.name,
               images: [data.image],
               description: data.description
-            },
+            }
           },
-          quantity: 1
+          quantity: item.quantity
         });
 
       } catch(err) {
-        console.log('ERROR: ', err);
+        console.log(err);
       }
+    });
+
+    // Get shipping rate from easypost
+    await easypost.Shipment.retrieve(shipping.shipment_id)
+      .then((response) => {
+        rate = response.rates.find(rate => rate.id === shipping.rate_id);
+
+        if (rate) {
+          items.push({
+            price_data: {
+              currency: 'usd',
+              unit_amount: parseFloat(rate.rate) * 100,
+              product_data: {
+                name: rate.carrier,
+                description: rate.service
+              }
+            },
+            quantity: 1
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    // Add taxes as a line item. Includes shipping cost.
+    let subtotal = 0;
+    items.forEach(item => {
+      subtotal += item.price_data.unit_amount * item.quantity;
+    });
+    taxes = (parseFloat(subtotal) * (process.env.TAX_RATE / 100)).toFixed(0);
+
+    items.push({
+      price_data: {
+        currency: 'usd',
+        unit_amount: taxes,
+        product_data: {
+          name: 'Taxes',
+          description: 'TN Sales Tax'
+        }
+      },
+      quantity: 1
     });
 
     // Create new Checkout Session for the order
@@ -111,11 +192,14 @@ router.route('/create-checkout-session')
       mode: 'payment',
       locale: locale,
       billing_address_collection: 'required',
-      shipping_address_collection: { allowed_countries: ['US'] },
       customer: customer.id || null,
       line_items: items,
       success_url: `${domainURL}/payment?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${domainURL}/payment?success=false&session_id={CHECKOUT_SESSION_ID}`
+      cancel_url: `${domainURL}/payment?success=false&session_id={CHECKOUT_SESSION_ID}`,
+      metadata: {
+        shipment_id: shipping.shipment_id,
+        rate_id: shipping.rate_id
+      }
     });
 
     res.send({

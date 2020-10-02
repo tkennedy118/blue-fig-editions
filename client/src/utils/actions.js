@@ -9,3 +9,5 @@ export const ADD_ITEM = "ADD_ITEM";
 export const REMOVE_ITEM = "REMOVE_ITEM";
 export const CLEAR = "CLEAR";
 export const UPDATE_FEATURED_PRINTS = "UPDATE_FEATURED_PRINTS";
+export const UPDATE_ADDRESS = "UPDATE_ADDRESS";
+export const UPDATE_SHIPPING = "UPDATE_SHIPPING";

@@ -107,15 +107,22 @@ export default function Signup() {
 
     try {
       dispatch({ type: LOADING })
+      const stripe = await API.createCustomer({ email: input.email });
       const { data } = await API.signup({ 
         email: input.email,
         password: input.password,
-        stripe_id: null,
-        passwordReset: null
-       });
-
-       await API.signin({ email: input.email, password: input.password });
-       dispatch({ type: LOGIN });
+        stripe_id: stripe.data.id,
+        passwordReset: null,
+      });
+      
+      await API.signin({ email: input.email, password: input.password });
+      dispatch({ 
+        type: LOGIN,
+        _id: data._id,
+        stripe_id: data.stripe_id,
+        email: data.email,
+        isAdmin: data.isAdmin
+      });
 
     } catch(err) {
       dispatch({ type: LOGOUT }); 
