@@ -11,8 +11,9 @@ export default {
     return axios.get('/api/users/' + id);
   },
   // Update user with data.
-  updateUser: function(id, data) {
-    return axios.put('/api/users/' + id, data);
+  updateUser: function(id, data, options) {
+    const body = { data, options };
+    return axios.post('/api/users/' + id, body);
   },
   // Delete user with given id.
   deleteUser: function(id) {

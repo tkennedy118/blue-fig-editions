@@ -32,8 +32,22 @@ module.exports = {
       .catch(err => res.status(422).json(err));
   },
   update: function(req, res) {
+
+    // Don't let non-admin post requests update isAdmin value.
+    if (!req.user[0].isAdmin) { req.body.data.isAdmin = false; }
+
+    // Handle password updates.
+    if (req.body.data.password) {
+      if (bcrypt.compareSync(req.body.data.currentPassword, req.user[0].password)) {
+        const salt = bcrypt.genSaltSync(10);
+        req.body.data.password = bcrypt.hashSync(req.body.data.password, salt);
+      } else {
+        return res.status(422).send({ error: 'Incorrect Password' });
+      }
+    }
+
     db.User
-      .findOneAndUpdate({ _id: req.params._id }, req.body)
+      .findOneAndUpdate({ _id: req.params.id }, req.body.data, req.body.options)
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   },

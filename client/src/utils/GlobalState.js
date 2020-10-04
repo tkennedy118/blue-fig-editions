@@ -12,7 +12,8 @@ import {
   CLEAR,
   UPDATE_FEATURED_PRINTS,
   UPDATE_ADDRESS,
-  UPDATE_SHIPPING
+  UPDATE_SHIPPING,
+  UPDATE_EMAIL
 } from "./actions";
 
 const StoreContext = createContext();
@@ -48,6 +49,13 @@ const reducer = (state, action) => {
         loading: false,
       };
     
+      case UPDATE_EMAIL:
+        return {
+          ...state,
+          user: { ...state.user, email: action.email },
+          loading: false
+        };
+
     case LOADING:
       return {
         ...state,
