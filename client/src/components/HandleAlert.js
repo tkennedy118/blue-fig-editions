@@ -1,7 +1,18 @@
 import React from 'react';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    success: {
+      light: '#64b5f6',
+      main: '#2196f3',
+      dark: '#1976d2',
+    },
+  },  
+}); 
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant='filled' {...props} />;
@@ -13,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     '& > * + *': {
       marginTop: theme.spacing(2),
     },
+  },
+  snackbar: {
+    marginTop: theme.spacing(10),
   },
 }));
 
@@ -29,15 +43,19 @@ export default function HandleAlert(props) {
 
   return (
     <div className={classes.root}>
-      <Snackbar 
-        open={props.open} 
-        autoHideDuration={1700} 
-        onClose={() => props.setOpen(false)}
-      >
-        <Alert onClose={handleClose} severity={props.severity}>
-          {props.message}
-        </Alert>
-      </Snackbar>
+      <ThemeProvider theme={theme}>
+        <Snackbar 
+          open={props.open} 
+          autoHideDuration={2000} 
+          onClose={() => props.setOpen(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          className={classes.snackbar}
+        >
+          <Alert onClose={handleClose} severity={props.severity}>
+            {props.message}
+          </Alert>
+        </Snackbar>
+      </ThemeProvider>
     </div>
   );
 }

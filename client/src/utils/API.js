@@ -47,6 +47,21 @@ export default {
     return axios.delete('/api/prints/' + id);
   },
 
+  // API/PURCHASES ================================================================
+  // Create purchase.
+  createPurchase: function(data) {
+    return axios.post('/api/purchases/', data);
+  },
+  // Get purchase with given id.
+  getPurchase: function(id) {
+    return axios.get('/api/purchases/' + id);
+  },
+  // Update purchase with data.
+  updatePurchase: function(id, data, options) {
+    const body = { data, options };
+    return axios.post('/api/purchases/' + id, body);
+  },
+
   // SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================
   status: function() {
     return axios.get('/api/status');

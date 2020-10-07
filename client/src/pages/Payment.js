@@ -72,7 +72,6 @@ export default function Payment() {
 
     // Deal with payment details.
     async function fetchSession() {
-
       const session = await API.getSession(sessionId);
       const customer = await API.getCustomer(session.data.customer);
       const lineItems = session.data.line_items.data.filter(item => (item.description !== 'USPS' && item.description !== 'Taxes'));
@@ -85,16 +84,13 @@ export default function Payment() {
         const shipmentId = session.data.metadata.shipment_id;
         const rateId = session.data.metadata.rate_id;
         const purchase = await API.buyShipment(shipmentId, { rate_id: rateId });
-        
-        // Configure into admin dashboard at some point.
-        console.log('LABEL: ', purchase.data.postage_label);
 
         // If payment was successful, clear the cart and update database.
         if (success) {
           for await (const item of state.cart) {
             const { data } = await API.getPrint(item.id);
 
-            const response = await API.updatePrint(item.id, {
+            await API.updatePrint(item.id, {
               quantity: data.quantity - item.quantity
             }, { new: true });
           }
@@ -103,9 +99,19 @@ export default function Payment() {
           localStorage.removeItem('bfg-cart');
         }
 
-      } catch(err) {
-        console.log('ERROR: ', err);
-      }
+        // Add purchase to database. Will only occur if shipment has not yet
+        // been purchased.
+        API.createPurchase({ 
+          session_id: session.data.id,
+          purchase_id: purchase.data.id,
+          status: 'purchased'
+        }).then(({ data }) => {
+          API.updateUser(state.user._id, 
+            { $push: { purchases: data._id }}, 
+            { new: false });
+        });
+
+      } catch(err) { console.log('ERROR: ', err); }
 
       setSession({
         session: session.data,
@@ -117,8 +123,8 @@ export default function Payment() {
         taxesCost: taxesCost.amount_subtotal
       });
     }
-    fetchSession();
-  }, [sessionId]);
+    if (state.isLoggedIn) { fetchSession(); }
+  });
 
   return(
     <>

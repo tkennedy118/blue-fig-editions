@@ -4,9 +4,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import HandleAlert from '../components/HandleAlert';
 import { LOADING, UPDATE_EMAIL } from '../utils/actions';
 import { useStoreContext } from '../utils/GlobalState';
 import API from '../utils/API';
@@ -14,7 +16,10 @@ import API from '../utils/API';
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: '100vh',
-    padding: theme.spacing(3, 1),
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(3),
+    marginLeft: '-8px',
+    marginRight: '-8px',
   },
   paper: {
     backgroundColor: theme.palette.background.default,
@@ -23,12 +28,30 @@ const useStyles = makeStyles((theme) => ({
   form: {
     marginTop: theme.spacing(8),
   },
+  container: {
+    marginBottom: theme.spacing(2),
+  },
+  title: {
+    marginBottom: theme.spacing(8),
+  },
+  noPurchases: {
+    fontStyle: 'italic',
+  },
+  transactionText: {
+    margin: theme.spacing(1),
+    fontWeight: 'bold',
+  },
+  divider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  }
 }));
 
 function Profile(props) {
   const classes = useStyles();
   const id = props.match.params.id;
   const [state, dispatch] = useStoreContext();
+  const [purchases, setPurchases] = useState([]);
 
   const [input, setInput] = useState({
     email: '',
@@ -42,9 +65,13 @@ function Profile(props) {
     validateEmail: false,
     password: false,
     validatePassword: false,
-    serverEmail: false, 
-    serverPassword: false,
-    serverDelete: false
+  });
+  
+  // Handle alert to display success or failure.
+  const [open, setOpen] = useState(false);
+  const [alert, setAlert] = useState({
+    message: '',
+    severity: ''
   });
 
   const handleChange = (event) => {
@@ -105,15 +132,17 @@ function Profile(props) {
           email: data.email
         });
         setInput({ ...input, email: '', validateEmail: '' });
+        setAlert({ message: 'Email update successful', severity: 'success' });
       } else {
-        setError({ ...error, serverEmail: true });
+        setAlert({ message: 'Email update unsuccessful', severity: 'error' });
         dispatch({ type: LOADING });
       }
-
+      
     } catch(err) {
-      setError({ ...error, serverEmail: true });
+      setAlert({ message: 'Email update unsuccessful', severity: 'error '});
       dispatch({ type: LOADING });
     }
+    setOpen(true);
   }
 
   const handleSubmitPassword = async (event) => {
@@ -127,21 +156,86 @@ function Profile(props) {
       }, { new: true });
 
       if (data) {
-        setInput({ ...input, password: '', validatePassword: '', currentPassword: '' });
+        setAlert({ message: 'Password update successful', severity: 'success' });
       } else {
-        setError({ ...error, serverPassword: true });
+        setAlert({ message: 'Password update unsuccessful', severity: 'error' });
+      }
+      
+    } catch(err) {
+      setAlert({ message: 'Password update unsuccessful', severity: 'error' });
+    }
+    dispatch({ type: LOADING });
+    setInput({ ...input, password: '', validatePassword: '', currentPassword: '' });
+    setOpen(true);
+  }
+
+  const displayPurchase = purchase => {
+    return (
+      <Grid container>
+        <Grid item xs={12} className={classes.divider}>
+          <Divider/>
+        </Grid>
+        <Grid item xs={6} sm={4}>
+          <Typography variant='body1' align='left' className={classes.transactionText}>
+            {purchase.date.toDateString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={6} sm={4}>
+          <Typography variant='body1' align='right' className={classes.transactionText}>
+            {`(${purchase.numItems}) items`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Button
+            variant='contained'
+            color='primary'
+            href={`/payment?success=true&session_id=${purchase.sessionId}`}
+            target='_blank' 
+            rel='noreferrer'
+            fullWidth
+            disableElevation
+          >
+            View
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      let purchases = [];
+      let { data } = await API.getUser(state.user._id);
+      
+      dispatch({ type: LOADING });
+      for await (const purchaseId of data.purchases) {
+        const { data } = await API.getPurchase(purchaseId);
+
+        if (data) { 
+          const session = await API.getSession(data.session_id);
+          const shipment = await API.retrieveShipment(data.purchase_id);
+          const date = new Date(shipment.data.created_at);
+
+          purchases.push({
+            paymentStatus: session.data.payment_status,
+            sessionId: session.data.id,
+            date: date,
+            label: shipment.data.postage_label.label_url,
+            numItems: session.data.line_items.data.length - 2
+          });
+        }
       }
       dispatch({ type: LOADING });
 
-    } catch(err) {
-      setError({ ...error, serverEmail: true });
-      dispatch({ type: LOADING });
+      purchases.sort((a, b) => b.date - a.date);
+      setPurchases(purchases);
     }
-  }
+    fetchData();
+  }, []);
 
   return (
-    <>
-      <Container maxWidth='sm' className={classes.root}>
+    <div className={classes.root}>
+      <Container maxWidth='sm' className={classes.container}>
         <Grid container>
           <Grid item xs={12}>
             <Paper variant='outlined' elevation={0} className={classes.paper}>
@@ -268,8 +362,50 @@ function Profile(props) {
           </Grid>
         </Grid>
       </Container>
+      <Container maxWidth='sm' className={classes.container}>
+        <Grid container>
+          <Grid item xs={12}>
+            <Paper variant='outlined' elevation={0} className={classes.paper}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography component='h2' variant='h5' align='center' className={classes.title}>
+                    Transaction History
+                  </Typography>
+                  {purchases.length > 0
+                    ?
+                      <>
+                        {purchases.map(purchase => {
+                          return(
+                            <div key={purchase.sessionId}>
+                              {displayPurchase(purchase)}
+                            </div>
+                          );
+                        })}
+                      </>
+                    :
+                      <Typography variant='body1' align='center' className={classes.noPurchases}>
+                        No purchase history
+                      </Typography>
+                  }
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+      {setOpen
+        ?
+          <HandleAlert
+            open={open}
+            setOpen={setOpen}
+            message={alert.message}
+            severity={alert.severity}
+          />
+        :
+          <></>
+      }
       {!state.isLoggedIn || state.user._id !== id ? <Redirect push to='/home' /> : <></>}
-    </>
+    </div>
   );
 }
 
