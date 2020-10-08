@@ -3,6 +3,7 @@ const db = require('../../models');
 const passport = require('../../config/passport');
 const userRoutes = require('./users');
 const printRoutes = require('./prints');
+const purchaseRoutes = require('./purchases');
 const emailRoutes = require('./emails');
 const stripeRoutes = require('./stripe');
 const cloudinaryRoutes = require('./cloudinary');
@@ -10,9 +11,9 @@ const easypostRoutes = require('./easypost');
 const usersController = require('../../controllers/usersController');
 const isAuthenticated = require('../../config/middleware/isAuthenticated');
 
-// Catch user and snip routes.
 router.use('/users', userRoutes);
 router.use('/prints', printRoutes);
+router.use('/purchases', purchaseRoutes);
 router.use('/emails', emailRoutes);
 router.use('/stripe', stripeRoutes);
 router.use('/cloudinary', cloudinaryRoutes);

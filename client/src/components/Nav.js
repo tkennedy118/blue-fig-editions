@@ -87,7 +87,7 @@ const MyToolbar = withStyles(styles)(
 );
 
 const MyDrawer = withStyles(styles)(
-  ({ classes, variant, open, onClose, onItemClick, isLoggedIn, handleSignOut }) => (
+  ({ classes, variant, open, onClose, onItemClick, isLoggedIn, handleSignOut, state }) => (
     <Drawer variant={variant} open={open} onClose={onClose}
       classes={{ paper: classes.drawerPaper }}
     >
@@ -120,7 +120,7 @@ const MyDrawer = withStyles(styles)(
       {isLoggedIn
         ?
           <List>
-            <ListItem button component={Link} to='/profile/:id' onClick={onItemClick('Profile')}>
+            <ListItem button component={Link} to={`/profile/${state.user._id}`} onClick={onItemClick('Profile')}>
               <ListItemIcon>
                 <AccountCircle />
               </ListItemIcon>
@@ -183,6 +183,7 @@ function AppBarInteraction({ classes, variant }) {
         handleSignOut={handleSignOut}
         variant={variant}
         isLoggedIn={state.isLoggedIn}
+        state={state}
       />
     </div>
   );

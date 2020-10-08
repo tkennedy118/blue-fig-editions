@@ -186,6 +186,7 @@ export default function Signup() {
                 color='primary'
                 className={classes.submit}
                 onClick={handleSubmit}
+                disableElevation
               >
                 Sign Up
               </Button>

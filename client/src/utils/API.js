@@ -11,8 +11,9 @@ export default {
     return axios.get('/api/users/' + id);
   },
   // Update user with data.
-  updateUser: function(id, data) {
-    return axios.put('/api/users/' + id, data);
+  updateUser: function(id, data, options) {
+    const body = { data, options };
+    return axios.post('/api/users/' + id, body);
   },
   // Delete user with given id.
   deleteUser: function(id) {
@@ -44,6 +45,25 @@ export default {
   // Delete print with given id.
   deletePrint: function(id) {
     return axios.delete('/api/prints/' + id);
+  },
+
+  // API/PURCHASES ================================================================
+  // Create purchase.
+  createPurchase: function(data) {
+    return axios.post('/api/purchases/', data);
+  },
+  // Get purchase with given id.
+  getPurchase: function(id) {
+    return axios.get('/api/purchases/' + id);
+  },
+  // Get multiple purchases.
+  getPurchases: function(data) {
+    return axios.get('/api/purchases', { params: data });
+  },
+  // Update purchase with data.
+  updatePurchase: function(id, data, options) {
+    const body = { data, options };
+    return axios.post('/api/purchases/' + id, body);
   },
 
   // SIGNUP/SIGNIN/SIGNOUT/STATUS ==============================================

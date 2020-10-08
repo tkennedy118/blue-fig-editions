@@ -37,7 +37,11 @@ const UserSchema = new Schema({
     state: { type: String, require: false },
     zip: { type: String, require: false },
     country: { type: String, require: false }
-  }
+  },
+  purchases: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Purchase'
+  }]
 });
 
 // Method to check if unhashed password entered by the user can be compared

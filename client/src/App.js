@@ -91,7 +91,7 @@ function App() {
               <Route exact path='/profile/:id' render={props => 
               <>
                 <Nav />
-                <Profile />
+                <Profile {...props}/>
                 <Footer />
               </>
               }/>
