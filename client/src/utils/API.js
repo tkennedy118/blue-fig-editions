@@ -56,6 +56,10 @@ export default {
   getPurchase: function(id) {
     return axios.get('/api/purchases/' + id);
   },
+  // Get multiple purchases.
+  getPurchases: function(data) {
+    return axios.get('/api/purchases', { params: data });
+  },
   // Update purchase with data.
   updatePurchase: function(id, data, options) {
     const body = { data, options };

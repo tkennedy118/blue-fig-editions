@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import HandleAlert from '../components/HandleAlert';
 import { LOADING, UPDATE_EMAIL } from '../utils/actions';
@@ -44,7 +45,17 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
-  }
+  },
+  dropdownContainer: {
+    paddingRight: theme.spacing(.5),
+    paddingLeft: theme.spacing(.5),
+  },
+  statusText: {
+    margin: theme.spacing(1),
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
 }));
 
 function Profile(props) {
@@ -52,7 +63,6 @@ function Profile(props) {
   const id = props.match.params.id;
   const [state, dispatch] = useStoreContext();
   const [purchases, setPurchases] = useState([]);
-
   const [input, setInput] = useState({
     email: '',
     validateEmail: '',
@@ -169,7 +179,26 @@ function Profile(props) {
     setOpen(true);
   }
 
-  const displayPurchase = purchase => {
+  const displayPurchase = (purchase, index, isAdmin) => {
+    const statuses = [
+      { value: 'purchased', label: 'purchased' },
+      { value: 'shipped', label: 'shipped' }
+    ];
+
+    const handleUpdate = async (event) => {
+      const value = event.target.value;
+      const temp = purchases;
+
+      temp[index].status = value;
+      setPurchases([ ...temp]);
+  
+      dispatch({ type: LOADING });
+        await API.updatePurchase(purchase.id, {
+          status: event.target.value
+        }, { new: true });
+      dispatch({ type: LOADING });
+    };
+
     return (
       <Grid container>
         <Grid item xs={12} className={classes.divider}>
@@ -180,12 +209,12 @@ function Profile(props) {
             {purchase.date.toDateString()}
           </Typography>
         </Grid>
-        <Grid item xs={6} sm={4}>
-          <Typography variant='body1' align='right' className={classes.transactionText}>
+        <Grid item xs={6} sm={2}>
+          <Typography variant='body2' align='right' className={classes.transactionText}>
             {`(${purchase.numItems}) items`}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           <Button
             variant='contained'
             color='primary'
@@ -198,6 +227,54 @@ function Profile(props) {
             View
           </Button>
         </Grid>
+        {isAdmin
+          ?
+            <>
+              <Grid item xs={6} className={classes.dropdownContainer}>
+                <TextField
+                  select
+                  value={purchase.status}
+                  id={purchase.id}
+                  name={purchase.id}
+                  label='Status'
+                  variant='outlined'
+                  onChange={handleUpdate}
+                  fullWidth
+                  size='small'
+                  InputProps={{
+                    style: {
+                      height: '36.44px',
+                    },
+                  }}
+                >
+                  {statuses.map((option) => (
+                    <MenuItem key={option.value} value={option.value} style={{ paddingBottom: 0 }}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  href={purchase.label}
+                  target='_blank' 
+                  rel='noreferrer'
+                  fullWidth
+                  disableElevation
+                >
+                  Label
+                </Button>
+              </Grid>
+            </>
+          :
+            <Grid item xs={12}>
+              <Typography variant='body2' align='left' className={classes.statusText}>
+                {purchase.status}
+              </Typography>
+            </Grid>
+        }
       </Grid>
     );
   };
@@ -205,11 +282,24 @@ function Profile(props) {
   useEffect(() => {
     async function fetchData() {
       let purchases = [];
-      let { data } = await API.getUser(state.user._id);
-      
+      let data;
+
       dispatch({ type: LOADING });
-      for await (const purchaseId of data.purchases) {
-        const { data } = await API.getPurchase(purchaseId);
+      if (state.isAdmin) {
+        let purchases = await API.getPurchases({ status: 'purchased' });
+        data = purchases.data;
+      } else {
+        let user = await API.getUser(state.user._id);
+        data = user.data.purchases;
+      }
+      
+      for await (const item of data) {
+        let data = item;
+
+        if (!state.isAdmin) {
+          data = await API.getPurchase(item);
+          data = data.data;
+        }
 
         if (data) { 
           const session = await API.getSession(data.session_id);
@@ -217,11 +307,12 @@ function Profile(props) {
           const date = new Date(shipment.data.created_at);
 
           purchases.push({
-            paymentStatus: session.data.payment_status,
+            id: data._id,
+            status: data.status,
+            label: state.isAdmin ? shipment.data.postage_label.label_url : null,
             sessionId: session.data.id,
-            date: date,
-            label: shipment.data.postage_label.label_url,
-            numItems: session.data.line_items.data.length - 2
+            numItems: session.data.line_items.data.length - 2,
+            date: date
           });
         }
       }
@@ -230,182 +321,189 @@ function Profile(props) {
       purchases.sort((a, b) => b.date - a.date);
       setPurchases(purchases);
     }
-    fetchData();
-  }, []);
+    if (state.isLoggedIn) { fetchData(); }
+  }, [state.isLoggedIn]);
 
   return (
-    <div className={classes.root}>
-      <Container maxWidth='sm' className={classes.container}>
-        <Grid container>
-          <Grid item xs={12}>
-            <Paper variant='outlined' elevation={0} className={classes.paper}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Typography component='h2' variant='h5' align='center'>
-                    Your Profile
-                  </Typography>
-                  <Typography component='h3' variant='subtitle1' align='center'>
-                    {state.user.email}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} className={classes.form}>
-                  <form>
-                    <Grid container spacing={1}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          value={input.email}
-                          variant='outlined'
-                          fullWidth
-                          id='email'
-                          label='Email Address'
-                          name='email'
-                          type='email'
-                          autoComplete='email'
-                          size='small'
-                          onChange={handleChange}
-                          error={error.email ? true : false}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          value={input.validateEmail}
-                          variant='outlined'
-                          fullWidth
-                          id='validateEmail'
-                          label='Re-enter email'
-                          name='validateEmail'
-                          type='email'
-                          autoComplete='email'
-                          size='small'
-                          onChange={handleChange}
-                          error={error.validateEmail ? true : false}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Button 
-                          variant='contained'
-                          color='primary'
-                          disableElevation
-                          fullWidth
-                          onClick={handleSubmitEmail}
-                          disabled={input.email === '' || input.validateEmail === '' || error.email || error.validateEmail}
-                        >
-                          Update Email
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </form>
-                </Grid>
-                <Grid item xs={12} className={classes.form}>
-                  <form>
-                    <Grid container spacing={1}>
-                      <Grid item xs={12}>
-                        <TextField
-                          value={input.currentPassword}
-                          variant='outlined'
-                          fullWidth
-                          name='currentPassword'
-                          type='password'
-                          label='Current password'
-                          id='currentPassword'
-                          size='small'
-                          onChange={handleChange}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          value={input.password}
-                          variant='outlined'
-                          fullWidth
-                          name='password'
-                          type='password'
-                          label='New password'
-                          id='password'
-                          size='small'
-                          onChange={handleChange}
-                          error={error.password ? true : false}
-                          helperText={error.password ? 'Password must be between 8 and 16 characters' : ''}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          value={input.validatePassword}
-                          variant='outlined'
-                          fullWidth
-                          name='validatePassword'
-                          type='password'
-                          label='Re-enter new password'
-                          id='validatePassword'
-                          size='small'
-                          onChange={handleChange}
-                          error={error.validatePassword ? true : false}
-                          helperText={error.password ? 'Passwords do not match' : ''}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Button
-                          variant='contained'
-                          color='primary'
-                          disableElevation
-                          fullWidth
-                          onClick={handleSubmitPassword}
-                          disabled={input.password === '' || input.validatePassword === '' || input.currentPassword === '' || error.password || error.validatePassword}
-                        >
-                          Update Password
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </form>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
-      <Container maxWidth='sm' className={classes.container}>
-        <Grid container>
-          <Grid item xs={12}>
-            <Paper variant='outlined' elevation={0} className={classes.paper}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Typography component='h2' variant='h5' align='center' className={classes.title}>
-                    Transaction History
-                  </Typography>
-                  {purchases.length > 0
-                    ?
-                      <>
-                        {purchases.map(purchase => {
-                          return(
-                            <div key={purchase.sessionId}>
-                              {displayPurchase(purchase)}
-                            </div>
-                          );
-                        })}
-                      </>
-                    :
-                      <Typography variant='body1' align='center' className={classes.noPurchases}>
-                        No purchase history
-                      </Typography>
-                  }
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
-      {setOpen
+    <>
+      {state.isLoggedIn
         ?
-          <HandleAlert
-            open={open}
-            setOpen={setOpen}
-            message={alert.message}
-            severity={alert.severity}
-          />
+          <div className={classes.root}>
+            <Container maxWidth='sm' className={classes.container}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Paper variant='outlined' elevation={0} className={classes.paper}>
+                    <Grid container>
+                      <Grid item xs={12}>
+                        <Typography component='h2' variant='h5' align='center'>
+                          Your Profile
+                        </Typography>
+                        <Typography component='h3' variant='subtitle1' align='center'>
+                          {state.user.email}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} className={classes.form}>
+                        <form>
+                          <Grid container spacing={1}>
+                            <Grid item xs={12} sm={6}>
+                              <TextField
+                                value={input.email}
+                                variant='outlined'
+                                fullWidth
+                                id='email'
+                                label='Email Address'
+                                name='email'
+                                type='email'
+                                autoComplete='email'
+                                size='small'
+                                onChange={handleChange}
+                                error={error.email ? true : false}
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <TextField
+                                value={input.validateEmail}
+                                variant='outlined'
+                                fullWidth
+                                id='validateEmail'
+                                label='Re-enter email'
+                                name='validateEmail'
+                                type='email'
+                                autoComplete='email'
+                                size='small'
+                                onChange={handleChange}
+                                error={error.validateEmail ? true : false}
+                              />
+                            </Grid>
+                            <Grid item xs={12}>
+                              <Button 
+                                variant='contained'
+                                color='primary'
+                                disableElevation
+                                fullWidth
+                                onClick={handleSubmitEmail}
+                                disabled={input.email === '' || input.validateEmail === '' || error.email || error.validateEmail}
+                              >
+                                Update Email
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        </form>
+                      </Grid>
+                      <Grid item xs={12} className={classes.form}>
+                        <form>
+                          <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                              <TextField
+                                value={input.currentPassword}
+                                variant='outlined'
+                                fullWidth
+                                name='currentPassword'
+                                type='password'
+                                label='Current password'
+                                id='currentPassword'
+                                size='small'
+                                onChange={handleChange}
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <TextField
+                                value={input.password}
+                                variant='outlined'
+                                fullWidth
+                                name='password'
+                                type='password'
+                                label='New password'
+                                id='password'
+                                size='small'
+                                onChange={handleChange}
+                                error={error.password ? true : false}
+                                helperText={error.password ? 'Password must be between 8 and 16 characters' : ''}
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <TextField
+                                value={input.validatePassword}
+                                variant='outlined'
+                                fullWidth
+                                name='validatePassword'
+                                type='password'
+                                label='Re-enter new password'
+                                id='validatePassword'
+                                size='small'
+                                onChange={handleChange}
+                                error={error.validatePassword ? true : false}
+                                helperText={error.password ? 'Passwords do not match' : ''}
+                              />
+                            </Grid>
+                            <Grid item xs={12}>
+                              <Button
+                                variant='contained'
+                                color='primary'
+                                disableElevation
+                                fullWidth
+                                onClick={handleSubmitPassword}
+                                disabled={input.password === '' || input.validatePassword === '' || input.currentPassword === '' || error.password || error.validatePassword}
+                              >
+                                Update Password
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        </form>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Container>
+            <Container maxWidth='sm' className={classes.container}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Paper variant='outlined' elevation={0} className={classes.paper}>
+                    <Grid container>
+                      <Grid item xs={12}>
+                        <Typography component='h2' variant='h5' align='center' className={classes.title}>
+                          {state.isAdmin ? 'New Orders' : 'Purchases'}
+                        </Typography>
+                        {purchases.length > 0 && !state.loading
+                          ?
+                            <>
+                              {purchases.map((purchase, index) => {
+                                return(
+                                  <div key={purchase.sessionId}>
+                                    {displayPurchase(purchase, index, state.isAdmin)}
+                                  </div>
+                                );
+                              })}
+                            </>
+                          :
+                            <Typography variant='body1' align='center' className={classes.noPurchases}>
+                              {state.isAdmin ? 'No new orders' : 'No purchase history'}
+                            </Typography>
+                        }
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Container>
+            {setOpen
+              ?
+                <HandleAlert
+                  open={open}
+                  setOpen={setOpen}
+                  message={alert.message}
+                  severity={alert.severity}
+                />
+              :
+                <></>
+            }
+            {state.user._id !== id ? <Redirect push to='/home' /> : <></>}
+          </div>
         :
           <></>
       }
-      {!state.isLoggedIn || state.user._id !== id ? <Redirect push to='/home' /> : <></>}
-    </div>
+    </>
   );
 }
 

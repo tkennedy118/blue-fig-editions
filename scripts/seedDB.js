@@ -125,6 +125,9 @@ userSeed.forEach(user => {
   user.password = bcrypt.hashSync(user.password, salt);
 })
 
+db.Purchase.collection.dropIndexes();
+db.Purchase.remove({});
+
 db.User.collection.dropIndexes();
 db.User
   .remove({})
