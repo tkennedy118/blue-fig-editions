@@ -127,8 +127,16 @@ export default {
   },
 
   // API/EASYPOST =============================================================
-  retrieveShipment: function(id) {
-    return axios.get('/api/easypost/retrieve-shipment/' + id);
+  retrieveShipmentDate: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment-date/' + id);
+  },
+
+  retrieveShipmentRates: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment-rates/' + id);
+  },
+
+  retrieveShipmentLabel: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment-label/' + id);
   },
 
   retrieveParcel: function(id) {

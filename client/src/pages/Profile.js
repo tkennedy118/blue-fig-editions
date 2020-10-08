@@ -271,7 +271,7 @@ function Profile(props) {
           :
             <Grid item xs={12}>
               <Typography variant='body2' align='left' className={classes.statusText}>
-                {purchase.status}
+                {`Status: ${purchase.status}`}
               </Typography>
             </Grid>
         }
@@ -303,13 +303,16 @@ function Profile(props) {
 
         if (data) { 
           const session = await API.getSession(data.session_id);
-          const shipment = await API.retrieveShipment(data.purchase_id);
-          const date = new Date(shipment.data.created_at);
+          const createdAt = await API.retrieveShipmentDate(data.purchase_id);
+          const date = new Date(createdAt.data);
+
+          let label;
+          if (state.isAdmin) { label = await API.retrieveShipmentLabel(data.purchase_id); }
 
           purchases.push({
             id: data._id,
             status: data.status,
-            label: state.isAdmin ? shipment.data.postage_label.label_url : null,
+            label: state.isAdmin ? label.data : null,
             sessionId: session.data.id,
             numItems: session.data.line_items.data.length - 2,
             date: date

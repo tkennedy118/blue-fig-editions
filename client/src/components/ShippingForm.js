@@ -64,7 +64,6 @@ export default function ShippingForm(props) {
   const handleChange = (event) => {
     setError({ name: false, street1: false, city: false, zip: false });
     setChecks({ searchedAddress: false, foundAddress: false });
-
     const name = event.target.name;
 
     dispatch({
@@ -117,7 +116,6 @@ export default function ShippingForm(props) {
     let count = 0;
     cart.forEach(item => { count += item.quantity });
 
-    console.log('COUNT: ', count);
     return({
       length: 22,
       width: 20,
@@ -127,8 +125,8 @@ export default function ShippingForm(props) {
   };
 
   const getRates = async (shipment_id) => {
-    const response = await API.retrieveShipment(shipment_id);
-    setRates([...response.data.rates]);
+    const { data } = await API.retrieveShipmentRates(shipment_id);
+    setRates([...data]);
   };
 
   // Steps for getting shipping options:
@@ -153,7 +151,7 @@ export default function ShippingForm(props) {
       
       // 3. Create Shipment
       response = await API.createShipment({ toAddress: addr.id, parcel: parcel.id });
-      getRates(response.data.id);
+      await getRates(response.data.id);
 
       setChecks({ searchedAddress: true, foundAddress: true });
       dispatch({
