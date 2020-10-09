@@ -7,9 +7,9 @@ import Link from '@material-ui/core/Link';
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary">
+    <Typography variant='body2' color='textSecondary'>
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color='inherit' href='/home'>
         bluefigeditions.com
       </Link>{' '}
       {new Date().getFullYear()}
@@ -39,8 +39,8 @@ export default function StickyFooter() {
   return (
     <div className={classes.root}>
       <footer className={classes.footer} style={{ marginBottom: (xs && homes.includes(pathname)) ? 56 : 0 }}>
-        <Container maxWidth="sm">
-          <Typography variant="body1">Keep local art alive in Nashville.</Typography>
+        <Container maxWidth='sm'>
+          <Typography variant='body1'>Keep local art alive in Nashville.</Typography>
           <Copyright />
         </Container>
       </footer>

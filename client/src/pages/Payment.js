@@ -69,14 +69,13 @@ export default function Payment() {
   const success = params.get('success');
 
   useEffect(() => {
-
     // Deal with payment details.
     async function fetchSession() {
       const session = await API.getSession(sessionId);
       const customer = await API.getCustomer(session.data.customer);
-      const lineItems = session.data.line_items.data.filter(item => (item.description !== 'USPS' && item.description !== 'Taxes'));
-      const shippingCost = session.data.line_items.data.find(item => item.description === 'USPS');
-      const taxesCost = session.data.line_items.data.find(item => item.description === 'Taxes');
+      const lineItems = session.data.line_items.filter(item => (item.description !== 'USPS' && item.description !== 'Taxes'));
+      const shippingCost = session.data.line_items.find(item => item.description === 'USPS');
+      const taxesCost = session.data.line_items.find(item => item.description === 'Taxes');
 
       // Deal with EasyPost. Should throw error if shipment has already been
       // purchased from EasyPost.
@@ -115,8 +114,9 @@ export default function Payment() {
 
       setSession({
         session: session.data,
-        payment_intent: session.data.payment_intent,
-        payment_method: session.data.payment_intent.payment_method,
+        pi_id: session.data.pi_id,
+        payment_method: session.data.payment_method,
+        subtotal: session.data.subtotal,
         line_items: lineItems,
         shipping: customer.data.shipping,
         shippingCost: shippingCost.amount_subtotal,
@@ -124,7 +124,7 @@ export default function Payment() {
       });
     }
     if (state.isLoggedIn) { fetchSession(); }
-  });
+  }, [state.isLoggedIn]);
 
   return(
     <>
@@ -196,7 +196,7 @@ export default function Payment() {
                                     Order Number
                                   </Typography>
                                   <Typography variant='body2' style={{ marginBottom: 24}}>
-                                    {session.payment_intent.id}
+                                    {session.pi_id}
                                   </Typography>
                                   <Typography variant='subtitle2' className={classes.subtitle}>
                                     Shipping Address
@@ -263,7 +263,7 @@ export default function Payment() {
                                     </Grid>
                                     <Grid item xs={3}>
                                       <Typography variant='body2' align='right' className={classes.marginTop}>
-                                        ${((session.session.amount_subtotal - session.shippingCost - session.taxesCost) / 100).toFixed(2)}
+                                        ${((session.subtotal - session.shippingCost - session.taxesCost) / 100).toFixed(2)}
                                       </Typography>
                                     </Grid>
                                     <Grid item xs={6} />
@@ -296,7 +296,7 @@ export default function Payment() {
                                     </Grid>
                                     <Grid item xs={3} className={classes.topDivider}>
                                       <Typography variant='body2' align='right' className={classes.total}>
-                                        ${(session.session.amount_total / 100).toFixed(2)}
+                                        ${(session.subtotal / 100).toFixed(2)}
                                       </Typography>
                                     </Grid>
                                   </Grid>
@@ -308,7 +308,7 @@ export default function Payment() {
                                 If you have any questions, please contact me at <Link href='mailto:tkennedy118@gmail.com' color='secondary'>martino@bluefig.com</Link> Please 
                                 be sure to include the Order Number in the subject line of your email.
                               </Typography>
-                              <Link href='/home' variant='body1' color='primary'>
+                              <Link href='/home' variant='body1' color='textSecondary'>
                                 Return to main site
                               </Link>
                             </Grid>

@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'italic',
   },
   transactionText: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(0),
     fontWeight: 'bold',
   },
   divider: {
@@ -48,13 +48,10 @@ const useStyles = makeStyles((theme) => ({
   },
   dropdownContainer: {
     paddingRight: theme.spacing(.5),
-    paddingLeft: theme.spacing(.5),
   },
-  statusText: {
-    margin: theme.spacing(1),
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+  adminSection: {
+    marginTop: theme.spacing(.5),
+    marginBottom: theme.spacing(.5),
   },
 }));
 
@@ -204,17 +201,27 @@ function Profile(props) {
         <Grid item xs={12} className={classes.divider}>
           <Divider/>
         </Grid>
-        <Grid item xs={6} sm={4}>
-          <Typography variant='body1' align='left' className={classes.transactionText}>
+        <Grid item xs={6}>
+          <Typography variant='body2' align='left' className={classes.transactionText}>
             {purchase.date.toDateString()}
           </Typography>
         </Grid>
-        <Grid item xs={6} sm={2}>
+        <Grid item xs={6}>
           <Typography variant='body2' align='right' className={classes.transactionText}>
             {`(${purchase.numItems}) items`}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        {!isAdmin
+          ?
+            <Grid item xs={12}>
+              <Typography variant='body2' align='left' className={classes.transactionText}>
+                {`Status: ${purchase.status}`}
+              </Typography>
+            </Grid>
+          :
+            <></>
+        }
+        <Grid item xs={12}>
           <Button
             variant='contained'
             color='primary'
@@ -229,51 +236,50 @@ function Profile(props) {
         </Grid>
         {isAdmin
           ?
-            <>
-              <Grid item xs={6} className={classes.dropdownContainer}>
-                <TextField
-                  select
-                  value={purchase.status}
-                  id={purchase.id}
-                  name={purchase.id}
-                  label='Status'
-                  variant='outlined'
-                  onChange={handleUpdate}
-                  fullWidth
-                  size='small'
-                  InputProps={{
-                    style: {
-                      height: '36.44px',
-                    },
-                  }}
-                >
-                  {statuses.map((option) => (
-                    <MenuItem key={option.value} value={option.value} style={{ paddingBottom: 0 }}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
+            <Grid item xs={12} className={classes.adminSection}>
+              <Grid container>
+                <Grid item xs={6} className={classes.dropdownContainer}>
+                  <TextField
+                    select
+                    value={purchase.status}
+                    id={purchase.id}
+                    name={purchase.id}
+                    label='Status'
+                    variant='outlined'
+                    onChange={handleUpdate}
+                    fullWidth
+                    size='small'
+                    InputProps={{
+                      style: {
+                        height: '36.44px',
+
+                      },
+                    }}
+                  >
+                    {statuses.map((option) => (
+                      <MenuItem key={option.value} value={option.value} style={{ paddingBottom: 0 }}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    href={purchase.label}
+                    target='_blank' 
+                    rel='noreferrer'
+                    fullWidth
+                    disableElevation
+                  >
+                    Label
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  href={purchase.label}
-                  target='_blank' 
-                  rel='noreferrer'
-                  fullWidth
-                  disableElevation
-                >
-                  Label
-                </Button>
-              </Grid>
-            </>
-          :
-            <Grid item xs={12}>
-              <Typography variant='body2' align='left' className={classes.statusText}>
-                {`Status: ${purchase.status}`}
-              </Typography>
             </Grid>
+          :
+            <></>
         }
       </Grid>
     );
@@ -314,7 +320,7 @@ function Profile(props) {
             status: data.status,
             label: state.isAdmin ? label.data : null,
             sessionId: session.data.id,
-            numItems: session.data.line_items.data.length - 2,
+            numItems: session.data.line_items.length - 2,
             date: date
           });
         }

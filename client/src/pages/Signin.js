@@ -165,12 +165,12 @@ export default function Signin() {
               </Button>
               <Grid container justify='space-between'>
                 <Grid item>
-                  <Link component={RouterLink} to='/reset-password-request' variant='body2' style={{ marginRight: 16 }}>
+                  <Link component={RouterLink} to='/reset-password-request' variant='body2' color='textSecondary' style={{ marginRight: 16 }}>
                     Forgot password?
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link component={RouterLink} to='/signup' variant='body2'>
+                  <Link component={RouterLink} to='/signup' variant='body2' color='textSecondary'>
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>

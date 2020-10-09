@@ -139,14 +139,6 @@ export default {
     return axios.get('/api/easypost/retrieve-shipment-label/' + id);
   },
 
-  retrieveParcel: function(id) {
-    return axios.get('/api/easypost/retrieve-parcel/' + id);
-  },
-
-  retrieveAddress: function(id) {
-    return axios.get('/api/easypost/retrieve-address/' + id);
-  },
-
   buyShipment: function(id, data) {
     return axios.post('/api/easypost/buy-shipment/' + id, data);
   },
