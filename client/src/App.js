@@ -66,7 +66,7 @@ function App() {
     }
     fetchData();
 
-  }, []);
+  }, [dispatch]);
 
   return (
     <Paper square>

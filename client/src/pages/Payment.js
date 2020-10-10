@@ -80,8 +80,8 @@ export default function Payment() {
       // Deal with EasyPost. Should throw error if shipment has already been
       // purchased from EasyPost.
       try {
-        const shipmentId = session.data.metadata.shipment_id;
-        const rateId = session.data.metadata.rate_id;
+        const shipmentId = session.data.meta_data.shipment_id;
+        const rateId = session.data.meta_data.rate_id;
         const purchase = await API.buyShipment(shipmentId, { rate_id: rateId });
 
         // If payment was successful, clear the cart and update database.
@@ -124,7 +124,7 @@ export default function Payment() {
       });
     }
     if (state.isLoggedIn) { fetchSession(); }
-  }, [state.isLoggedIn]);
+  }, [dispatch, sessionId, state.cart, state.user._id, state.isLoggedIn, success]);
 
   return(
     <>

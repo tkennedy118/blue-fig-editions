@@ -119,6 +119,8 @@ function Profile(props) {
           setError({ ...error, validateEmail: false });
         }
         break;
+      default:
+        break;
     }
 
     setInput({ ...input, [name]: value });
@@ -146,7 +148,7 @@ function Profile(props) {
       }
       
     } catch(err) {
-      setAlert({ message: 'Email update unsuccessful', severity: 'error '});
+      setAlert({ message: 'Email update unsuccessful', severity: 'error'});
       dispatch({ type: LOADING });
     }
     setOpen(true);
@@ -331,7 +333,7 @@ function Profile(props) {
       setPurchases(purchases);
     }
     if (state.isLoggedIn) { fetchData(); }
-  }, [state.isLoggedIn]);
+  }, [state.isLoggedIn, state.isAdmin, state.user._id, dispatch]);
 
   return (
     <>
@@ -386,6 +388,7 @@ function Profile(props) {
                             </Grid>
                             <Grid item xs={12}>
                               <Button 
+                                type='submit'
                                 variant='contained'
                                 color='primary'
                                 disableElevation
@@ -447,6 +450,7 @@ function Profile(props) {
                             </Grid>
                             <Grid item xs={12}>
                               <Button
+                                type='submit'
                                 variant='contained'
                                 color='primary'
                                 disableElevation

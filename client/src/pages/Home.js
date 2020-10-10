@@ -145,31 +145,30 @@ function Home() {
   const trigger = useScrollTrigger();
 
   // Deals with bottom navigation
-  const [value, setValue] = React.useState('recents');
+  const [value, setValue] = useState('recents');
 
   // Scrollable anchor configuration.
-  configureAnchors({offset: -88, scrollDuration: 512})
+  configureAnchors({ offset: -88, scrollDuration: 512 });
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
   };
 
-  const getPrints = () => {
-    dispatch({ type: LOADING });
-    API.getPrints()
-      .then(results => {
-        const featured = results.data.filter(print => print.featured === true);
-        dispatch({
-          type: UPDATE_FEATURED_PRINTS,
-          prints: featured
-        });
-      })
-      .catch(err => console.log(err));
-  };
-
   useEffect(() => {
+    const getPrints = () => {
+      dispatch({ type: LOADING });
+      API.getPrints()
+        .then(results => {
+          const featured = results.data.filter(print => print.featured === true);
+          dispatch({
+            type: UPDATE_FEATURED_PRINTS,
+            prints: featured
+          });
+        })
+        .catch(err => console.log(err));
+    };
     getPrints();
-  }, []);
+  }, [dispatch]);
 
   function getTop() {
     return(
@@ -233,9 +232,11 @@ function Home() {
                   <Fade in={isVisible} timeout={1500}>
                     <Container>
                       <ScrollableAnchor id={'classes'}>
-                        <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                          Classes
-                        </Typography>
+                        <div>
+                          <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                            Classes
+                          </Typography>
+                        </div>
                       </ScrollableAnchor>
                       <Grid container spacing={3} justify='center' align='center'>
                         {lessons.length > 0
@@ -272,7 +273,7 @@ function Home() {
 
   return (
     <>
-      <ScrollableAnchor id={'top'}><></></ScrollableAnchor>
+      <ScrollableAnchor id={'top'}><div></div></ScrollableAnchor>
       {extraSmall
         ?
           <></>
@@ -314,9 +315,11 @@ function Home() {
           <div className={classes.section}>
             <Container>
               <ScrollableAnchor id={'featured'}>
-                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                  Featured
-                </Typography>
+                <div>
+                  <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                    Featured
+                  </Typography>
+                </div>
               </ScrollableAnchor>
               <VisibilitySensor partialVisibility>
                 {({isVisible}) => (
@@ -324,9 +327,9 @@ function Home() {
                     {state.featured.length > 0
                       ?
                         <>
-                          {state.featured.map((print, index) => (
-                            <Slide in={isVisible} direction='right' timeout={1500}>
-                              <Grid item key={index} xs={12} sm={6} md={4}>
+                          {state.featured.map((print) => (
+                            <Slide key={print._id} in={isVisible} direction='right' timeout={1500}>
+                              <Grid item xs={12} sm={6} md={4}>
                                 <PrintCard
                                   name={print.name}
                                   description={print.description}
@@ -336,7 +339,6 @@ function Home() {
                                   image={print.image}
                                   featured={print.featured}
                                   about={print.about}
-                                  quantity={print.quantity}
                                   _id={print._id}
                                 />
                               </Grid>
@@ -361,9 +363,11 @@ function Home() {
         <div className={classes.section}>
           <Container>
             <ScrollableAnchor id={'about'}>
-              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                The Artist
-              </Typography>
+              <div>
+                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                  The Artist
+                </Typography>
+              </div>
             </ScrollableAnchor>
             <Grid container spacing={3} justify='center' alignItems='center'>
               <Grid item xs={12} md={5} align='center'>
@@ -392,9 +396,11 @@ function Home() {
           <Grid container justify='center' alignItems='center'>
             <Grid item xs={12} sm={8} md={6} lg={4}>
               <ScrollableAnchor id={'contact'}>
-                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                  Contact
-                </Typography>
+                <div>
+                  <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                    Contact
+                  </Typography>
+                </div>
               </ScrollableAnchor>
               <ContactForm 
                 subject={subject.length > 1 ? `${subject} Lessons` : ''} 

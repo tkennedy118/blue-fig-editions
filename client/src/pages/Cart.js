@@ -152,35 +152,6 @@ function Cart() {
   };
   // ==========================================================================
 
-  const getCart = () => {
-    // Update local storage after delete.
-    localStorage.setItem('bfg-cart', JSON.stringify([...state.cart]));
-
-    dispatch({ type: LOADING });
-    API.getPrints()
-      .then(results => {
-        const cart = results.data.filter(print => {
-          const item = state.cart.find(item => item.id === print._id);
-          if (item) return true;
-        });
-        let checked = {};
-        let subtotal = 0;
-        
-        // Set initial checks and subtotal
-        cart.forEach(item => {
-          const cartObj = state.cart.find(obj => obj.id === item._id);
-          checked[item._id] = false;
-          subtotal += item.price * cartObj.quantity;
-        });
-
-        setCart(cart);
-        setChecked(checked);
-        setCosts({ ...costs, subtotal });
-      })
-      .catch(err => console.log(err));  
-    dispatch({ type: LOADING });
-  };
-
   const handleChange = (event) => {
     setChecked({ ...checked, [event.target.name]: event.target.checked });
   };
@@ -225,8 +196,37 @@ function Cart() {
   };
 
   useEffect(() => {
+    const getCart = () => {
+      // Update local storage after delete.
+      localStorage.setItem('bfg-cart', JSON.stringify([...state.cart]));
+  
+      dispatch({ type: LOADING });
+      API.getPrints()
+        .then(results => {
+          const cart = results.data.filter(print => {
+            const item = state.cart.find(item => item.id === print._id);
+            return (item) ? true : false;
+          });
+          let checked = {};
+          let subtotal = 0;
+          
+          // Set initial checks and subtotal
+          cart.forEach(item => {
+            const cartObj = state.cart.find(obj => obj.id === item._id);
+            checked[item._id] = false;
+            subtotal += item.price * cartObj.quantity;
+          });
+  
+          setCart(cart);
+          setChecked(checked);
+          setCosts({ ...costs, subtotal: subtotal });
+        })
+        .catch(err => console.log(err));
+      dispatch({ type: LOADING });
+    };
     getCart();
-  }, [state.cart.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -349,7 +349,7 @@ function Cart() {
                 :
                   <></>
               }
-              {activeStep == 2
+              {activeStep === 2
                 ?
                   <>
                     <Grid container className={classes.top}>
@@ -405,7 +405,7 @@ function Cart() {
                         </div>
                     }
                     <Grid container spacing={0} className={classes.totalSection}>
-                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={false} sm={6}/>
                       <Grid item xs={6} sm={3}>
                         <Typography variant='body1' align={xs ? 'left' : 'right'}>
                           Subtotal
@@ -416,7 +416,7 @@ function Cart() {
                           ${costs.subtotal.toFixed(2)}
                         </Typography>
                       </Grid>
-                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={false} sm={6}/>
                       <Grid item xs={6} sm={3}>
                         <Typography variant='body1' align={xs ? 'left' : 'right'}>
                           Shipping
@@ -427,7 +427,7 @@ function Cart() {
                           ${costs.shipping.toFixed(2)}
                         </Typography>
                       </Grid>
-                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={false} sm={6}/>
                       <Grid item xs={6} sm={3}>
                         <Typography variant='body1' align={xs ? 'left' : 'right'}>
                           Taxes
@@ -438,7 +438,7 @@ function Cart() {
                           ${costs.taxes.toFixed(2)}
                         </Typography>
                       </Grid>
-                      <Grid item xs={0} sm={6}/>
+                      <Grid item xs={false} sm={6}/>
                       <Grid item xs={6} sm={3}className={classes.topDivider}>
                         <Typography variant='body1' align={xs ? 'left' : 'right'} className={classes.total}>
                           Total

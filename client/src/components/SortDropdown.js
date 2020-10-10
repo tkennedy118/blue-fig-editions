@@ -5,7 +5,6 @@ import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import MenuList from '@material-ui/core/MenuList';
@@ -14,6 +13,8 @@ import SortIcon from '@material-ui/icons/Sort';
 import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
 import BurstModeIcon from '@material-ui/icons/BurstMode';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import { useStoreContext } from '../utils/GlobalState';
+import { UPDATE_PRINTS } from '../utils/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     marginRight: theme.spacing(2),
-    border: '1px solid #d3d45d',
+    border: 'none',
   },
   button: {
     margin: theme.spacing(0),
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SortDropdown(props) {
   const classes = useStyles();
+  const [state, dispatch] = useStoreContext();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
 
@@ -44,9 +46,15 @@ export default function SortDropdown(props) {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-
     setOpen(false);
   };
+
+  const handleSort = (sort) => {
+    dispatch({
+      type: UPDATE_PRINTS,
+      prints: state.prints.sort((a, b) => (a[sort] > b[sort]) ? 1 : -1)
+    });
+  }
 
   function handleListKeyDown(event) {
     if (event.key === 'Tab') {
@@ -86,29 +94,23 @@ export default function SortDropdown(props) {
               <Paper className={classes.paper}>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    <MenuItem>
-                      <ListItem onClick={(event) => { handleClose(event); props.setSort('name') }}>
-                        <ListItemIcon>
-                          <SortByAlphaIcon fontSize='small' />
-                        </ListItemIcon>
-                        <Typography variant='inherit'>Name</Typography>
-                      </ListItem>
+                    <MenuItem onClick={(event) => { handleClose(event); handleSort('name') }}>
+                      <ListItemIcon>
+                        <SortByAlphaIcon fontSize='small' />
+                      </ListItemIcon>
+                      <Typography variant='inherit'>Name</Typography>
                     </MenuItem>
-                    <MenuItem>
-                      <ListItem onClick={(event) => { handleClose(event); props.setSort('series') }}>
-                        <ListItemIcon>
-                          <BurstModeIcon fontSize='small' />
-                        </ListItemIcon>
-                        <Typography variant='inherit'>Series</Typography>
-                      </ListItem>
+                    <MenuItem onClick={(event) => { handleClose(event); handleSort('series') }}>
+                      <ListItemIcon>
+                        <BurstModeIcon fontSize='small' />
+                      </ListItemIcon>
+                      <Typography variant='inherit'>Series</Typography>
                     </MenuItem>
-                    <MenuItem>
-                      <ListItem onClick={(event) => { handleClose(event); props.setSort('price') }}>
-                        <ListItemIcon>
-                          <AttachMoneyIcon fontSize='small' />
-                        </ListItemIcon>
-                        <Typography variant='inherit'>Price</Typography>
-                      </ListItem>
+                    <MenuItem onClick={(event) => { handleClose(event); handleSort('price') }}>
+                      <ListItemIcon>
+                        <AttachMoneyIcon fontSize='small' />
+                      </ListItemIcon>
+                      <Typography variant='inherit'>Price</Typography>
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>

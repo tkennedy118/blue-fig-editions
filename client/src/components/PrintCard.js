@@ -78,11 +78,11 @@ export default function PrintCard(props) {
   useEffect(() => {
     const item = state.cart.find(item => item.id === props._id);
     if (item) { setQuantity(item.quantity); }
-  }, [])
+  }, [props._id, state.cart])
 
   useEffect(() => {
     localStorage.setItem('bfg-cart', JSON.stringify([...state.cart]));
-  }, [quantity])
+  }, [quantity, state.cart])
 
   return (
     <>
@@ -99,7 +99,6 @@ export default function PrintCard(props) {
               image={props.image}
               featured={props.featured}
               about={props.about}
-              quantity={props.quantity}
               _id={props._id}
               update={true}
             />

@@ -182,142 +182,145 @@ export default function ShippingForm(props) {
       <Typography variant='h6' gutterBottom>
         Shipping address
       </Typography>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <TextField
-            required
-            value={state.address.name}
-            id='name'
-            name='name'
-            label='Full Name'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth
-            autoComplete='given-name'
-            error={error.name ? true : false}
-            helperText={error.name ? 'Please enter name' : ''}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            value={state.address.street1}
-            id='street1'
-            name='street1'
-            label='Address line 1'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth
-            autoComplete='shipping address-street1'
-            error={error.street1 ? true : false}
-            helperText={error.street1 ? 'Please enter address' : ''}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id='street2'
-            value={state.address.street2}
-            name='street2'
-            label='Address line 2'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth
-            autoComplete='shipping address-street2'
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            value={state.address.city}
-            id='city'
-            name='city'
-            label='City'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth
-            autoComplete='shipping address-level2'
-            error={error.city ? true : false}
-            helperText={error.city ? 'Please enter city' : ''}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField 
-            required
-            select
-            value={state.address.state}
-            id='state' 
-            name='state' 
-            label='State/Province/Region'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth 
-          >
-            {states.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            value={state.address.zip}
-            id='zip'
-            name='zip'
-            label='Zip / Postal code'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth
-            autoComplete='shipping postal-code'
-            error={error.zip ? true : false}
-            helperText={error.zip ? 'Please enter zip code' : ''}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            select
-            value={state.address.country}
-            id='country'
-            name='country'
-            label='Country'
-            variant='outlined'
-            onChange={handleChange}
-            fullWidth
-            autoComplete='shipping country'
-          >
-            {countries.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        {checks.searchedAddress && !checks.foundAddress && !state.loading
-          ?
+      <form>
+        <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Typography variant='body2' color='error' align='center'>
-                No postage options were found for the given address.
-              </Typography>
+              <TextField
+                required
+                value={state.address.name || ''}
+                id='name'
+                name='name'
+                label='Full Name'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth
+                autoComplete='given-name'
+                error={error.name ? true : false}
+                helperText={error.name ? 'Please enter name' : ''}
+              />
             </Grid>
-          :
-            <></>
-        }
-        <Grid item xs={12}>
-          <Button 
-            variant='contained' 
-            color='primary' 
-            disableElevation 
-            fullWidth 
-            className={classes.calulateShippingBtn}
-            onClick={handleSubmit}
-            disabled={checkDisabled()}
-          >
-              Get Options
-          </Button>
-        </Grid>
-      </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                value={state.address.street1 || ''}
+                id='street1'
+                name='street1'
+                label='Address line 1'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth
+                autoComplete='shipping address-street1'
+                error={error.street1 ? true : false}
+                helperText={error.street1 ? 'Please enter address' : ''}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id='street2'
+                value={state.address.street2 || ''}
+                name='street2'
+                label='Address line 2'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth
+                autoComplete='shipping address-street2'
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                value={state.address.city || ''}
+                id='city'
+                name='city'
+                label='City'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth
+                autoComplete='shipping address-level2'
+                error={error.city ? true : false}
+                helperText={error.city ? 'Please enter city' : ''}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField 
+                required
+                select
+                value={state.address.state || ''}
+                id='state' 
+                name='state' 
+                label='State/Province/Region'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth 
+              >
+                {states.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                value={state.address.zip || ''}
+                id='zip'
+                name='zip'
+                label='Zip / Postal code'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth
+                autoComplete='shipping postal-code'
+                error={error.zip ? true : false}
+                helperText={error.zip ? 'Please enter zip code' : ''}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                select
+                value={state.address.country || ''}
+                id='country'
+                name='country'
+                label='Country'
+                variant='outlined'
+                onChange={handleChange}
+                fullWidth
+                autoComplete='shipping country'
+              >
+                {countries.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            {checks.searchedAddress && !checks.foundAddress && !state.loading
+              ?
+                <Grid item xs={12}>
+                  <Typography variant='body2' color='error' align='center'>
+                    No postage options were found for the given address.
+                  </Typography>
+                </Grid>
+              :
+                <></>
+            }
+            <Grid item xs={12}>
+              <Button 
+                type='submit'
+                variant='contained' 
+                color='primary' 
+                disableElevation 
+                fullWidth 
+                className={classes.calulateShippingBtn}
+                onClick={handleSubmit}
+                disabled={checkDisabled()}
+              >
+                  Get Options
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
       {rates.length > 0
         ?
           <>
@@ -353,7 +356,7 @@ export default function ShippingForm(props) {
                             {rate.service.split(/(?=[A-Z])/)}
                           </Typography>
                         </Grid>
-                        <Grid item item xs={6}>
+                        <Grid item xs={6}>
                           <Typography variant='body2' align='right'>
                             {rate.est_delivery_days ? `${rate.est_delivery_days} Days` : ''}
                           </Typography>

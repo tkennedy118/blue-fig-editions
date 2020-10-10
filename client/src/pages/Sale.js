@@ -40,9 +40,8 @@ function Sale() {
   const classes = useStyles();
   const [state, dispatch] = useStoreContext();
   const [addNew, setAddNew] = useState(false);
-  const [sort, setSort] = useState(false);
 
-  const getPrints = () => {
+  useEffect(() => {
     dispatch({ type: LOADING });
     API.getPrints()
       .then(results => {
@@ -52,22 +51,7 @@ function Sale() {
         });
       })
       .catch(err => console.log(err));
-  };
-
-  const sortPrints = () => {
-    dispatch({
-      type: UPDATE_PRINTS,
-      prints: state.prints.sort((a, b) => (a[sort] > b[sort]) ? 1 : -1)
-    });
-  };
-
-  useEffect(() => {
-    getPrints();
-  }, []);
-
-  useEffect(() => {
-    sortPrints();
-  }, [sort])
+  }, [dispatch]);
 
   return (
     <>
@@ -75,7 +59,7 @@ function Sale() {
         <Container className={classes.cardGrid} maxWidth='md'>
           <Grid container spacing={2}>
             <Grid item xs={12} >
-              <SortDropdown setSort={setSort} />
+              <SortDropdown />
             </Grid>
             <Grid item xs={12} style={{ marginBottom: 8 }}>
               <Divider />
@@ -110,7 +94,6 @@ function Sale() {
                   image={print.image}
                   featured={print.featured}
                   about={print.about}
-                  quantity={print.quantity}
                   _id={print._id}
                 />
               </Grid>
