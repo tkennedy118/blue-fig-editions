@@ -285,7 +285,7 @@ export default function PrintForm(props) {
                 style={{ display: 'none' }}
               />
               <label htmlFor='upload-img-btn'>
-                <Button variant='contained' color='primary' component='span' fullWidth startIcon={<PublishIcon/>}>
+                <Button variant='contained' color='secondary' component='span' fullWidth disableElevation startIcon={<PublishIcon/>}>
                   Upload Image
                 </Button>
               </label>
@@ -296,7 +296,7 @@ export default function PrintForm(props) {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button type='submit' variant='outlined' fullWidth color='primary' startIcon={<ArrowUpwardIcon/>} onClick={handleSubmit}>
+              <Button type='submit' variant='outlined' fullWidth color='secondary' startIcon={<ArrowUpwardIcon/>} onClick={handleSubmit}>
                 {!props.update ? 'Submit' : 'Update'}
               </Button>
             </Grid>

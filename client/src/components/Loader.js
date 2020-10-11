@@ -14,8 +14,10 @@ export default function Loader(props) {
   const classes = useStyles();
 
   return(
-    <Backdrop className={classes.backdrop} open={props.loading}>
-      <CircularProgress color="inherit" />
-    </Backdrop>
+    <div style={{ height: '100vh' }}>
+      <Backdrop className={classes.backdrop} open={props.loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </div>
   );
 }
