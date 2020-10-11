@@ -111,12 +111,15 @@ const useStyles = makeStyles((theme) => ({
   },
   nav: {
     position: 'fixed',
-    top: 28,
+    top: 26,
     zIndex: theme.zIndex.drawer + 1,
+    [theme.breakpoints.only('sm')]: {
+      transform: 'translateX(24px)',
+    },
   },
   navItem: {
-    maringLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
+    maringLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   navBottom: {
     position: 'fixed',
@@ -187,7 +190,7 @@ function Home() {
                     target='_blank' 
                     rel='noreferrer'
                     color='inherit'
-                    underline='hover'
+                    underline='always'
                   >
                     The Arcade Nashville
                   </Link>
