@@ -127,16 +127,16 @@ export default {
   },
 
   // API/EASYPOST =============================================================
-  retrieveShipment: function(id) {
-    return axios.get('/api/easypost/retrieve-shipment/' + id);
+  retrieveShipmentDate: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment-date/' + id);
   },
 
-  retrieveParcel: function(id) {
-    return axios.get('/api/easypost/retrieve-parcel/' + id);
+  retrieveShipmentRates: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment-rates/' + id);
   },
 
-  retrieveAddress: function(id) {
-    return axios.get('/api/easypost/retrieve-address/' + id);
+  retrieveShipmentLabel: function(id) {
+    return axios.get('/api/easypost/retrieve-shipment-label/' + id);
   },
 
   buyShipment: function(id, data) {

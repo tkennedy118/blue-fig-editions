@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -32,8 +31,12 @@ const styles = theme => ({
   root: {
     flexGrow: 1
   },
-  flex: {
-    flex: 1
+  title: {
+    flex: 1,
+    fontSize: 24,
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    color: theme.palette.text.secondary,
   },
   drawerPaper: {
     position: 'relative',
@@ -50,7 +53,7 @@ const styles = theme => ({
 });
 
 const MyToolbar = withStyles(styles)(
-  ({ classes, title, onMenuClick, trigger }) => (
+  ({ classes, onMenuClick, trigger, XsAndSm }) => (
     <>
       <Slide timeout={256} direction='down' in={trigger}>
         <AppBar className={classes.aboveDrawer}>
@@ -63,13 +66,14 @@ const MyToolbar = withStyles(styles)(
             >
               <MenuIcon />
             </IconButton>
-            <Typography
+            <Link 
+              to='/home'
               variant='h6'
-              color='inherit'
-              className={classes.flex}
+              className={classes.title}
+              color='secondary'
             >
-              {title}
-            </Typography>
+              {XsAndSm ? 'Blue Fig' : 'Blue Fig Editions'}
+            </Link>
             <IconButton
               color='inherit'
               aria-label='cart'
@@ -97,19 +101,19 @@ const MyDrawer = withStyles(styles)(
         })}
       />
       <List>
-        <ListItem button component={Link} to='/home' onClick={onItemClick('Home')}>
+        <ListItem button component={Link} to='/home' onClick={onItemClick}>
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
           <ListItemText>Home</ListItemText>
         </ListItem>
-        <ListItem button component={Link} to='/sale' onClick={onItemClick('Sale')}>
+        <ListItem button component={Link} to='/sale' onClick={onItemClick}>
           <ListItemIcon>
             <Collection />
           </ListItemIcon>
           <ListItemText>Sale</ListItemText>
         </ListItem>
-        <ListItem button component={Link} to='/cart' onClick={onItemClick('Checkout')}>
+        <ListItem button component={Link} to='/cart' onClick={onItemClick}>
           <ListItemIcon>
             <CartIcon isButton={false}/>
           </ListItemIcon>
@@ -120,7 +124,7 @@ const MyDrawer = withStyles(styles)(
       {isLoggedIn
         ?
           <List>
-            <ListItem button component={Link} to={`/profile/${state.user._id}`} onClick={onItemClick('Profile')}>
+            <ListItem button component={Link} to={`/profile/${state.user._id}`} onClick={onItemClick}>
               <ListItemIcon>
                 <AccountCircle />
               </ListItemIcon>
@@ -135,7 +139,7 @@ const MyDrawer = withStyles(styles)(
           </List>
         :
           <List>
-            <ListItem button component={Link} to='/signin' onClick={onItemClick('Signin')}>
+            <ListItem button component={Link} to='/signin' onClick={onItemClick}>
               <ListItemIcon>
                 <ExitToAppIcon />
               </ListItemIcon>
@@ -150,17 +154,16 @@ const MyDrawer = withStyles(styles)(
 function AppBarInteraction({ classes, variant }) {
   const [state, dispatch] = useStoreContext();
   const [drawer, setDrawer] = useState(false);
-  const [title, setTitle] = useState('Home');
 
   // Deals with hiding app bar at specific breakpoints.
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const XsAndSm = useMediaQuery(theme.breakpoints.down('sm'));
   const trigger = useScrollTrigger();
 
   const toggleDrawer = () => { setDrawer(!drawer); };
 
-  const onItemClick = title => () => {
-    setTitle(title);
+  const onItemClick = () => {
     setDrawer(variant === 'temporary' ? false : drawer);
     setDrawer(!drawer);
   };
@@ -168,14 +171,12 @@ function AppBarInteraction({ classes, variant }) {
   const handleSignOut = async () => {
     await API.signout();
     dispatch({ type: LOGOUT });
-
-    setTitle('Home');
     setDrawer(!drawer);
   }
 
   return (
     <div className={classes.root}>
-      <MyToolbar title={title} onMenuClick={toggleDrawer} trigger={matches ? !trigger : true} />
+      <MyToolbar onMenuClick={toggleDrawer} trigger={matches ? !trigger : true} XsAndSm={XsAndSm}/>
       <MyDrawer
         open={drawer}
         onClose={toggleDrawer}

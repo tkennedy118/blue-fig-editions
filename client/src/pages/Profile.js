@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'italic',
   },
   transactionText: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(0),
     fontWeight: 'bold',
   },
   divider: {
@@ -48,13 +48,10 @@ const useStyles = makeStyles((theme) => ({
   },
   dropdownContainer: {
     paddingRight: theme.spacing(.5),
-    paddingLeft: theme.spacing(.5),
   },
-  statusText: {
-    margin: theme.spacing(1),
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+  adminSection: {
+    marginTop: theme.spacing(.5),
+    marginBottom: theme.spacing(.5),
   },
 }));
 
@@ -122,6 +119,8 @@ function Profile(props) {
           setError({ ...error, validateEmail: false });
         }
         break;
+      default:
+        break;
     }
 
     setInput({ ...input, [name]: value });
@@ -149,7 +148,7 @@ function Profile(props) {
       }
       
     } catch(err) {
-      setAlert({ message: 'Email update unsuccessful', severity: 'error '});
+      setAlert({ message: 'Email update unsuccessful', severity: 'error'});
       dispatch({ type: LOADING });
     }
     setOpen(true);
@@ -204,17 +203,27 @@ function Profile(props) {
         <Grid item xs={12} className={classes.divider}>
           <Divider/>
         </Grid>
-        <Grid item xs={6} sm={4}>
-          <Typography variant='body1' align='left' className={classes.transactionText}>
+        <Grid item xs={6}>
+          <Typography variant='body2' align='left' className={classes.transactionText}>
             {purchase.date.toDateString()}
           </Typography>
         </Grid>
-        <Grid item xs={6} sm={2}>
+        <Grid item xs={6}>
           <Typography variant='body2' align='right' className={classes.transactionText}>
             {`(${purchase.numItems}) items`}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        {!isAdmin
+          ?
+            <Grid item xs={12}>
+              <Typography variant='body2' align='left' className={classes.transactionText}>
+                {`Status: ${purchase.status}`}
+              </Typography>
+            </Grid>
+          :
+            <></>
+        }
+        <Grid item xs={12}>
           <Button
             variant='contained'
             color='primary'
@@ -229,51 +238,50 @@ function Profile(props) {
         </Grid>
         {isAdmin
           ?
-            <>
-              <Grid item xs={6} className={classes.dropdownContainer}>
-                <TextField
-                  select
-                  value={purchase.status}
-                  id={purchase.id}
-                  name={purchase.id}
-                  label='Status'
-                  variant='outlined'
-                  onChange={handleUpdate}
-                  fullWidth
-                  size='small'
-                  InputProps={{
-                    style: {
-                      height: '36.44px',
-                    },
-                  }}
-                >
-                  {statuses.map((option) => (
-                    <MenuItem key={option.value} value={option.value} style={{ paddingBottom: 0 }}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
+            <Grid item xs={12} className={classes.adminSection}>
+              <Grid container>
+                <Grid item xs={6} className={classes.dropdownContainer}>
+                  <TextField
+                    select
+                    value={purchase.status}
+                    id={purchase.id}
+                    name={purchase.id}
+                    label='Status'
+                    variant='outlined'
+                    onChange={handleUpdate}
+                    fullWidth
+                    size='small'
+                    InputProps={{
+                      style: {
+                        height: '36.44px',
+
+                      },
+                    }}
+                  >
+                    {statuses.map((option) => (
+                      <MenuItem key={option.value} value={option.value} style={{ paddingBottom: 0 }}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    href={purchase.label}
+                    target='_blank' 
+                    rel='noreferrer'
+                    fullWidth
+                    disableElevation
+                  >
+                    Label
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  href={purchase.label}
-                  target='_blank' 
-                  rel='noreferrer'
-                  fullWidth
-                  disableElevation
-                >
-                  Label
-                </Button>
-              </Grid>
-            </>
-          :
-            <Grid item xs={12}>
-              <Typography variant='body2' align='left' className={classes.statusText}>
-                {purchase.status}
-              </Typography>
             </Grid>
+          :
+            <></>
         }
       </Grid>
     );
@@ -303,15 +311,18 @@ function Profile(props) {
 
         if (data) { 
           const session = await API.getSession(data.session_id);
-          const shipment = await API.retrieveShipment(data.purchase_id);
-          const date = new Date(shipment.data.created_at);
+          const createdAt = await API.retrieveShipmentDate(data.purchase_id);
+          const date = new Date(createdAt.data);
+
+          let label;
+          if (state.isAdmin) { label = await API.retrieveShipmentLabel(data.purchase_id); }
 
           purchases.push({
             id: data._id,
             status: data.status,
-            label: state.isAdmin ? shipment.data.postage_label.label_url : null,
+            label: state.isAdmin ? label.data : null,
             sessionId: session.data.id,
-            numItems: session.data.line_items.data.length - 2,
+            numItems: session.data.line_items.length - 2,
             date: date
           });
         }
@@ -322,7 +333,7 @@ function Profile(props) {
       setPurchases(purchases);
     }
     if (state.isLoggedIn) { fetchData(); }
-  }, [state.isLoggedIn]);
+  }, [state.isLoggedIn, state.isAdmin, state.user._id, dispatch]);
 
   return (
     <>
@@ -377,6 +388,7 @@ function Profile(props) {
                             </Grid>
                             <Grid item xs={12}>
                               <Button 
+                                type='submit'
                                 variant='contained'
                                 color='primary'
                                 disableElevation
@@ -438,6 +450,7 @@ function Profile(props) {
                             </Grid>
                             <Grid item xs={12}>
                               <Button
+                                type='submit'
                                 variant='contained'
                                 color='primary'
                                 disableElevation

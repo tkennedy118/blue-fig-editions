@@ -1,24 +1,48 @@
 const router = require('express').Router();
 const EasyPost = require('@easypost/api');
 const db = require('../../models');
+const isAuthenticated = require('../../config/middleware/isAuthenticated');
+const isAdmin = require('../../config/middleware/isAdmin');
 
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const api = new EasyPost(process.env.EASYPOST_API_KEY);
 
-router.route('/retrieve-shipment/:id')
-  .get((req, res) => {
+router.route('/retrieve-shipment-label/:id')
+  .get(isAdmin, (req, res) => {
     api.Shipment.retrieve(req.params.id)
       .then((response) => {
-        res.send(response);
+        res.send(response.postage_label.label_url);
       })
       .catch((err) => {
         res.status(422).send(err);
       });
   });
 
+router.route('/retrieve-shipment-date/:id')
+  .get(isAuthenticated, (req, res) => {
+    api.Shipment.retrieve(req.params.id)
+      .then((response) => {
+        res.send(response.created_at);
+      })
+      .catch((err) => {
+        res.status(422).send(err);
+      });
+  });
+
+router.route('/retrieve-shipment-rates/:id')
+  .get(isAuthenticated, (req, res) => {
+    api.Shipment.retrieve(req.params.id)
+      .then((response) => {
+        res.send(response.rates);
+      })
+      .catch((err) => {
+        res.status(422).send(err);
+      })
+  })
+
 router.route('/retrieve-parcel/:id')
-  .get((req, res) => {
+  .get(isAuthenticated, (req, res) => {
     api.Parcel.retrieve(req.params.id)
       .then((response) => {
         res.send(response);
@@ -29,7 +53,7 @@ router.route('/retrieve-parcel/:id')
   });
 
 router.route('/retrieve-address/:id')
-  .get((req, res) => {
+  .get(isAuthenticated, (req, res) => {
     api.Address.retrieve(req.params.id)
       .then((response) => {
         res.send(response);
@@ -40,7 +64,7 @@ router.route('/retrieve-address/:id')
   });
 
 router.route('/buy-shipment/:id')
-  .post((req, res) => {
+  .post(isAuthenticated, (req, res) => {
     
     api.Shipment.retrieve(req.params.id)
       .then((shipment) => {
@@ -58,7 +82,7 @@ router.route('/buy-shipment/:id')
   });
 
 router.route('/create-shipment')
-  .post(async (req, res) => {
+  .post(isAuthenticated, async (req, res) => {
 
     try {
       // Get admin address for fromAddress.
@@ -91,7 +115,7 @@ router.route('/create-shipment')
   });
 
 router.route('/create-parcel')
-  .post((req, res) => {
+  .post(isAuthenticated, (req, res) => {
     const parcel = new api.Parcel(req.body.parcel);
 
     parcel.save()
@@ -104,7 +128,7 @@ router.route('/create-parcel')
   });
 
 router.route('/create-address')
-  .post((req, res) => {
+  .post(isAuthenticated, (req, res) => {
     req.body.address.verify = ['delivery', 'zip4'];
     const address = new api.Address(req.body.address);
 

@@ -6,6 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const EasyPost = require('@easypost/api');
 const easypost = new EasyPost(process.env.EASYPOST_API_KEY);
 const db = require('../../models');
+const isAuthenticated = require('../../config/middleware/isAuthenticated');
 
 // For asynchronous looping.
 async function asyncForEach(array, callback) {
@@ -16,7 +17,7 @@ async function asyncForEach(array, callback) {
 
 // Strip configuration.
 router.route('/config')
-  .get(async (req, res) => {
+  .get(isAuthenticated, async (req, res) => {
     res.send({
       publicKey: process.env.STRIPE_PUBLIC_KEY,
     });
@@ -24,25 +25,33 @@ router.route('/config')
 
 // Fetch the Checkout session to display the JSON result on the success page.
 router.route('/checkout-sessions/:id')
-  .get(async(req, res) => {
+  .get(isAuthenticated, async(req, res) => {
     const result = await stripe.checkout.sessions.retrieve(req.params.id,
       {
         expand: ['payment_intent.payment_method', 'line_items']
       });
 
-    res.send(result);
+    res.send({
+      id: result.id,
+      line_items: result.line_items.data,
+      meta_data: result.metadata,
+      subtotal: result.amount_subtotal,
+      pi_id: result.payment_intent.id,
+      customer: result.customer,
+      payment_method: result.payment_intent.payment_method
+    });
   });
 
 // Fetch the Payment Intent after a session is completed.
 router.route('/payment-intents/:id')
-  .get(async(req, res) => {
+  .get(isAuthenticated, async(req, res) => {
     const result = await stripe.paymentIntents.retrieve(req.params.id);
 
     res.send(result);
   });
 
 router.route('/customer/:id')
-  .get(async(req, res) => {
+  .get(isAuthenticated, async(req, res) => {
     const result = await stripe.customers.retrieve(req.params.id);
 
     res.send(result);
@@ -50,14 +59,14 @@ router.route('/customer/:id')
 
 // Fetch the Payment Method after a payment is completed.
 router.route('/payment-methods/:id')
-  .get(async(req, res) => {
+  .get(isAuthenticated, async(req, res) => {
     const result = await stripe.paymentMethods.retrieve(req.params.id);
     res.send(result);
   });
 
 // Create customer.
 router.route('/create-customer')
-  .post(async(req, res) => {
+  .post(isAuthenticated, async(req, res) => {
     const { email } = req.body;
 
     try {
@@ -71,7 +80,7 @@ router.route('/create-customer')
 
 // Create checkout session.
 router.route('/create-checkout-session')
-  .post(async (req, res) => {
+  .post(isAuthenticated, async (req, res) => {
     const domainURL = process.env.DOMAIN;
     const { user, cart, shipping, address, locale } = req.body;
     let customer = null;

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
 import VisibilitySensor from 'react-visibility-sensor';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -111,12 +110,15 @@ const useStyles = makeStyles((theme) => ({
   },
   nav: {
     position: 'fixed',
-    top: 28,
+    top: 26,
     zIndex: theme.zIndex.drawer + 1,
+    [theme.breakpoints.only('sm')]: {
+      transform: 'translateX(24px)',
+    },
   },
   navItem: {
-    maringLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
+    maringLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   navBottom: {
     position: 'fixed',
@@ -145,31 +147,36 @@ function Home() {
   const trigger = useScrollTrigger();
 
   // Deals with bottom navigation
-  const [value, setValue] = React.useState('recents');
+  const [value, setValue] = useState('recents');
 
-  // Scrollable anchor configuration.
-  configureAnchors({offset: -88, scrollDuration: 512})
+  const topRef = useRef(null);
+  const featuredRef = useRef(null);
+  const aboutRef = useRef(null);
+  const classesRef = useRef(null);
+  const contactRef = useRef(null);
+  const executeScroll = (ref) => window.scrollTo({
+    top: ref.current.offsetTop,
+    left: 0,
+    behavior: 'smooth'
+  });
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const getPrints = () => {
-    dispatch({ type: LOADING });
-    API.getPrints()
-      .then(results => {
-        const featured = results.data.filter(print => print.featured === true);
-        dispatch({
-          type: UPDATE_FEATURED_PRINTS,
-          prints: featured
-        });
-      })
-      .catch(err => console.log(err));
-  };
+  const handleChange = (value) => { setValue(value) };
 
   useEffect(() => {
+    const getPrints = () => {
+      dispatch({ type: LOADING });
+      API.getPrints()
+        .then(results => {
+          const featured = results.data.filter(print => print.featured === true);
+          dispatch({
+            type: UPDATE_FEATURED_PRINTS,
+            prints: featured
+          });
+        })
+        .catch(err => console.log(err));
+    };
     getPrints();
-  }, []);
+  }, [dispatch]);
 
   function getTop() {
     return(
@@ -188,7 +195,7 @@ function Home() {
                     target='_blank' 
                     rel='noreferrer'
                     color='inherit'
-                    underline='hover'
+                    underline='always'
                   >
                     The Arcade Nashville
                   </Link>
@@ -209,7 +216,7 @@ function Home() {
                       </Button>
                     </Grid>
                     <Grid item>
-                      <Button component='a' href='#featured' variant='contained' color='secondary'>
+                      <Button variant='contained' color='secondary' onClick={() => executeScroll(featuredRef)}>
                         More
                       </Button>
                     </Grid>
@@ -232,11 +239,9 @@ function Home() {
                 <div className={classes.section}>
                   <Fade in={isVisible} timeout={1500}>
                     <Container>
-                      <ScrollableAnchor id={'classes'}>
-                        <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                          Classes
-                        </Typography>
-                      </ScrollableAnchor>
+                      <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                        Classes
+                      </Typography>
                       <Grid container spacing={3} justify='center' align='center'>
                         {lessons.length > 0
                           ?
@@ -248,6 +253,8 @@ function Home() {
                                     lineOne={item.lineOne}
                                     lineTwo={item.lineTwo}
                                     setSubject={setSubject}
+                                    executeScroll={executeScroll}
+                                    contactRef={contactRef}
                                   />
                                 </Grid>
                               ))}
@@ -272,7 +279,7 @@ function Home() {
 
   return (
     <>
-      <ScrollableAnchor id={'top'}><></></ScrollableAnchor>
+      <div ref={topRef}></div>
       {extraSmall
         ?
           <></>
@@ -281,22 +288,22 @@ function Home() {
             <Grid container justify='center' style={{ marginLeft: 24 }}>
               <div className={classes.nav}>
                 <Grid item>
-                  <Link href='#featured' underline='none'>
+                  <Link component='button' underline='none'onClick={() => executeScroll(featuredRef)}>
                     <Typography className={classes.navItem} component='span' color='textSecondary'>
                       featured
                     </Typography>
                   </Link>
-                  <Link href='#about' underline='none'>
+                  <Link component='button' underline='none'onClick={() => executeScroll(aboutRef)}>
                     <Typography className={classes.navItem} component='span' color='textSecondary'>
                       about
                     </Typography>
                   </Link>
-                  <Link href='#classes' underline='none'>
+                  <Link component='button' underline='none'onClick={() => executeScroll(classesRef)}>
                     <Typography className={classes.navItem} component='span' color='textSecondary'>
                       classes
                     </Typography>
                   </Link>
-                  <Link href='#contact' underline='none'>
+                  <Link component='button' underline='none'onClick={() => executeScroll(contactRef)}>
                     <Typography className={classes.navItem} component='span' color='textSecondary'>
                       contact
                     </Typography>
@@ -309,24 +316,22 @@ function Home() {
       <Hero default={true} fullHeight={true}>
       {getTop()}
       </Hero>
-      <div style={{ minHeight: '100vh' }}>
+      <div ref={featuredRef} style={{ minHeight: '100vh' }}>
         <Hero default={false}>
           <div className={classes.section}>
             <Container>
-              <ScrollableAnchor id={'featured'}>
-                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                  Featured
-                </Typography>
-              </ScrollableAnchor>
+              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                Featured
+              </Typography>
               <VisibilitySensor partialVisibility>
                 {({isVisible}) => (
                   <Grid container spacing={2} justify='center'>
                     {state.featured.length > 0
                       ?
                         <>
-                          {state.featured.map((print, index) => (
-                            <Slide in={isVisible} direction='right' timeout={1500}>
-                              <Grid item key={index} xs={12} sm={6} md={4}>
+                          {state.featured.map((print) => (
+                            <Slide key={print._id} in={isVisible} direction='right' timeout={1500}>
+                              <Grid item xs={12} sm={6} md={4}>
                                 <PrintCard
                                   name={print.name}
                                   description={print.description}
@@ -336,7 +341,6 @@ function Home() {
                                   image={print.image}
                                   featured={print.featured}
                                   about={print.about}
-                                  quantity={print.quantity}
                                   _id={print._id}
                                 />
                               </Grid>
@@ -357,14 +361,13 @@ function Home() {
           </div>
         </Hero>
       </div>
+      <div ref={aboutRef}></div>
       <Hero default={true} fullHeight={true}>
         <div className={classes.section}>
           <Container>
-            <ScrollableAnchor id={'about'}>
-              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                The Artist
-              </Typography>
-            </ScrollableAnchor>
+            <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+              The Artist
+            </Typography>
             <Grid container spacing={3} justify='center' alignItems='center'>
               <Grid item xs={12} md={5} align='center'>
                 <img
@@ -386,23 +389,23 @@ function Home() {
           </Container>
         </div>
       </Hero>
+      <div ref={classesRef}></div>
       {getSectionClasses()}
+      <div ref={contactRef}></div>
       <Hero default={true} fullHeight={true}>
         <div className={classes.section} style={{ position: 'relative' }}>
           <Grid container justify='center' alignItems='center'>
             <Grid item xs={12} sm={8} md={6} lg={4}>
-              <ScrollableAnchor id={'contact'}>
-                <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
-                  Contact
-                </Typography>
-              </ScrollableAnchor>
+              <Typography component='h2' variant='h3' align='center' color='textPrimary' className={classes.title} gutterBottom>
+                Contact
+              </Typography>
               <ContactForm 
                 subject={subject.length > 1 ? `${subject} Lessons` : ''} 
                 message={subject.length > 1 ? `I would like to know more about ${subject} classes. Please contact me at the provided email with more information. Thank you.` : ''}
               />
             </Grid>
             <Grid item xs={12} align='center' className={classes.toTopButton}>
-              <Button component='a' href='#top' variant='text' color='secondary'>
+              <Button component='a' href='#top' variant='text' color='secondary' onClick={() => executeScroll(topRef)}>
                 Back to Top
               </Button>
             </Grid>
@@ -412,10 +415,10 @@ function Home() {
       {extraSmall
         ?
         <BottomNavigation value={value} onChange={handleChange} className={classes.navBottom}>
-          <BottomNavigationAction component='a' href='#featured' label='Featured' value='featured' icon={<FiberNewIcon />} />
-          <BottomNavigationAction component='a' href='#about' label='About' value='about' icon={<InfoIcon />} />
-          <BottomNavigationAction component='a' href='#classes' label='Classes' value='classes' icon={<LocalOfferIcon />} />
-          <BottomNavigationAction component='a' href='#contact' label='Contact' value='contact' icon={<ContactMailIcon />} />
+          <BottomNavigationAction label='Featured' value='featured' icon={<FiberNewIcon />} onClick={() => executeScroll(featuredRef)}/>
+          <BottomNavigationAction label='About' value='about' icon={<InfoIcon />} onClick={() => executeScroll(aboutRef)}/>
+          <BottomNavigationAction label='Classes' value='classes' icon={<LocalOfferIcon />} onClick={() => executeScroll(classesRef)}/>
+          <BottomNavigationAction label='Contact' value='contact' icon={<ContactMailIcon />} onClick={() => executeScroll(contactRef)}/>
         </BottomNavigation>
         :
           <></>

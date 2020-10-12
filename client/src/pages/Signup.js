@@ -192,7 +192,7 @@ export default function Signup() {
               </Button>
               <Grid container justify='center'>
                 <Grid item>
-                  <Link component={RouterLink} to='/signin' variant='body2'>
+                  <Link component={RouterLink} to='/signin' variant='body2' color='textSecondary'>
                     {"Already have an account? Sign In"}
                   </Link>
                 </Grid>

@@ -26,6 +26,7 @@ export default function OutlinedCard(props) {
   const handleClick = (event) => {
     event.preventDefault();
     props.setSubject(props.name);
+    props.executeScroll(props.contactRef);
   };
 
   return (

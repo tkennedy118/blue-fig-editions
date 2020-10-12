@@ -39,13 +39,13 @@ export default function ContactFrom(props) {
     text: false
   });
 
-  useEffect(() => {
+  useEffect((state) => {
     setState({
       ...state,
       subject: props.subject,
       text: props.message
     });
-  }, [props.subject, props.message])
+  }, [props.subject, props.message]);
 
   async function sendEmail() {
     setLoading(true);
@@ -55,10 +55,10 @@ export default function ContactFrom(props) {
       subject: state.subject,
       text: state.text
     })
-      .then((result) => {
+      .then(() => {
         setOpen({ ...open, success: true });
       })
-      .catch((error) => {
+      .catch(() => {
         setOpen({ ...open, failure: true })
       });
     setLoading(false);
@@ -111,11 +111,11 @@ export default function ContactFrom(props) {
   }
 
   return (
-    <>
+    <form>
       <Grid container spacing={1} className={classes.form}>
         <Grid item xs={12} sm={6}>
           <TextField
-            value={state.name}
+            value={state.name || ''}
             required
             id='name'
             name='name'
@@ -129,7 +129,7 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            value={state.from}
+            value={state.from || ''}
             required
             type='email'
             id='from'
@@ -144,7 +144,7 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            value={state.subject}
+            value={state.subject || ''}
             required
             id='subject'
             name='subject'
@@ -158,7 +158,7 @@ export default function ContactFrom(props) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            value={state.text}
+            value={state.text || ''}
             required
             id='text'
             name='text'
@@ -191,6 +191,6 @@ export default function ContactFrom(props) {
       <HandleAlert open={open.success} setOpen={setOpen} message='Email sent successfully' severity='success' />
       <HandleAlert open={open.failure} setOpen={setOpen} message='Email unseccessful' severity='error' />
       <Loader loading={loading} />
-    </>
+    </form>
   );
 }

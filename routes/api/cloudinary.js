@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const isAdmin = require('../../config/middleware/isAdmin');
 
 const cloudinary = require('cloudinary').v2;
 cloudinary.config({
@@ -10,7 +11,7 @@ cloudinary.config({
 });
 
 router.route('/upload-image')
-  .post(async (req, res) => {
+  .post(isAdmin, async (req, res) => {
 
     try {
       const fileStr = req.body.data;

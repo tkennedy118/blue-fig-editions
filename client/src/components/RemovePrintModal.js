@@ -52,7 +52,7 @@ export default function RemovePrintModal(props) {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button variant='contained' color='primary' fullWidth onClick={() => props.setRemove(false)}>
+              <Button variant='contained' color='primary' fullWidth disableElevation onClick={() => props.setRemove(false)}>
                 No
               </Button>
             </Grid>

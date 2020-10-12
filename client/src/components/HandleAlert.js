@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   snackbar: {
-    marginTop: theme.spacing(10),
+    marginTop: theme.spacing(2),
   },
 }));
 
