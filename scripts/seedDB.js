@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const db = require('../models');
+require('dotenv').config();
 
 // This file empties the user and print database and seeds with simple information.
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editions', {
@@ -8,28 +9,12 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editio
   useFindAndModify: false
 });
 
+const email = process.env.ADMIN_EMAIL;
+const password = process.env.ADMIN_PASSWORD;
 const userSeed = [
   {
-    email: 'martino@bluefig.com',
-    password: 'Password1!',
-    stripe_id: null,
-    isAdmin: false
-  },
-  {
-    email: 'kennedy@bluefig.com',
-    password: 'Password1!',
-    stripe_id: null,
-    isAdmin: false
-  },
-  {
-    email: 'burley@bluefig.com',
-    password: 'Password1!',
-    stripe_id: null,
-    isAdmin: false
-  },
-  {
-    email: 'tkennedy118@gmail.com',
-    password: 'Happyapple1!',
+    email: email,
+    password: password,
     stripe_id: null,
     isAdmin: true,
     address: {
@@ -49,78 +34,55 @@ const printSeed = [
     name: 'Big Gilbert',
     description: 'Silkscreen mono-print and silkscreen 22x22',
     series: 'Space-scape',
-    price: 10,
-    quantity: 3,
+    price: 45,
+    quantity: 1,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636340/bluefig/Big-Gilbert_pulfnm.jpg'
   },
   {
     name: 'Sasha',
     description: 'Silkscreen mono-print and etching 20x20',
     series: 'Space-scape',
-    price: 12,
-    quantity: 3,
+    price: 45,
+    quantity: 1,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636368/bluefig/Sasha_dqfi1b.jpg',
   },
   {
     name: 'Enzo',
     description: 'Silkscreen mono-print and silkscreen 21x21',
     series: 'Space-scape',
-    price: 11,
-    quantity: 3,
+    price: 45,
+    quantity: 1,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636365/bluefig/Enzo_etzy2a.jpg'
   },
   {
     name: 'Landon',
     description: 'Silkscreen and monoprint 22x28',
     series: 'Landscape',
-    price: 11,
-    quantity: 3,
+    price: 45,
+    quantity: 1,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636369/bluefig/Landon_gj1u3o.jpg'
   },
   {
     name: 'Owen',
     description: 'Silkscreen and monoprint 22x18',
     series: 'Landscape',
-    price: 16,
-    quantity: 3,
+    price: 45,
+    quantity: 1,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636375/bluefig/Owen_kieapy.jpg'
   },
   {
     name: 'Kira',
     description: 'Monoprint / screen print 11x11, 8 of 12',
     series: 'Landscape',
-    price: 15,
+    price: 45,
     quantity: 3,
     image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636372/bluefig/Kira_ijgeet.jpg'
-  },
-  {
-    name: 'Edna',
-    description: 'none',
-    series: 'none',
-    price: 12,
-    quantity: 3,
-    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636365/bluefig/Edna_ge2khl.jpg'
-  },
-  {
-    name: 'Edna L.',
-    description: 'none',
-    series: 'none',
-    price: 8,
-    quantity: 3,
-    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636362/bluefig/Edna-L_ptursp.jpg'
-  },
-  {
-    name: 'Jethro',
-    description: 'none',
-    series: 'none',
-    price: 10,
-    quantity: 3,
-    image: 'https://res.cloudinary.com/tkennedy118/image/upload/v1597636363/bluefig/Jethro_fk4uve.jpg'
   }
 ];
 
 // Encrypt passwords.
 userSeed.forEach(user => {
+  console.log('USER: ', user);
   const salt = bcrypt.genSaltSync(10);
   user.password = bcrypt.hashSync(user.password, salt);
 })
