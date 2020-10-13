@@ -6,7 +6,8 @@ require('dotenv').config();
 // This file empties the user and print database and seeds with simple information.
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/blue-fig-editions', {
   useNewUrlParser: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  useUnifiedTopology: true
 });
 
 const email = process.env.ADMIN_EMAIL;
