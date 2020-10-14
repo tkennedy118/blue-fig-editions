@@ -1,7 +1,11 @@
 const router = require('express').Router();
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const isAdmin = require('../../config/middleware/isAdmin');
+
+// Serve up static assets (usually on heroku)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+}
 
 const cloudinary = require('cloudinary').v2;
 cloudinary.config({

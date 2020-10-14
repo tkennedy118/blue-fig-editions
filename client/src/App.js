@@ -129,6 +129,13 @@ function App() {
                 <Footer />
               </>
               }/>
+              <Route render={props => 
+              <>
+                <Nav />
+                <Home />
+                <Footer />
+              </>
+              }/>
             </Switch>
           </>
         </Router>

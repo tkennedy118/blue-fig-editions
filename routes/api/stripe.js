@@ -1,6 +1,10 @@
 const router = require('express').Router();
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+
+// Serve up static assets (usually on heroku)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+} 
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const EasyPost = require('@easypost/api');

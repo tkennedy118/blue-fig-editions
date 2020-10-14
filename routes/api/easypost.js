@@ -1,11 +1,14 @@
 const router = require('express').Router();
 const EasyPost = require('@easypost/api');
 const db = require('../../models');
+const path = require('path');
 const isAuthenticated = require('../../config/middleware/isAuthenticated');
 const isAdmin = require('../../config/middleware/isAdmin');
 
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+// Serve up static assets (usually on heroku)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+}
 const api = new EasyPost(process.env.EASYPOST_API_KEY);
 
 router.route('/retrieve-shipment-label/:id')
