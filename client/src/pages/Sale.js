@@ -5,12 +5,12 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
+import Fade from '@material-ui/core/Fade';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { makeStyles } from '@material-ui/core/styles';
 import PrintCard from '../components/PrintCard';
 import PrintForm from '../components/PrintForm';
 import SortDropdown from '../components/SortDropdown';
-import Loader from '../components/Loader';
 import { useStoreContext } from '../utils/GlobalState';
 import { LOADING, UPDATE_PRINTS } from '../utils/actions';
 import API from '../utils/API';
@@ -85,24 +85,25 @@ function Sale() {
                 <></>
             }
             {state.prints.map((print, index) => (
-              <Grid item key={index} xs={12} sm={6} md={4}>
-                <PrintCard 
-                  name={print.name}
-                  description={print.description}
-                  series={print.series}
-                  price={print.price}
-                  quantity={print.quantity}
-                  image={print.image}
-                  featured={print.featured}
-                  about={print.about}
-                  _id={print._id}
-                />
-              </Grid>
+              <Fade in={true} timeout={1700}>
+                <Grid item key={index} xs={12} sm={6} md={4}>
+                  <PrintCard 
+                    name={print.name}
+                    description={print.description}
+                    series={print.series}
+                    price={print.price}
+                    quantity={print.quantity}
+                    image={print.image}
+                    featured={print.featured}
+                    about={print.about}
+                    _id={print._id}
+                  />
+                </Grid>
+              </Fade>
             ))}
           </Grid> 
         </Container>
       </main>
-      <Loader loading={state.loading} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
-import Image from 'material-ui-image';
+import Magnifier from 'react-magnifier';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -126,7 +126,7 @@ export default function PrintCard(props) {
                 className={classes.media}
                 title={props.name}
               >
-                <Image src={props.image} />
+                <Magnifier src={props.image} mgWidth={150} mgHeight={150} zoomFactor={3} />
               </CardMedia>
               <CardContent>
                 <Typography variant='subtitle1' color='textPrimary' align='center'>
