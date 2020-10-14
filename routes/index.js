@@ -6,7 +6,7 @@ const apiRoutes = require('./api');
 router.use('/api', apiRoutes);
 
 // If no other routes are hit, send to home page.
-router.use(function(req, res) {
+router.use('*', function(req, res) {
   res.sendFile(path.join(__dirname, '/'));
 });
 
