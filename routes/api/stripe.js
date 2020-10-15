@@ -70,7 +70,7 @@ router.route('/payment-methods/:id')
 
 // Create customer.
 router.route('/create-customer')
-  .post(isAuthenticated, async(req, res) => {
+  .post(async(req, res) => {
     const { email } = req.body;
 
     try {
